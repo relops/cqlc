@@ -71,7 +71,7 @@ type Query interface {
 }
 
 type SelectWhereStep interface {
-	//Fetchable
+	Fetchable
 	Where(conditions ...Condition) Query
 }
 

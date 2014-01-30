@@ -67,31 +67,29 @@ func main() {
 
 	result, _ = checkBasics(iter, basic)
 
-	/*
-		iter, err = ctx.Select(
-			BASIC.ID,
-			BASIC.ASCII_COLUMN,
-			BASIC.INT32_COLUMN,
-			BASIC.INT64_COLUMN,
-			BASIC.FLOAT_COLUMN,
-			BASIC.DOUBLE_COLUMN,
-			BASIC.TIMESTAMP_COLUMN,
-			BASIC.TIMEUUID_COLUMN,
-			BASIC.BOOLEAN_COLUMN,
-			BASIC.TEXT_COLUMN,
-			BASIC.VARCHAR_COLUMN,
-			BASIC.MAP_COLUMN,
-			BASIC.ARRAY_COLUMN).
-			From(BASIC).
-			Fetch(session)
+	iter, err = ctx.Select(
+		BASIC.ID,
+		BASIC.ASCII_COLUMN,
+		BASIC.INT32_COLUMN,
+		BASIC.INT64_COLUMN,
+		BASIC.FLOAT_COLUMN,
+		BASIC.DOUBLE_COLUMN,
+		BASIC.TIMESTAMP_COLUMN,
+		BASIC.TIMEUUID_COLUMN,
+		BASIC.BOOLEAN_COLUMN,
+		BASIC.TEXT_COLUMN,
+		BASIC.VARCHAR_COLUMN,
+		BASIC.MAP_COLUMN,
+		BASIC.ARRAY_COLUMN).
+		From(BASIC).
+		Fetch(session)
 
-		if err != nil {
-			log.Fatalf("Could not bind data: %v", err)
-			os.Exit(1)
-		}
+	if err != nil {
+		log.Fatalf("Could not bind data: %v", err)
+		os.Exit(1)
+	}
 
-		result, _ = checkBasics(iter, basic)
-	*/
+	result, _ = checkBasics(iter, basic)
 
 	// TODO write test cases for SELECT without a WHERE clause and a non-matching WHERE clause
 

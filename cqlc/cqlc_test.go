@@ -145,15 +145,13 @@ func (s *CqlTestSuite) TestSelect() {
 	barCol := &MockAsciiColumn{name: "bar"}
 	c := NewContext()
 
-	/*
-		c.Select(barCol).From(s.table)
-		cql, err := c.RenderCQL()
-		assert.NoError(s.T(), err)
-		assert.Equal(s.T(), cql, "SELECT bar FROM foo")
-	*/
+	c.Select(barCol).From(s.table)
+	cql, err := c.RenderCQL()
+	assert.NoError(s.T(), err)
+	assert.Equal(s.T(), cql, "SELECT bar FROM foo")
 
 	c.Select(barCol).From(s.table).Where(idCol.Eq("x"))
-	cql, err := c.RenderCQL()
+	cql, err = c.RenderCQL()
 	assert.NoError(s.T(), err)
 	assert.Equal(s.T(), cql, "SELECT bar FROM foo WHERE id = ?")
 
