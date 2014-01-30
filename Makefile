@@ -7,6 +7,6 @@ test: bindata
 	go test -v ./...
 
 format:
-	gofmt --tabs=false --tabwidth=4 -w cql generator integration test
+	gofmt -w cqlc generator integration test
 
 .PHONY: test
