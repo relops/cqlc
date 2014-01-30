@@ -3,5 +3,11 @@ language: go
 go:
   - 1.2
 
+before_install:
+  - go get github.com/jteeuwen/go-bindata
+
+install: 
+  - go get -v ./...
+
 services:
   - cassandra
