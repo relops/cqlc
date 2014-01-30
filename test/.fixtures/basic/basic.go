@@ -91,7 +91,7 @@ func main() {
 
 	result, _ = checkBasics(iter, basic)
 
-	// TODO write test cases for SELECT without a WHERE clause and a non-matching WHERE clause
+	// TODO write test case for a non-matching WHERE clause
 
 	os.Stdout.WriteString(result)
 }
