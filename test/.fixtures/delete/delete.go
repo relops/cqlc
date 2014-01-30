@@ -3,9 +3,9 @@ package main
 import (
 	"github.com/relops/cqlc/cqlc"
 	"github.com/relops/cqlc/integration"
+	"github.com/tux21b/gocql"
 	"log"
 	"os"
-	"tux21b.org/v1/gocql"
 )
 
 var REALLY_BASIC = ReallyBasicTableDef()

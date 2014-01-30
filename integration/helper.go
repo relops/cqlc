@@ -3,9 +3,9 @@ package integration
 import (
 	"fmt"
 	"github.com/relops/cqlc/cqlc"
+	"github.com/tux21b/gocql"
 	"log"
 	"os"
-	"tux21b.org/v1/gocql"
 )
 
 func TestSession(host string, keyspace string) *gocql.Session {

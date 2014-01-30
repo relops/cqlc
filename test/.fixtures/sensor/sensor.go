@@ -3,9 +3,9 @@ package main
 import (
 	"github.com/relops/cqlc/cqlc"
 	"github.com/relops/cqlc/integration"
+	"github.com/tux21b/gocql"
 	"log"
 	"os"
-	"tux21b.org/v1/gocql/uuid"
 )
 
 var EVENTS = EventsTableDef()
@@ -23,7 +23,7 @@ func main() {
 
 	ctx.Upsert(EVENTS).
 		SetInt64(EVENTS.SENSOR, sensorId).
-		SetTimeUUID(EVENTS.TIMESTAMP, uuid.TimeUUID()).
+		SetTimeUUID(EVENTS.TIMESTAMP, gocql.TimeUUID()).
 		SetFloat32(EVENTS.TEMPERATURE, 19.8).
 		SetInt32(EVENTS.PRESSURE, 357).
 		Exec(session)
@@ -32,7 +32,7 @@ func main() {
 		From(EVENTS).
 		Where(
 		EVENTS.SENSOR.Eq(sensorId),
-		EVENTS.TIMESTAMP.Lt(uuid.TimeUUID())).
+		EVENTS.TIMESTAMP.Lt(gocql.TimeUUID())).
 		Fetch(session)
 
 	if err != nil {

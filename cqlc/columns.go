@@ -1,8 +1,8 @@
 package cqlc
 
 import (
+	"github.com/tux21b/gocql"
 	"time"
-	"tux21b.org/v1/gocql/uuid"
 )
 
 type StringColumn interface {
@@ -175,30 +175,30 @@ type LastClusteredTimestampColumn interface {
 
 type TimeUUIDColumn interface {
 	Column
-	Supports(value uuid.UUID) bool
+	Supports(value gocql.UUID) bool
 }
 
 type PartitionedTimeUUIDColumn interface {
 	TimeUUIDColumn
-	Eq(value uuid.UUID) Condition
+	Eq(value gocql.UUID) Condition
 }
 
 type LastPartitionedTimeUUIDColumn interface {
 	PartitionedTimeUUIDColumn
-	In(value ...uuid.UUID) Condition
+	In(value ...gocql.UUID) Condition
 }
 
 type ClusteredTimeUUIDColumn interface {
 	PartitionedTimeUUIDColumn
-	Gt(value uuid.UUID) Condition
-	Lt(value uuid.UUID) Condition
-	Ge(value uuid.UUID) Condition
-	Le(value uuid.UUID) Condition
+	Gt(value gocql.UUID) Condition
+	Lt(value gocql.UUID) Condition
+	Ge(value gocql.UUID) Condition
+	Le(value gocql.UUID) Condition
 }
 
 type LastClusteredTimeUUIDColumn interface {
 	ClusteredTimeUUIDColumn
-	In(value ...uuid.UUID) Condition
+	In(value ...gocql.UUID) Condition
 }
 
 type BooleanColumn interface {

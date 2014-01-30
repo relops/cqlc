@@ -3,9 +3,6 @@
 package {{ .Options.Package }}
 
 import (
-    "github.com/relops/cqlc/cqlc"
-    "tux21b.org/v1/gocql"
-    "log"
     {{range $_, $path := .Imports}}
         "{{$path}}"
     {{end}}

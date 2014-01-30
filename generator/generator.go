@@ -52,6 +52,25 @@ func validateOptions(opts *Options) error {
 	return nil
 }
 
+func coalesceImports(cf []ColumnFamily) []string {
+
+	set := make(map[string]bool)
+	for _, path := range importPaths(cf) {
+		set[path] = true
+	}
+
+	set["github.com/relops/cqlc/cqlc"] = true
+	set["github.com/tux21b/gocql"] = true
+	set["log"] = true
+
+	paths := make([]string, 0)
+	for path, _ := range set {
+		paths = append(paths, path)
+	}
+
+	return paths
+}
+
 func generateBinding(opts *Options, w io.Writer) error {
 
 	cf, err := ColumnFamilies(opts.Instance, opts.Keyspace)
@@ -62,7 +81,7 @@ func generateBinding(opts *Options, w io.Writer) error {
 
 	meta := make(map[string]interface{})
 	meta["Options"] = opts
-	meta["Imports"] = importPaths(cf)
+	meta["Imports"] = coalesceImports(cf)
 	meta["ColumnFamilies"] = cf
 
 	var b bytes.Buffer

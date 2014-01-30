@@ -4,13 +4,12 @@ import (
 	"fmt"
 	"github.com/relops/cqlc/cqlc"
 	"github.com/relops/cqlc/integration"
+	"github.com/tux21b/gocql"
 	"log"
 	"math"
 	"os"
 	"reflect"
 	"time"
-	"tux21b.org/v1/gocql"
-	"tux21b.org/v1/gocql/uuid"
 )
 
 var BASIC = BasicTableDef()
@@ -35,7 +34,7 @@ func main() {
 		VarcharColumn:   "bar",
 		FloatColumn:     math.MaxFloat32,
 		DoubleColumn:    math.MaxFloat64,
-		TimeuuidColumn:  uuid.TimeUUID(),
+		TimeuuidColumn:  gocql.TimeUUID(),
 		MapColumn:       map[string]string{"baz": "quux"},
 		ArrayColumn:     []string{"baz", "quux"},
 	}

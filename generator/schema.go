@@ -2,9 +2,9 @@ package generator
 
 import (
 	"fmt"
+	"github.com/tux21b/gocql"
 	"sort"
 	"strings"
-	"tux21b.org/v1/gocql"
 )
 
 type ColumnKeyType uint
@@ -61,7 +61,7 @@ var literalTypes = map[ColumnDataType]string{
 	FloatType:     "float32",
 	DoubleType:    "float64",
 	TimestampType: "time.Time",
-	TimeUUIDType:  "uuid.UUID",
+	TimeUUIDType:  "gocql.UUID",
 	BooleanType:   "bool",
 	CounterType:   "int64",
 	MapType:       "map[string]string",
@@ -69,7 +69,7 @@ var literalTypes = map[ColumnDataType]string{
 }
 
 var customImportPaths = map[string]string{
-	"uuid.UUID": "tux21b.org/v1/gocql/uuid",
+	"gocql.UUID": "github.com/tux21b/gocql",
 }
 
 var columnTypes = map[ColumnDataType]string{

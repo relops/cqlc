@@ -16,10 +16,9 @@ package cqlc
 import (
 	"bytes"
 	"fmt"
+	"github.com/tux21b/gocql"
 	"reflect"
 	"time"
-	"tux21b.org/v1/gocql"
-	"tux21b.org/v1/gocql/uuid"
 )
 
 type OperationType int
@@ -92,7 +91,7 @@ type SetValueStep interface {
 	SetFloat32(col Float32Column, value float32) SetValueStep
 	SetFloat64(col Float64Column, value float64) SetValueStep
 	SetTimestamp(col TimestampColumn, value time.Time) SetValueStep
-	SetTimeUUID(col TimeUUIDColumn, value uuid.UUID) SetValueStep
+	SetTimeUUID(col TimeUUIDColumn, value gocql.UUID) SetValueStep
 	SetBoolean(col BooleanColumn, value bool) SetValueStep
 	SetMap(col MapColumn, value map[string]string) SetValueStep
 	SetArray(col ArrayColumn, value []string) SetValueStep
@@ -211,7 +210,7 @@ func (c *Context) SetTimestamp(col TimestampColumn, value time.Time) SetValueSte
 	return c
 }
 
-func (c *Context) SetTimeUUID(col TimeUUIDColumn, value uuid.UUID) SetValueStep {
+func (c *Context) SetTimeUUID(col TimeUUIDColumn, value gocql.UUID) SetValueStep {
 	set(c, col, value)
 	return c
 }
@@ -267,7 +266,7 @@ func (c *Context) Fetch(s *gocql.Session) (*gocql.Iter, error) {
 				// Not really happy about having to special case UUIDs
 				// but this works for now
 
-				if val, ok := v.(uuid.UUID); ok {
+				if val, ok := v.(gocql.UUID); ok {
 					placeHolders = append(placeHolders, val.Bytes())
 				} else {
 					return nil, bindingErrorf("Cannot bind component: %+v (type: %s)", v, reflect.TypeOf(v))
