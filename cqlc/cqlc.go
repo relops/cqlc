@@ -14,378 +14,380 @@
 package cqlc
 
 import (
-    "bytes"
-    "fmt"
-    "reflect"
-    "time"
-    "tux21b.org/v1/gocql"
-    "tux21b.org/v1/gocql/uuid"
+	"bytes"
+	"fmt"
+	"reflect"
+	"time"
+	"tux21b.org/v1/gocql"
+	"tux21b.org/v1/gocql/uuid"
 )
 
 type OperationType int
 type PredicateType int
 
 const (
-    EqPredicate PredicateType = 1
-    GtPredicate PredicateType = 2
-    GePredicate PredicateType = 3
-    LtPredicate PredicateType = 4
-    LePredicate PredicateType = 5
-    InPredicate PredicateType = 6
+	EqPredicate PredicateType = 1
+	GtPredicate PredicateType = 2
+	GePredicate PredicateType = 3
+	LtPredicate PredicateType = 4
+	LePredicate PredicateType = 5
+	InPredicate PredicateType = 6
 )
 
 const (
-    None             OperationType = 0
-    ReadOperation    OperationType = 1
-    WriteOperation   OperationType = 2
-    DeleteOperation  OperationType = 3
-    CounterOperation OperationType = 4
+	None             OperationType = 0
+	ReadOperation    OperationType = 1
+	WriteOperation   OperationType = 2
+	DeleteOperation  OperationType = 3
+	CounterOperation OperationType = 4
 )
 
 // Context represents the state of the CQL statement that is being built by the application.
 type Context struct {
-    Operation  OperationType
-    Table      Table
-    Columns    []Column
-    Bindings   []ColumnBinding
-    Conditions []Condition
+	Operation  OperationType
+	Table      Table
+	Columns    []Column
+	Bindings   []ColumnBinding
+	Conditions []Condition
 }
 
 // NewContext creates a fresh Context instance.
 func NewContext() *Context {
-    return &Context{}
+	return &Context{}
 }
 
 type Executable interface {
-    Exec(*gocql.Session) error
-    Batch(*gocql.Batch) error
+	Exec(*gocql.Session) error
+	Batch(*gocql.Batch) error
+}
+
+type Fetchable interface {
+	Fetch(*gocql.Session) (*gocql.Iter, error)
 }
 
 type Query interface {
-    Executable
-    Fetch(*gocql.Session) (*gocql.Iter, error)
+	Executable
+	Fetchable
 }
 
 type SelectWhereStep interface {
-    Where(conditions ...Condition) Query
+	//Fetchable
+	Where(conditions ...Condition) Query
 }
 
 type SelectFromStep interface {
-    From(table Table) SelectWhereStep
-}
-
-type FromStep interface {
-    From(table Table) SelectWhereStep
+	From(table Table) SelectWhereStep
 }
 
 type SelectSelectStep interface {
-    Select(cols ...Column) SelectFromStep
+	Select(cols ...Column) SelectFromStep
 }
 
 type SetValueStep interface {
-    Executable
-    SelectWhereStep
-    SetString(col StringColumn, value string) SetValueStep
-    SetInt32(col Int32Column, value int32) SetValueStep
-    SetInt64(col Int64Column, value int64) SetValueStep
-    SetFloat32(col Float32Column, value float32) SetValueStep
-    SetFloat64(col Float64Column, value float64) SetValueStep
-    SetTimestamp(col TimestampColumn, value time.Time) SetValueStep
-    SetTimeUUID(col TimeUUIDColumn, value uuid.UUID) SetValueStep
-    SetBoolean(col BooleanColumn, value bool) SetValueStep
-    SetMap(col MapColumn, value map[string]string) SetValueStep
-    SetArray(col ArrayColumn, value []string) SetValueStep
+	Executable
+	SelectWhereStep
+	SetString(col StringColumn, value string) SetValueStep
+	SetInt32(col Int32Column, value int32) SetValueStep
+	SetInt64(col Int64Column, value int64) SetValueStep
+	SetFloat32(col Float32Column, value float32) SetValueStep
+	SetFloat64(col Float64Column, value float64) SetValueStep
+	SetTimestamp(col TimestampColumn, value time.Time) SetValueStep
+	SetTimeUUID(col TimeUUIDColumn, value uuid.UUID) SetValueStep
+	SetBoolean(col BooleanColumn, value bool) SetValueStep
+	SetMap(col MapColumn, value map[string]string) SetValueStep
+	SetArray(col ArrayColumn, value []string) SetValueStep
 }
 
 type IncrementWhereStep interface {
-    Having(conditions ...Condition) Executable
+	Having(conditions ...Condition) Executable
 }
 
 type IncrementCounterStep interface {
-    IncrementWhereStep
-    Increment(col CounterColumn, value int64) IncrementCounterStep
+	IncrementWhereStep
+	Increment(col CounterColumn, value int64) IncrementCounterStep
 }
 
 type Upsertable interface {
-    Table
-    SupportsUpsert() bool
+	Table
+	SupportsUpsert() bool
 }
 
 type CounterTable interface {
-    Table
-    IsCounterTable() bool
+	Table
+	IsCounterTable() bool
 }
 
 type Table interface {
-    TableName() string
-    ColumnDefinitions() []Column
+	TableName() string
+	ColumnDefinitions() []Column
 }
 
 type Column interface {
-    ColumnName() string
+	ColumnName() string
 }
 
 type Condition struct {
-    Binding   ColumnBinding
-    Predicate PredicateType
+	Binding   ColumnBinding
+	Predicate PredicateType
 }
 
 type ColumnBinding struct {
-    Column Column
-    Value  interface{}
+	Column Column
+	Value  interface{}
 }
 
 type BindingError string
 
 func (m BindingError) Error() string {
-    return string(m)
+	return string(m)
 }
 
 func (c *Context) Select(cols ...Column) SelectFromStep {
-    c.Columns = cols
-    c.Operation = ReadOperation
-    return c
+	c.Columns = cols
+	c.Operation = ReadOperation
+	return c
 }
 
 func (c *Context) From(t Table) SelectWhereStep {
-    c.Table = t
-    return c
+	c.Table = t
+	return c
 }
 
 func (c *Context) Delete(cols ...Column) SelectFromStep {
-    c.Columns = cols
-    c.Operation = DeleteOperation
-    return c
+	c.Columns = cols
+	c.Operation = DeleteOperation
+	return c
 }
 
 func (c *Context) UpdateCounter(t CounterTable) IncrementCounterStep {
-    c.Table = t
-    c.Operation = CounterOperation
-    return c
+	c.Table = t
+	c.Operation = CounterOperation
+	return c
 }
 
 func (c *Context) Increment(col CounterColumn, value int64) IncrementCounterStep {
-    set(c, col, value)
-    return c
+	set(c, col, value)
+	return c
 }
 
 func (c *Context) Having(cond ...Condition) Executable {
-    c.Conditions = cond
-    return c
+	c.Conditions = cond
+	return c
 }
 
 func (c *Context) Upsert(u Upsertable) SetValueStep {
-    c.Table = u
-    c.Operation = WriteOperation
-    return c
+	c.Table = u
+	c.Operation = WriteOperation
+	return c
 }
 
 func (c *Context) SetString(col StringColumn, value string) SetValueStep {
-    set(c, col, value)
-    return c
+	set(c, col, value)
+	return c
 }
 
 func (c *Context) SetInt32(col Int32Column, value int32) SetValueStep {
-    set(c, col, value)
-    return c
+	set(c, col, value)
+	return c
 }
 
 func (c *Context) SetInt64(col Int64Column, value int64) SetValueStep {
-    set(c, col, value)
-    return c
+	set(c, col, value)
+	return c
 }
 
 func (c *Context) SetFloat32(col Float32Column, value float32) SetValueStep {
-    set(c, col, value)
-    return c
+	set(c, col, value)
+	return c
 }
 
 func (c *Context) SetFloat64(col Float64Column, value float64) SetValueStep {
-    set(c, col, value)
-    return c
+	set(c, col, value)
+	return c
 }
 
 func (c *Context) SetTimestamp(col TimestampColumn, value time.Time) SetValueStep {
-    set(c, col, value)
-    return c
+	set(c, col, value)
+	return c
 }
 
 func (c *Context) SetTimeUUID(col TimeUUIDColumn, value uuid.UUID) SetValueStep {
-    set(c, col, value)
-    return c
+	set(c, col, value)
+	return c
 }
 
 func (c *Context) SetBoolean(col BooleanColumn, value bool) SetValueStep {
-    set(c, col, value)
-    return c
+	set(c, col, value)
+	return c
 }
 
 func (c *Context) SetMap(col MapColumn, value map[string]string) SetValueStep {
-    set(c, col, value)
-    return c
+	set(c, col, value)
+	return c
 }
 
 func (c *Context) SetArray(col ArrayColumn, value []string) SetValueStep {
-    set(c, col, value)
-    return c
+	set(c, col, value)
+	return c
 }
 
 func (c *Context) Where(cond ...Condition) Query {
-    c.Conditions = cond
-    return c
+	c.Conditions = cond
+	return c
 }
 
-
 func (c *Context) Fetch(s *gocql.Session) (*gocql.Iter, error) {
-    
-    stmt, err := c.RenderCQL()
-    if err != nil {
-        return nil, err
-    }
 
-    // The reason why this is so dynamic is because of WHERE foo IN (?,?,?) clauses
-    // The factoring for an IN clause is bad, since we are storing an array into the value
-    // and using reflection to dig it out again
-    // This should be more strongly typed
+	stmt, err := c.RenderCQL()
+	if err != nil {
+		return nil, err
+	}
 
-    placeHolders := make([]interface{}, 0)
+	// The reason why this is so dynamic is because of WHERE foo IN (?,?,?) clauses
+	// The factoring for an IN clause is bad, since we are storing an array into the value
+	// and using reflection to dig it out again
+	// This should be more strongly typed
 
-    for _, cond := range c.Conditions {
-        v := cond.Binding.Value
-        
-        switch reflect.TypeOf(v).Kind() {
-            case reflect.Slice: {
-                s := reflect.ValueOf(v)
-                for i := 0; i < s.Len(); i++ {
-                    placeHolders = append(placeHolders, s.Index(i).Interface())
-                }    
-            }
-            case reflect.Array: {
+	placeHolders := make([]interface{}, 0)
 
-                // Not really happy about having to special case UUIDs
-                // but this works for now
+	for _, cond := range c.Conditions {
+		v := cond.Binding.Value
 
-                if val, ok := v.(uuid.UUID); ok {
-                    placeHolders = append(placeHolders, val.Bytes())
-                } else {
-                    return nil, bindingErrorf("Cannot bind component: %+v (type: %s)", v, reflect.TypeOf(v))
-                }
-            }
-            default: {
-                placeHolders = append(placeHolders, &v)
-            }
-        }
-    }
+		switch reflect.TypeOf(v).Kind() {
+		case reflect.Slice:
+			{
+				s := reflect.ValueOf(v)
+				for i := 0; i < s.Len(); i++ {
+					placeHolders = append(placeHolders, s.Index(i).Interface())
+				}
+			}
+		case reflect.Array:
+			{
 
-    c.Dispose()
+				// Not really happy about having to special case UUIDs
+				// but this works for now
 
-    iter := s.Query(stmt, placeHolders...).Iter()
-    return iter, nil
+				if val, ok := v.(uuid.UUID); ok {
+					placeHolders = append(placeHolders, val.Bytes())
+				} else {
+					return nil, bindingErrorf("Cannot bind component: %+v (type: %s)", v, reflect.TypeOf(v))
+				}
+			}
+		default:
+			{
+				placeHolders = append(placeHolders, &v)
+			}
+		}
+	}
+
+	c.Dispose()
+
+	iter := s.Query(stmt, placeHolders...).Iter()
+	return iter, nil
 }
 
 func (c *Context) Exec(s *gocql.Session) error {
-    stmt, placeHolders, err := BuildStatement(c)
+	stmt, placeHolders, err := BuildStatement(c)
 
-    if err != nil {
-        return err
-    }
+	if err != nil {
+		return err
+	}
 
-    return s.Query(stmt, placeHolders...).Exec()
+	return s.Query(stmt, placeHolders...).Exec()
 }
 
 func (c *Context) Batch(b *gocql.Batch) error {
-    stmt, placeHolders, err := BuildStatement(c)
+	stmt, placeHolders, err := BuildStatement(c)
 
-    if err != nil {
-        return err
-    }
+	if err != nil {
+		return err
+	}
 
-    b.Query(stmt, placeHolders...)
+	b.Query(stmt, placeHolders...)
 
-    return nil
+	return nil
 }
 
 func BuildStatement(c *Context) (stmt string, placeHolders []interface{}, err error) {
-    stmt, err = c.RenderCQL()
-    if err != nil {
-        return stmt, nil, err
-    }
+	stmt, err = c.RenderCQL()
+	if err != nil {
+		return stmt, nil, err
+	}
 
-    bindings := len(c.Bindings) // TODO check whether this is nil
-    conditions := 0
+	bindings := len(c.Bindings) // TODO check whether this is nil
+	conditions := 0
 
-    if c.Conditions != nil {
-        conditions = len(c.Conditions)
-    }
+	if c.Conditions != nil {
+		conditions = len(c.Conditions)
+	}
 
-    placeHolders = make([]interface{}, bindings+conditions)
+	placeHolders = make([]interface{}, bindings+conditions)
 
-    for i, bind := range c.Bindings {
-        placeHolders[i] = bind.Value
-    }
+	for i, bind := range c.Bindings {
+		placeHolders[i] = bind.Value
+	}
 
-    if c.Conditions != nil {
-        for i, cond := range c.Conditions {
-            placeHolders[i+bindings] = cond.Binding.Value
-        }
-    }
+	if c.Conditions != nil {
+		for i, cond := range c.Conditions {
+			placeHolders[i+bindings] = cond.Binding.Value
+		}
+	}
 
-    c.Dispose()
+	c.Dispose()
 
-    return stmt, placeHolders, nil
+	return stmt, placeHolders, nil
 }
 
 // TODO Make this private, since we should be able to test against BuildStatement()
 func (ctx *Context) RenderCQL() (string, error) {
 
-    var buf bytes.Buffer
+	var buf bytes.Buffer
 
-    // TODO This should be a switch
-    switch ctx.Operation {
-    case ReadOperation:
-        {
-            renderSelect(ctx, &buf)
-        }
-    case WriteOperation:
-        {
-            if ctx.hasConditions() {
-                renderUpdate(ctx, &buf, false)
-            } else {
-                renderInsert(ctx, &buf)
-            }
-        }
-    case CounterOperation:
-        {
-            renderUpdate(ctx, &buf, true)
-        }
-    case DeleteOperation:
-        {
-            renderDelete(ctx, &buf)
-        }
-    default:
-        return "", fmt.Errorf("Unknown operation type: %s", ctx.Operation)
-    }
+	// TODO This should be a switch
+	switch ctx.Operation {
+	case ReadOperation:
+		{
+			renderSelect(ctx, &buf)
+		}
+	case WriteOperation:
+		{
+			if ctx.hasConditions() {
+				renderUpdate(ctx, &buf, false)
+			} else {
+				renderInsert(ctx, &buf)
+			}
+		}
+	case CounterOperation:
+		{
+			renderUpdate(ctx, &buf, true)
+		}
+	case DeleteOperation:
+		{
+			renderDelete(ctx, &buf)
+		}
+	default:
+		return "", fmt.Errorf("Unknown operation type: %s", ctx.Operation)
+	}
 
-    return buf.String(), nil
+	return buf.String(), nil
 }
 
 func (ctx *Context) Dispose() {
-    ctx.Columns = nil
-    ctx.Operation = None
-    ctx.Table = nil
-    ctx.Bindings = nil
-    ctx.Conditions = nil
+	ctx.Columns = nil
+	ctx.Operation = None
+	ctx.Table = nil
+	ctx.Bindings = nil
+	ctx.Conditions = nil
 }
 
 func set(c *Context, col Column, value interface{}) {
-    c.Bindings = append(c.Bindings, ColumnBinding{Column: col, Value: value})
+	c.Bindings = append(c.Bindings, ColumnBinding{Column: col, Value: value})
 }
 
 func (c *Context) hasConditions() bool {
-    return len(c.Conditions) > 0
+	return len(c.Conditions) > 0
 }
 
 func bindingErrorf(format string, args ...interface{}) BindingError {
-    return BindingError(fmt.Sprintf(format, args...))
+	return BindingError(fmt.Sprintf(format, args...))
 }
-

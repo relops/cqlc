@@ -1,63 +1,63 @@
 package generator
 
 import (
-    "github.com/stretchr/testify/assert"
-    "testing"
+	"github.com/stretchr/testify/assert"
+	"testing"
 )
 
 var opts *Options
 
 func init() {
-    opts = &Options{
-        Package:  "main",
-        Instance: "127.0.0.1",
-        Keyspace: "cqlc",
-    }
+	opts = &Options{
+		Package:  "main",
+		Instance: "127.0.0.1",
+		Keyspace: "cqlc",
+	}
 }
 
 func TestBasicGenerator(t *testing.T) {
 
-    out, err := runFixture("basic", opts)
+	out, err := runFixture("basic", opts)
 
-    assert.NoError(t, err)
-    assert.Equal(t, out, "PASSED")
+	assert.NoError(t, err)
+	assert.Equal(t, out, "PASSED")
 }
 
 func TestCounterGenerator(t *testing.T) {
 
-    out, err := runFixture("counter", opts)
+	out, err := runFixture("counter", opts)
 
-    assert.NoError(t, err)
-    assert.Equal(t, out, "PASSED")
+	assert.NoError(t, err)
+	assert.Equal(t, out, "PASSED")
 }
 
 func TestDeleteGenerator(t *testing.T) {
-    out, err := runFixture("delete", opts)
+	out, err := runFixture("delete", opts)
 
-    assert.NoError(t, err)
-    assert.Equal(t, out, "PASSED")
+	assert.NoError(t, err)
+	assert.Equal(t, out, "PASSED")
 }
 
 func TestComparisonGenerator(t *testing.T) {
 
-    out, err := runFixture("comparison", opts)
+	out, err := runFixture("comparison", opts)
 
-    assert.NoError(t, err)
-    assert.Equal(t, out, "PASSED")
+	assert.NoError(t, err)
+	assert.Equal(t, out, "PASSED")
 }
 
 func TestBatchGenerator(t *testing.T) {
 
-    out, err := runFixture("batch", opts)
+	out, err := runFixture("batch", opts)
 
-    assert.NoError(t, err)
-    assert.Equal(t, out, "PASSED")
+	assert.NoError(t, err)
+	assert.Equal(t, out, "PASSED")
 }
 
 func TestSensorGenerator(t *testing.T) {
 
-    out, err := runFixture("sensor", opts)
+	out, err := runFixture("sensor", opts)
 
-    assert.NoError(t, err)
-    assert.Equal(t, out, "PASSED")
+	assert.NoError(t, err)
+	assert.Equal(t, out, "PASSED")
 }
