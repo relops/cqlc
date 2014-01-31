@@ -20,7 +20,8 @@ func init() {
 		"valueType":       valueType,
 		"isCounterColumn": isCounterColumn,
 	}
-	bindingTemplate = template.Must(template.New("binding.tmpl").Funcs(m).Parse(string(binding_tmpl())))
+	temp, _ := generator_tmpl_binding_tmpl()
+	bindingTemplate = template.Must(template.New("binding.tmpl").Funcs(m).Parse(string(temp)))
 }
 
 func isCounterColumn(c Column) bool {

@@ -1,14 +1,31 @@
 package generator
 
 import (
-	"bytes"
-	"compress/gzip"
-	"io"
+    "bytes"
+    "compress/gzip"
+    "fmt"
+    "io"
 )
 
-// binding_tmpl returns raw, uncompressed file data.
-func binding_tmpl() []byte {
-	gz, err := gzip.NewReader(bytes.NewBuffer([]byte{
+func bindata_read(data []byte, name string) ([]byte, error) {
+	gz, err := gzip.NewReader(bytes.NewBuffer(data))
+	if err != nil {
+		return nil, fmt.Errorf("Read %q: %v", name, err)
+	}
+
+	var buf bytes.Buffer
+	_, err = io.Copy(&buf, gz)
+	gz.Close()
+
+	if err != nil {
+		return nil, fmt.Errorf("Read %q: %v", name, err)
+	}
+
+	return buf.Bytes(), nil
+}
+
+func generator_tmpl_binding_tmpl() ([]byte, error) {
+	return bindata_read([]byte{
 		0x1f, 0x8b, 0x08, 0x00, 0x00, 0x09, 0x6e, 0x88, 0x00, 0xff, 0xec, 0x58,
 		0x5f, 0x6f, 0xdb, 0x36, 0x10, 0x7f, 0xf7, 0xa7, 0xb8, 0x05, 0x41, 0x20,
 		0xa5, 0x9e, 0xda, 0x67, 0x6f, 0x7d, 0x48, 0x1d, 0x25, 0x15, 0xe0, 0x25,
@@ -101,15 +118,24 @@ func binding_tmpl() []byte {
 		0x9e, 0xb8, 0x74, 0x38, 0x3f, 0xe9, 0x0a, 0xfd, 0xff, 0x98, 0xef, 0x3f,
 		0xf9, 0x47, 0xaf, 0x1b, 0x91, 0xea, 0xc3, 0x7f, 0x01, 0x00, 0x00, 0xff,
 		0xff, 0xe2, 0xa8, 0x5d, 0x14, 0xc3, 0x19, 0x00, 0x00,
-	}))
+		},
+		"generator/tmpl/binding.tmpl",
+	)
+}
 
-	if err != nil {
-		panic("Decompression failed: " + err.Error())
+
+// Asset loads and returns the asset for the given name.
+// It returns an error if the asset could not be found or
+// could not be loaded.
+func Asset(name string) ([]byte, error) {
+	if f, ok := _bindata[name]; ok {
+		return f()
 	}
+	return nil, fmt.Errorf("Asset %s not found", name)
+}
 
-	var b bytes.Buffer
-	io.Copy(&b, gz)
-	gz.Close()
+// _bindata is a table, holding each asset generator, mapped to its name.
+var _bindata = map[string] func() ([]byte, error) {
+	"generator/tmpl/binding.tmpl": generator_tmpl_binding_tmpl,
 
-	return b.Bytes()
 }

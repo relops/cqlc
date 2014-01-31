@@ -4,8 +4,8 @@ schema:
 
 bindata: generator/binding_tmpl.go
 
-generator/%_tmpl.go: generator/tmpl/%.tmpl
-	cat $< | go-bindata -func=$*_tmpl -pkg=generator | gofmt > $@
+generator/binding_tmpl.go: generator/tmpl/binding.tmpl
+	go-bindata -pkg=generator -o=generator/binding_tmpl.go generator/tmpl
 
 test: bindata schema
 	go test -v ./...
