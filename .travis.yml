@@ -5,8 +5,7 @@ go:
 
 before_install:
   - go get github.com/jteeuwen/go-bindata/...
-  - export PATH=$PATH:/home/travis/gopath/bin
-  - go-bindata
+  - export PATH=$PATH:/home/travis/gopath/bin:/usr/local/cassandra/bin
 
 install: 
   - go get -v ./...
