@@ -10,5 +10,8 @@ before_install:
 install: 
   - go get -v ./...
 
+script:
+  - make schema
+
 services:
   - cassandra
