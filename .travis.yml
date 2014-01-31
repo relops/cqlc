@@ -4,7 +4,7 @@ go:
   - 1.2
 
 before_install:
-  - go get github.com/jteeuwen/go-bindata
+  - go get github.com/jteeuwen/go-bindata/...
   - /home/travis/gopath/bin/go-bindata
   - /home/travis/.gvm/pkgsets/go1.2/global/bin/go-bindata
 
