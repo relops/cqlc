@@ -5,8 +5,8 @@ go:
 
 before_install:
   - go get github.com/jteeuwen/go-bindata/...
-  - /home/travis/gopath/bin/go-bindata
-  - /home/travis/.gvm/pkgsets/go1.2/global/bin/go-bindata
+  - export PATH=$PATH:/home/travis/gopath/bin
+  - go-bindata
 
 install: 
   - go get -v ./...
