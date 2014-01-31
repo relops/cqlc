@@ -1,3 +1,6 @@
+schema:
+	cqlsh -f test/keyspace.cql
+
 bindata: generator/binding_tmpl.go
 
 generator/%_tmpl.go: generator/tmpl/%.tmpl
