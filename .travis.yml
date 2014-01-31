@@ -11,7 +11,7 @@ install:
   - go get -v ./...
 
 script:
-  - make schema
+  - make test
 
 services:
   - cassandra
