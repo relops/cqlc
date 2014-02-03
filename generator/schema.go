@@ -2,7 +2,7 @@ package generator
 
 import (
 	"fmt"
-	"github.com/tux21b/gocql"
+	"github.com/gocql/gocql"
 	"sort"
 	"strings"
 )
@@ -69,7 +69,7 @@ var literalTypes = map[ColumnDataType]string{
 }
 
 var customImportPaths = map[string]string{
-	"gocql.UUID": "github.com/tux21b/gocql",
+	"gocql.UUID": "github.com/gocql/gocql",
 }
 
 var columnTypes = map[ColumnDataType]string{

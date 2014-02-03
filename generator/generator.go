@@ -60,7 +60,7 @@ func coalesceImports(cf []ColumnFamily) []string {
 	}
 
 	set["github.com/relops/cqlc/cqlc"] = true
-	set["github.com/tux21b/gocql"] = true
+	set["github.com/gocql/gocql"] = true
 	set["log"] = true
 
 	paths := make([]string, 0)

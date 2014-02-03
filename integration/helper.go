@@ -2,8 +2,8 @@ package integration
 
 import (
 	"fmt"
+	"github.com/gocql/gocql"
 	"github.com/relops/cqlc/cqlc"
-	"github.com/tux21b/gocql"
 	"log"
 	"os"
 )

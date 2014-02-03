@@ -16,7 +16,7 @@ package cqlc
 import (
 	"bytes"
 	"fmt"
-	"github.com/tux21b/gocql"
+	"github.com/gocql/gocql"
 	"reflect"
 	"time"
 )

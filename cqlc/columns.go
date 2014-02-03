@@ -1,7 +1,7 @@
 package cqlc
 
 import (
-	"github.com/tux21b/gocql"
+	"github.com/gocql/gocql"
 	"time"
 )
 
