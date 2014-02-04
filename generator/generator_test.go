@@ -61,3 +61,11 @@ func TestSensorGenerator(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, out, "PASSED")
 }
+
+func TestBindGenerator(t *testing.T) {
+
+	out, err := runFixture("bind", opts)
+
+	assert.NoError(t, err)
+	assert.Equal(t, out, "PASSED")
+}

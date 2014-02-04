@@ -135,6 +135,11 @@ type ColumnBinding struct {
 	Value  interface{}
 }
 
+type TableBinding struct {
+	Table   Table
+	Columns []ColumnBinding
+}
+
 type BindingError string
 
 func (m BindingError) Error() string {
@@ -177,6 +182,13 @@ func (c *Context) Having(cond ...Condition) Executable {
 func (c *Context) Upsert(u Upsertable) SetValueStep {
 	c.Table = u
 	c.Operation = WriteOperation
+	return c
+}
+
+func (c *Context) Store(b TableBinding) Executable {
+	c.Table = b.Table
+	c.Operation = WriteOperation
+	c.Bindings = b.Columns
 	return c
 }
 
