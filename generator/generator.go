@@ -21,6 +21,7 @@ type Options struct {
 	Package  string `short:"p" long:"package" description:"The name of the target package for the generated code"`
 	Output   string `short:"o" long:"output" description:"The file to write the generated bindings to"`
 	Version  func() `short:"V" long:"version" description:"Print cqlc version and exit"`
+	Verbose  []bool `short:"v" long:"verbose" description:"Show verbose debug information"`
 }
 
 func Generate(opts *Options) error {
@@ -73,7 +74,7 @@ func coalesceImports(cf []ColumnFamily) []string {
 
 func generateBinding(opts *Options, w io.Writer) error {
 
-	cf, err := ColumnFamilies(opts.Instance, opts.Keyspace)
+	cf, err := ColumnFamilies(opts.Instance, opts.Keyspace, len(opts.Verbose) > 0)
 
 	if err != nil {
 		return err

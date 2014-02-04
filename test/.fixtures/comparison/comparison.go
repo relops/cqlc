@@ -47,6 +47,8 @@ func main() {
 
 	passed = expectComparisonResult(ctx, session, expect(1), id, stringCluster, int64Cluster, lastClusterElement)
 
+	passed = expectComparisonResult(ctx, session, expect(1), CLUSTER_BY_STRING_AND_INT.ID.In("a"))
+
 	if passed {
 		result = "PASSED"
 	}

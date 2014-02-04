@@ -118,7 +118,7 @@ func (c *Column) SupportsClustering() bool {
 	return c.KeyType == ClusteringKey
 }
 
-func ColumnFamilies(host string, keyspace string) ([]ColumnFamily, error) {
+func ColumnFamilies(host string, keyspace string, verbose bool) ([]ColumnFamily, error) {
 
 	cluster := gocql.NewCluster(host)
 	session, err := cluster.CreateSession()
@@ -145,6 +145,11 @@ func ColumnFamilies(host string, keyspace string) ([]ColumnFamily, error) {
 	}
 
 	for i, cf := range columnFamilies {
+
+		if verbose {
+			fmt.Printf("Reading metadata for %s.%s ...\n", keyspace, cf.Name)
+		}
+
 		iter := session.Query(`SELECT column_name, type, validator, component_index 
                                FROM system.schema_columns
                                WHERE keyspace_name = ? AND columnfamily_name = ?`, keyspace, cf.Name).Iter()
@@ -186,21 +191,30 @@ func ColumnFamilies(host string, keyspace string) ([]ColumnFamily, error) {
 		foundClustered := false
 
 		for i, _ := range columns {
+
 			if foundClustered && foundParitioned {
 				break
 			}
-			if foundClustered || foundParitioned {
-				continue
-			}
-			if columns[i].SupportsClustering() {
-				columns[i].IsLastComponent = true
-				foundClustered = true
-			}
-			if columns[i].SupportsPartitioning() {
-				columns[i].IsLastComponent = true
-				foundParitioned = true
+
+			if !foundClustered {
+				if columns[i].SupportsClustering() {
+					columns[i].IsLastComponent = true
+					foundClustered = true
+				}
 			}
 
+			if !foundParitioned {
+				if columns[i].SupportsPartitioning() {
+					columns[i].IsLastComponent = true
+					foundParitioned = true
+				}
+			}
+		}
+
+		if verbose {
+			for _, col := range columns {
+				fmt.Printf("[%s.%s] Column: %+v\n", keyspace, cf.Name, col)
+			}
 		}
 
 		columnFamilies[i].Columns = columns
