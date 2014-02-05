@@ -7,7 +7,7 @@ import (
 
 type StringColumn interface {
 	Column
-	Supports(value string) bool
+	To(value *string) ColumnBinding
 }
 
 type PartitionedStringColumn interface {
@@ -35,7 +35,7 @@ type LastClusteredStringColumn interface {
 
 type Int32Column interface {
 	Column
-	Supports(value int32) bool
+	To(value *int32) ColumnBinding
 }
 
 type PartitionedInt32Column interface {
@@ -63,7 +63,7 @@ type LastClusteredInt32Column interface {
 
 type Int64Column interface {
 	Column
-	Supports(value int64) bool
+	To(value *int64) ColumnBinding
 }
 
 type PartitionedInt64Column interface {
@@ -91,7 +91,7 @@ type LastClusteredInt64Column interface {
 
 type Float32Column interface {
 	Column
-	Supports(value float32) bool
+	To(value *float32) ColumnBinding
 }
 
 type PartitionedFloat32Column interface {
@@ -119,7 +119,7 @@ type LastClusteredFloat32Column interface {
 
 type Float64Column interface {
 	Column
-	Supports(value float64) bool
+	To(value *float64) ColumnBinding
 }
 
 type PartitionedFloat64Column interface {
@@ -147,7 +147,7 @@ type LastClusteredFloat64Column interface {
 
 type TimestampColumn interface {
 	Column
-	Supports(value time.Time) bool
+	To(value *time.Time) ColumnBinding
 }
 
 type PartitionedTimestampColumn interface {
@@ -175,7 +175,7 @@ type LastClusteredTimestampColumn interface {
 
 type TimeUUIDColumn interface {
 	Column
-	Supports(value gocql.UUID) bool
+	To(value *gocql.UUID) ColumnBinding
 }
 
 type PartitionedTimeUUIDColumn interface {
@@ -203,7 +203,7 @@ type LastClusteredTimeUUIDColumn interface {
 
 type BooleanColumn interface {
 	Column
-	Supports(value bool) bool
+	To(value *bool) ColumnBinding
 }
 
 type PartitionedBooleanColumn interface {

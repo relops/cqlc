@@ -21,8 +21,8 @@ import (
             return "{{$col.Name}}"
         }
 
-        func (b * {{$QualifiedColStructType}}Column ) Supports(value {{valueType $col}}) bool {
-            return true
+        func (b * {{$QualifiedColStructType}}Column ) To(value *{{valueType $col}}) cqlc.ColumnBinding {
+            return cqlc.ColumnBinding{Column: b, Value: value}
         }
 
         {{ if isCounterColumn $col }}

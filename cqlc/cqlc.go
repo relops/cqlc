@@ -17,6 +17,7 @@ import (
 	"bytes"
 	"fmt"
 	"github.com/gocql/gocql"
+	"log"
 	"reflect"
 	"time"
 )
@@ -43,11 +44,12 @@ const (
 
 // Context represents the state of the CQL statement that is being built by the application.
 type Context struct {
-	Operation  OperationType
-	Table      Table
-	Columns    []Column
-	Bindings   []ColumnBinding
-	Conditions []Condition
+	Operation      OperationType
+	Table          Table
+	Columns        []Column
+	Bindings       []ColumnBinding
+	Conditions     []Condition
+	ResultBindings map[string]ColumnBinding
 }
 
 // NewContext creates a fresh Context instance.
@@ -64,9 +66,14 @@ type Fetchable interface {
 	Fetch(*gocql.Session) (*gocql.Iter, error)
 }
 
+type UniqueFetchable interface {
+	FetchOne(*gocql.Session) error
+}
+
 type Query interface {
 	Executable
 	Fetchable
+	Bindable
 }
 
 type SelectWhereStep interface {
@@ -123,6 +130,10 @@ type Table interface {
 
 type Column interface {
 	ColumnName() string
+}
+
+type Bindable interface {
+	Bind(...ColumnBinding) UniqueFetchable
 }
 
 type Condition struct {
@@ -245,6 +256,110 @@ func (c *Context) SetArray(col ArrayColumn, value []string) SetValueStep {
 func (c *Context) Where(cond ...Condition) Query {
 	c.Conditions = cond
 	return c
+}
+
+func (c *Context) Bind(cols ...ColumnBinding) UniqueFetchable {
+	c.ResultBindings = make(map[string]ColumnBinding)
+
+	for _, col := range cols {
+		c.ResultBindings[col.Column.ColumnName()] = col
+	}
+
+	return c
+}
+
+func (c *Context) FetchOne(s *gocql.Session) error {
+
+	iter, err := c.Fetch(s)
+	if err != nil {
+		return err
+	}
+
+	cols := iter.Columns()
+	row := make([]interface{}, len(cols))
+
+	for i := 0; i < len(cols); i++ {
+
+		name := cols[i].Name
+		binding, ok := c.ResultBindings[name]
+
+		if !ok {
+			// TODO implement a debug flag so that this only gets logged
+			// if the app wants it to be logged
+			//log.Printf("Unhandled bind column: %+v\n", cols[i])
+
+			// TODO Not sure if this will leak memory
+			switch cols[i].TypeInfo.Type {
+			case gocql.TypeVarchar, gocql.TypeAscii:
+				{
+					tmp := ""
+					row[i] = &tmp
+				}
+			case gocql.TypeInt:
+				{
+					tmp := int32(0)
+					row[i] = &tmp
+				}
+			case gocql.TypeBigInt:
+				{
+					tmp := int64(0)
+					row[i] = &tmp
+				}
+			case gocql.TypeTimestamp:
+				{
+					tmp := time.Now()
+					row[i] = &tmp
+				}
+			case gocql.TypeTimeUUID:
+				{
+					tmp := gocql.TimeUUID()
+					row[i] = &tmp
+				}
+			case gocql.TypeFloat:
+				{
+					tmp := float32(0)
+					row[i] = &tmp
+				}
+			case gocql.TypeDouble:
+				{
+					tmp := float64(0)
+					row[i] = &tmp
+				}
+			case gocql.TypeMap:
+				{
+					tmp := make(map[string]string)
+					row[i] = &tmp
+				}
+			case gocql.TypeList:
+				{
+					tmp := []string{}
+					row[i] = &tmp
+				}
+			case gocql.TypeBoolean:
+				{
+					tmp := false
+					row[i] = &tmp
+				}
+			default:
+				{
+					// TODO Map all of the rest of the supported types
+					log.Printf("Could not map type info: %+v", cols[i].TypeInfo.Type)
+				}
+			}
+
+		} else {
+			row[i] = binding.Value
+		}
+	}
+
+	iter.Scan(row...)
+
+	err = iter.Close()
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (c *Context) Fetch(s *gocql.Session) (*gocql.Iter, error) {

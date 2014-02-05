@@ -69,3 +69,11 @@ func TestBindGenerator(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, out, "PASSED")
 }
+
+func TestIntoGenerator(t *testing.T) {
+
+	out, err := runFixture("into", opts)
+
+	assert.NoError(t, err)
+	assert.Equal(t, out, "PASSED")
+}

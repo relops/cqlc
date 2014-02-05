@@ -43,8 +43,8 @@ func (t *MockAsciiColumn) ColumnName() string {
 	return t.name
 }
 
-func (t *MockAsciiColumn) Supports(value string) bool {
-	return true
+func (t *MockAsciiColumn) To(value *string) ColumnBinding {
+	return ColumnBinding{}
 }
 
 func (t *MockAsciiColumn) Eq(value string) Condition {
@@ -79,8 +79,8 @@ func (t *MockInt32Column) ColumnName() string {
 	return t.name
 }
 
-func (t *MockInt32Column) Supports(value int32) bool {
-	return true
+func (t *MockInt32Column) To(value *int32) ColumnBinding {
+	return ColumnBinding{}
 }
 
 func (t *MockInt32Column) Eq(value int32) Condition {
