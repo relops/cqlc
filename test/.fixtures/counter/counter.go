@@ -41,7 +41,23 @@ func main() {
 
 	if len(counters) == 1 {
 		if counters[0].CounterColumn == 13 {
-			result = "PASSED"
+
+			var counter int64
+
+			err = ctx.Select(COUNTER.COUNTER_COLUMN).
+				From(COUNTER).
+				Where(COUNTER.ID.Eq("x")).
+				Bind(COUNTER.COUNTER_COLUMN.To(&counter)).
+				FetchOne(session)
+
+			if err != nil {
+				log.Fatalf("Could not bind data: %v", err)
+				return
+			}
+
+			if counter == 13 {
+				result = "PASSED"
+			}
 		}
 	}
 

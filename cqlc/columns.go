@@ -240,4 +240,5 @@ type ArrayColumn interface {
 type CounterColumn interface {
 	Column
 	CanIncrement() bool
+	To(*int64) ColumnBinding
 }

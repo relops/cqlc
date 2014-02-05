@@ -95,6 +95,10 @@ func (t *MockCounterColumn) CanIncrement() bool {
 	return true
 }
 
+func (t *MockCounterColumn) To(value *int64) ColumnBinding {
+	return ColumnBinding{}
+}
+
 func eq(c Column, value interface{}) Condition {
 	return mockCondition(c, value, EqPredicate)
 }
