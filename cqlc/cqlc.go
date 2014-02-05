@@ -50,11 +50,12 @@ type Context struct {
 	Bindings       []ColumnBinding
 	Conditions     []Condition
 	ResultBindings map[string]ColumnBinding
+	Debug          bool
 }
 
 // NewContext creates a fresh Context instance.
 func NewContext() *Context {
-	return &Context{}
+	return &Context{Debug: false}
 }
 
 type Executable interface {
@@ -408,6 +409,10 @@ func (c *Context) Fetch(s *gocql.Session) (*gocql.Iter, error) {
 
 	c.Dispose()
 
+	if c.Debug {
+		fmt.Printf("%+v bound to stmt: %s\n", placeHolders, stmt)
+	}
+
 	iter := s.Query(stmt, placeHolders...).Iter()
 	return iter, nil
 }
@@ -419,6 +424,10 @@ func (c *Context) Exec(s *gocql.Session) error {
 		return err
 	}
 
+	if c.Debug {
+		fmt.Printf("%+v bound to stmt: %s\n", placeHolders, stmt)
+	}
+
 	return s.Query(stmt, placeHolders...).Exec()
 }
 
@@ -427,6 +436,10 @@ func (c *Context) Batch(b *gocql.Batch) error {
 
 	if err != nil {
 		return err
+	}
+
+	if c.Debug {
+		fmt.Printf("%+v bound to stmt: %s\n", placeHolders, stmt)
 	}
 
 	b.Query(stmt, placeHolders...)
