@@ -54,6 +54,7 @@ type Context struct {
 }
 
 // NewContext creates a fresh Context instance.
+// If you want statement debugging, set the Debug property to true
 func NewContext() *Context {
 	return &Context{Debug: false}
 }
