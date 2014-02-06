@@ -28,6 +28,7 @@ const (
 	CounterType   ColumnDataType = 9
 	MapType       ColumnDataType = 10
 	ArrayType     ColumnDataType = 11
+	BytesType     ColumnDataType = 12
 )
 
 var keyTypes = map[string]ColumnKeyType{
@@ -47,6 +48,7 @@ var dataTypes = map[string]ColumnDataType{
 	"org.apache.cassandra.db.marshal.TimeUUIDType":      TimeUUIDType,
 	"org.apache.cassandra.db.marshal.BooleanType":       BooleanType,
 	"org.apache.cassandra.db.marshal.CounterColumnType": CounterType,
+	"org.apache.cassandra.db.marshal.BytesType":         BytesType,
 }
 
 var collectionDataTypes = map[string]ColumnDataType{
@@ -66,6 +68,7 @@ var literalTypes = map[ColumnDataType]string{
 	CounterType:   "int64",
 	MapType:       "map[string]string",
 	ArrayType:     "[]string",
+	BytesType:     "[]byte",
 }
 
 var customImportPaths = map[string]string{
@@ -84,6 +87,7 @@ var columnTypes = map[ColumnDataType]string{
 	CounterType:   "cqlc.CounterColumn",
 	MapType:       "cqlc.MapColumn",
 	ArrayType:     "cqlc.ArrayColumn",
+	BytesType:     "cqlc.BytesColumn",
 }
 
 type Binding struct {

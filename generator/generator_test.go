@@ -77,3 +77,11 @@ func TestIntoGenerator(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, out, "PASSED")
 }
+
+func TestBlobGenerator(t *testing.T) {
+
+	out, err := runFixture("blob", opts)
+
+	assert.NoError(t, err)
+	assert.Equal(t, out, "PASSED")
+}

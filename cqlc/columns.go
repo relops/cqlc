@@ -229,6 +229,34 @@ type LastClusteredBooleanColumn interface {
 	In(value ...bool) Condition
 }
 
+type BytesColumn interface {
+	Column
+	To(value *[]byte) ColumnBinding
+}
+
+type PartitionedBytesColumn interface {
+	BytesColumn
+	Eq(value []byte) Condition
+}
+
+type LastPartitionedBytesColumn interface {
+	PartitionedBytesColumn
+	In(value ...[]byte) Condition
+}
+
+type ClusteredBytesColumn interface {
+	PartitionedBytesColumn
+	Gt(value []byte) Condition
+	Lt(value []byte) Condition
+	Ge(value []byte) Condition
+	Le(value []byte) Condition
+}
+
+type LastClusteredBytesColumn interface {
+	ClusteredBytesColumn
+	In(value ...[]byte) Condition
+}
+
 type MapColumn interface {
 	Column
 }

@@ -104,6 +104,7 @@ type SetValueStep interface {
 	SetBoolean(col BooleanColumn, value bool) SetValueStep
 	SetMap(col MapColumn, value map[string]string) SetValueStep
 	SetArray(col ArrayColumn, value []string) SetValueStep
+	SetBytes(col BytesColumn, value []byte) SetValueStep
 }
 
 type IncrementWhereStep interface {
@@ -255,6 +256,11 @@ func (c *Context) SetArray(col ArrayColumn, value []string) SetValueStep {
 	return c
 }
 
+func (c *Context) SetBytes(col BytesColumn, value []byte) SetValueStep {
+	set(c, col, value)
+	return c
+}
+
 func (c *Context) Where(cond ...Condition) Query {
 	c.Conditions = cond
 	return c
@@ -340,6 +346,11 @@ func (c *Context) FetchOne(s *gocql.Session) error {
 			case gocql.TypeBoolean:
 				{
 					tmp := false
+					row[i] = &tmp
+				}
+			case gocql.TypeBlob:
+				{
+					tmp := []byte{}
 					row[i] = &tmp
 				}
 			default:

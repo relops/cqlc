@@ -48,6 +48,13 @@ CREATE TABLE cluster_by_string_and_int
     PRIMARY KEY (id, string_cluster, int64_cluster, last_cluster_element)
 );
 
+CREATE TABLE basic_blob
+(
+    id ascii,
+    blob_column blob,
+    PRIMARY KEY (id)
+);
+
 -- Examples
 
 CREATE TABLE events
