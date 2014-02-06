@@ -300,58 +300,47 @@ func (c *Context) FetchOne(s *gocql.Session) error {
 			switch cols[i].TypeInfo.Type {
 			case gocql.TypeVarchar, gocql.TypeAscii:
 				{
-					tmp := ""
-					row[i] = &tmp
+					row[i] = new(string)
 				}
 			case gocql.TypeInt:
 				{
-					tmp := int32(0)
-					row[i] = &tmp
+					row[i] = new(int32)
 				}
 			case gocql.TypeBigInt:
 				{
-					tmp := int64(0)
-					row[i] = &tmp
+					row[i] = new(int64)
 				}
 			case gocql.TypeTimestamp:
 				{
-					tmp := time.Now()
-					row[i] = &tmp
+					row[i] = new(time.Time)
 				}
 			case gocql.TypeTimeUUID:
 				{
-					tmp := gocql.TimeUUID()
-					row[i] = &tmp
+					row[i] = new(gocql.UUID)
 				}
 			case gocql.TypeFloat:
 				{
-					tmp := float32(0)
-					row[i] = &tmp
+					row[i] = new(float32)
 				}
 			case gocql.TypeDouble:
 				{
-					tmp := float64(0)
-					row[i] = &tmp
+					row[i] = new(float64)
 				}
 			case gocql.TypeMap:
 				{
-					tmp := make(map[string]string)
-					row[i] = &tmp
+					row[i] = new(map[string]string)
 				}
 			case gocql.TypeList:
 				{
-					tmp := []string{}
-					row[i] = &tmp
+					row[i] = new([]string)
 				}
 			case gocql.TypeBoolean:
 				{
-					tmp := false
-					row[i] = &tmp
+					row[i] = new(bool)
 				}
 			case gocql.TypeBlob:
 				{
-					tmp := []byte{}
-					row[i] = &tmp
+					row[i] = new([]byte)
 				}
 			default:
 				{
