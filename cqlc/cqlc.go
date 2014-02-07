@@ -199,6 +199,9 @@ func (c *Context) Upsert(u Upsertable) SetValueStep {
 	return c
 }
 
+// Convenience method to generate CQL counter updates.
+// This generates CQL SET clauses for each of the counter columns
+// and CQL WHERE clauses for each of the key columns.
 func (c *Context) Add(b TableBinding) Executable {
 	c.Table = b.Table
 	c.Operation = CounterOperation
