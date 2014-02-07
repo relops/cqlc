@@ -199,6 +199,29 @@ func (c *Context) Upsert(u Upsertable) SetValueStep {
 	return c
 }
 
+func (c *Context) Add(b TableBinding) Executable {
+	c.Table = b.Table
+	c.Operation = CounterOperation
+
+	bindings := make([]ColumnBinding, 0)
+	conds := make([]Condition, 0)
+
+	for _, binding := range b.Columns {
+		_, ok := binding.Column.(CounterColumn)
+		if ok {
+			bindings = append(bindings, binding)
+		} else {
+			cond := Condition{Binding: binding, Predicate: EqPredicate}
+			conds = append(conds, cond)
+		}
+	}
+
+	c.Bindings = bindings
+	c.Conditions = conds
+
+	return c
+}
+
 func (c *Context) Store(b TableBinding) Executable {
 	c.Table = b.Table
 	c.Operation = WriteOperation

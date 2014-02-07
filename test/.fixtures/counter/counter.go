@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+	"github.com/gocql/gocql"
 	"github.com/relops/cqlc/cqlc"
 	"github.com/relops/cqlc/integration"
 	"log"
@@ -26,40 +28,45 @@ func main() {
 		log.Fatalf("Could not execute counter increment: %v", err)
 	}
 
-	iter, err := ctx.Select(COUNTER.COUNTER_COLUMN).
-		From(COUNTER).
-		Where(COUNTER.ID.Eq("x")).
-		Fetch(session)
-
-	counters := BindBasicCounter(iter)
-
-	err = iter.Close()
-	if err != nil {
-		log.Fatalf("Could not bind data: %v", err)
-		return
+	counter := readCounter(session, "x")
+	if counter == 13 {
+		result = "PASSED"
 	}
 
-	if len(counters) == 1 {
-		if counters[0].CounterColumn == 13 {
+	c := BasicCounter{
+		Id:            "x",
+		CounterColumn: 11,
+	}
 
-			var counter int64
+	err = ctx.Add(COUNTER.Bind(c)).Exec(session)
 
-			err = ctx.Select(COUNTER.COUNTER_COLUMN).
-				From(COUNTER).
-				Where(COUNTER.ID.Eq("x")).
-				Bind(COUNTER.COUNTER_COLUMN.To(&counter)).
-				FetchOne(session)
+	if err != nil {
+		log.Fatalf("Could not execute counter increment: %v", err)
+	}
 
-			if err != nil {
-				log.Fatalf("Could not bind data: %v", err)
-				return
-			}
-
-			if counter == 13 {
-				result = "PASSED"
-			}
-		}
+	counter = readCounter(session, "x")
+	if counter != 24 {
+		result = fmt.Sprintf("Expected 24, but counter was %d", counter)
 	}
 
 	os.Stdout.WriteString(result)
+}
+
+func readCounter(session *gocql.Session, key string) int64 {
+
+	var counter int64
+
+	ctx := cqlc.NewContext()
+	err := ctx.Select(COUNTER.COUNTER_COLUMN).
+		From(COUNTER).
+		Where(COUNTER.ID.Eq(key)).
+		Bind(COUNTER.COUNTER_COLUMN.To(&counter)).
+		FetchOne(session)
+
+	if err != nil {
+		log.Fatalf("Could not bind data: %v", err)
+		os.Exit(1)
+	}
+
+	return counter
 }
