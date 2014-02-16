@@ -37,11 +37,9 @@ func renderSelect(ctx *Context, buf *bytes.Buffer) {
 
 func columnClause(cols []Column) string {
 	colFragments := make([]string, len(cols))
-	for i := 0; i < len(cols); i++ {
-		col := cols[i].ColumnName()
-		colFragments[i] = col
+	for i, col := range cols {
+		colFragments[i] = col.ColumnName()
 	}
-
 	return strings.Join(colFragments, ", ")
 }
 
@@ -49,18 +47,17 @@ func renderInsert(ctx *Context, buf *bytes.Buffer) {
 	fmt.Fprintf(buf, "INSERT INTO %s (", ctx.Table.TableName())
 
 	colFragments := make([]string, len(ctx.Bindings))
-	for i := 0; i < len(ctx.Bindings); i++ {
-		col := ctx.Bindings[i].Column.ColumnName()
+	for i, binding := range ctx.Bindings {
+		col := binding.Column.ColumnName()
 		colFragments[i] = col
 	}
-
 	colClause := strings.Join(colFragments, ", ")
 	fmt.Fprint(buf, colClause)
 
 	fmt.Fprint(buf, ") VALUES (")
 
 	placeHolderFragments := make([]string, len(ctx.Bindings))
-	for i := 0; i < len(ctx.Bindings); i++ {
+	for i, _ := range ctx.Bindings {
 		placeHolderFragments[i] = "?"
 	}
 
@@ -75,8 +72,8 @@ func renderUpdate(ctx *Context, buf *bytes.Buffer, counterTable bool) {
 	fmt.Fprintf(buf, "UPDATE %s SET ", ctx.Table.TableName())
 
 	setFragments := make([]string, len(ctx.Bindings))
-	for i := 0; i < len(ctx.Bindings); i++ {
-		col := ctx.Bindings[i].Column.ColumnName()
+	for i, binding := range ctx.Bindings {
+		col := binding.Column.ColumnName()
 
 		if counterTable {
 			setFragments[i] = fmt.Sprintf("%s = %s + ?", col, col)
@@ -108,8 +105,7 @@ func renderWhereClause(ctx *Context, buf *bytes.Buffer) {
 	fmt.Fprint(buf, "WHERE ")
 
 	whereFragments := make([]string, len(ctx.Conditions))
-	for i := 0; i < len(ctx.Conditions); i++ {
-		condition := ctx.Conditions[i]
+	for i, condition := range ctx.Conditions {
 		col := condition.Binding.Column.ColumnName()
 
 		pred := condition.Predicate
@@ -125,7 +121,6 @@ func renderWhereClause(ctx *Context, buf *bytes.Buffer) {
 			whereFragments[i] = fmt.Sprintf("%s IN (%s)", col, valueString)
 
 		} else {
-
 			whereFragments[i] = fmt.Sprintf("%s %s ?", col, predicateTypes[pred])
 		}
 	}
