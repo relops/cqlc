@@ -13,7 +13,7 @@ import (
 var opts generator.Options
 var parser = flags.NewParser(&opts, flags.Default)
 
-var VERSION string = "0.9.10"
+var VERSION string = "0.9.11"
 
 func init() {
 	opts.Version = printVersionAndExit
