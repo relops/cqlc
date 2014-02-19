@@ -514,45 +514,45 @@ func BuildStatement(c *Context) (stmt string, placeHolders []interface{}, err er
 }
 
 // TODO Make this private, since we should be able to test against BuildStatement()
-func (ctx *Context) RenderCQL() (string, error) {
+func (c *Context) RenderCQL() (string, error) {
 
 	var buf bytes.Buffer
 
 	// TODO This should be a switch
-	switch ctx.Operation {
+	switch c.Operation {
 	case ReadOperation:
 		{
-			renderSelect(ctx, &buf)
+			renderSelect(c, &buf)
 		}
 	case WriteOperation:
 		{
-			if ctx.hasConditions() {
-				renderUpdate(ctx, &buf, false)
+			if c.hasConditions() {
+				renderUpdate(c, &buf, false)
 			} else {
-				renderInsert(ctx, &buf)
+				renderInsert(c, &buf)
 			}
 		}
 	case CounterOperation:
 		{
-			renderUpdate(ctx, &buf, true)
+			renderUpdate(c, &buf, true)
 		}
 	case DeleteOperation:
 		{
-			renderDelete(ctx, &buf)
+			renderDelete(c, &buf)
 		}
 	default:
-		return "", fmt.Errorf("Unknown operation type: %s", ctx.Operation)
+		return "", fmt.Errorf("Unknown operation type: %s", c.Operation)
 	}
 
 	return buf.String(), nil
 }
 
-func (ctx *Context) Dispose() {
-	ctx.Columns = nil
-	ctx.Operation = None
-	ctx.Table = nil
-	ctx.Bindings = nil
-	ctx.Conditions = nil
+func (c *Context) Dispose() {
+	c.Columns = nil
+	c.Operation = None
+	c.Table = nil
+	c.Bindings = nil
+	c.Conditions = nil
 }
 
 func set(c *Context, col Column, value interface{}) {
