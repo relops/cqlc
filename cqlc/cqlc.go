@@ -94,6 +94,7 @@ type SelectSelectStep interface {
 type SetValueStep interface {
 	Executable
 	SelectWhereStep
+	Apply(cols ...ColumnBinding) SetValueStep
 	SetString(col StringColumn, value string) SetValueStep
 	SetInt32(col Int32Column, value int32) SetValueStep
 	SetInt64(col Int64Column, value int64) SetValueStep
@@ -136,7 +137,7 @@ type Column interface {
 }
 
 type Bindable interface {
-	Bind(...ColumnBinding) UniqueFetchable
+	Bind(cols ...ColumnBinding) UniqueFetchable
 }
 
 type Condition struct {
@@ -229,6 +230,14 @@ func (c *Context) Store(b TableBinding) Executable {
 	c.Table = b.Table
 	c.Operation = WriteOperation
 	c.Bindings = b.Columns
+	return c
+}
+
+// Adds each column binding as a `SET col = ?` fragment in the resulting CQL
+func (c *Context) Apply(cols ...ColumnBinding) SetValueStep {
+	for _, col := range cols {
+		set(c, col.Column, col.Value)
+	}
 	return c
 }
 
