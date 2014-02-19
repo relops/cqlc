@@ -171,4 +171,12 @@ import (
         }
     }
 
+    {{range $_, $col := $cf.Columns}}
+        {{ $ColStructType := snakeToCamel $col.Name }}
+        {{ $QualifiedColStructType := sprint $StructType $ColStructType }}
+        func (s *{{$StructType}}Def) {{ $ColStructType }}Column() {{columnType $col}} {
+            return &{{ $QualifiedColStructType }}Column{}    
+        }
+    {{end}}
+
 {{end}}

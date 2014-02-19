@@ -85,3 +85,11 @@ func TestBlobGenerator(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, out, "PASSED")
 }
+
+func TestCompositionGenerator(t *testing.T) {
+
+	out, err := runFixture("composition", opts)
+
+	assert.NoError(t, err)
+	assert.Equal(t, out, "PASSED")
+}

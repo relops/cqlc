@@ -55,6 +55,21 @@ CREATE TABLE basic_blob
     PRIMARY KEY (id)
 );
 
+CREATE TABLE first_timeline
+(
+    when timeuuid,
+    tag ascii,
+    PRIMARY KEY (when)
+);
+
+CREATE TABLE second_timeline
+(
+    when timeuuid,
+    latitude float,
+    longitude float,
+    PRIMARY KEY (when)
+);
+
 -- Examples
 
 CREATE TABLE events
