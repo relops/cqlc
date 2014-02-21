@@ -8,8 +8,6 @@ import (
 	"os"
 )
 
-var BASIC_CLUSTERED = BasicClusteredTableDef()
-
 func main() {
 
 	session := integration.TestSession("127.0.0.1", "cqlc")

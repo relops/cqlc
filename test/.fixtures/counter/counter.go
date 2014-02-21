@@ -9,7 +9,8 @@ import (
 	"os"
 )
 
-var COUNTER = BasicCounterTableDef()
+// Alias this to keep things short
+var COUNTER = BASIC_COUNTER
 
 func main() {
 	session := integration.TestSession("127.0.0.1", "cqlc")

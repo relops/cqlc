@@ -9,8 +9,6 @@ import (
 	"os"
 )
 
-var BASIC_BLOB = BasicBlobTableDef()
-
 func main() {
 
 	session := integration.TestSession("127.0.0.1", "cqlc")

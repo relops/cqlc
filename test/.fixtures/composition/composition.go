@@ -10,9 +10,6 @@ import (
 	"os"
 )
 
-var FIRST_TIMELINE = FirstTimelineTableDef()
-var SECOND_TIMELINE = SecondTimelineTableDef()
-
 type WhenRowKey interface {
 	cqlc.Table
 	WhenColumn() cqlc.LastPartitionedTimeUUIDColumn

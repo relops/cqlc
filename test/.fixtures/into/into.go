@@ -10,8 +10,6 @@ import (
 	"time"
 )
 
-var BASIC = BasicTableDef()
-
 func main() {
 
 	session := integration.TestSession("127.0.0.1", "cqlc")

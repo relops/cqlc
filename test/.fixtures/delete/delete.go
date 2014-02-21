@@ -8,8 +8,6 @@ import (
 	"os"
 )
 
-var REALLY_BASIC = ReallyBasicTableDef()
-
 func main() {
 	session := integration.TestSession("127.0.0.1", "cqlc")
 	integration.Truncate(session, REALLY_BASIC)

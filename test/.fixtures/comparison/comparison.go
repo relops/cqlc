@@ -8,8 +8,6 @@ import (
 	"os"
 )
 
-var CLUSTER_BY_STRING_AND_INT = ClusterByStringAndIntTableDef()
-
 func main() {
 	session := integration.TestSession("127.0.0.1", "cqlc")
 	integration.Truncate(session, CLUSTER_BY_STRING_AND_INT)

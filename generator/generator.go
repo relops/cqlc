@@ -22,6 +22,7 @@ type Options struct {
 	Output   string `short:"o" long:"output" description:"The file to write the generated bindings to"`
 	Version  func() `short:"V" long:"version" description:"Print cqlc version and exit"`
 	Verbose  []bool `short:"v" long:"verbose" description:"Show verbose debug information"`
+	Symbols  []bool `short:"s" long:"symbols" description:"Generate compile symbols for each column family"`
 }
 
 func Generate(opts *Options) error {
@@ -82,6 +83,7 @@ func generateBinding(opts *Options, w io.Writer) error {
 
 	meta := make(map[string]interface{})
 	meta["Options"] = opts
+	meta["Symbols"] = len(opts.Symbols)
 	meta["Imports"] = coalesceImports(cf)
 	meta["ColumnFamilies"] = cf
 
