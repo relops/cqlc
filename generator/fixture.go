@@ -11,7 +11,7 @@ import (
 func runFixture(name string, opts *Options) (ret string, err error) {
 	withFixture(name, func(path string) {
 		opts.Output = filepath.Join(path, "binding.go")
-		if err = Generate(opts); err != nil {
+		if err = Generate(opts, "test_version"); err != nil {
 			fmt.Println("Generate error:", err.Error())
 			return
 		}

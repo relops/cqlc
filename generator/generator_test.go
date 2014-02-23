@@ -12,7 +12,7 @@ func init() {
 		Package:  "main",
 		Instance: "127.0.0.1",
 		Keyspace: "cqlc",
-		Symbols:  []bool{true},
+		Symbols:  true,
 	}
 }
 

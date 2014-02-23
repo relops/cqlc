@@ -9,6 +9,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 )
 
 var (
@@ -22,10 +23,15 @@ type Options struct {
 	Output   string `short:"o" long:"output" description:"The file to write the generated bindings to"`
 	Version  func() `short:"V" long:"version" description:"Print cqlc version and exit"`
 	Verbose  []bool `short:"v" long:"verbose" description:"Show verbose debug information"`
-	Symbols  []bool `short:"s" long:"symbols" description:"Generate compile symbols for each column family"`
+	Symbols  bool   `short:"s" long:"symbols" description:"Generate compile symbols for each column family"`
 }
 
-func Generate(opts *Options) error {
+type Provenance struct {
+	Version   string
+	Timestamp time.Time
+}
+
+func Generate(opts *Options, version string) error {
 
 	err := validateOptions(opts)
 	if err != nil {
@@ -33,7 +39,7 @@ func Generate(opts *Options) error {
 	}
 
 	var b bytes.Buffer
-	if err = generateBinding(opts, &b); err != nil {
+	if err = generateBinding(opts, version, &b); err != nil {
 		return err
 	}
 	if b.Len() > 0 {
@@ -73,7 +79,7 @@ func coalesceImports(cf []ColumnFamily) []string {
 	return paths
 }
 
-func generateBinding(opts *Options, w io.Writer) error {
+func generateBinding(opts *Options, version string, w io.Writer) error {
 
 	cf, err := ColumnFamilies(opts.Instance, opts.Keyspace, len(opts.Verbose) > 0)
 
@@ -81,9 +87,14 @@ func generateBinding(opts *Options, w io.Writer) error {
 		return err
 	}
 
+	provenance := Provenance{
+		Version:   version,
+		Timestamp: time.Now(),
+	}
+
 	meta := make(map[string]interface{})
+	meta["Provenance"] = provenance
 	meta["Options"] = opts
-	meta["Symbols"] = len(opts.Symbols)
 	meta["Imports"] = coalesceImports(cf)
 	meta["ColumnFamilies"] = cf
 

@@ -11,7 +11,7 @@ import (
 var opts generator.Options
 var parser = flags.NewParser(&opts, flags.Default)
 
-var VERSION string = "0.9.13"
+var VERSION string = "0.9.14"
 
 func init() {
 	opts.Version = printVersionAndExit
@@ -23,7 +23,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	if err := generator.Generate(&opts); err != nil {
+	if err := generator.Generate(&opts, VERSION); err != nil {
 		if err == generator.ErrInvalidOptions {
 			parser.WriteHelp(os.Stderr)
 			os.Exit(1)
