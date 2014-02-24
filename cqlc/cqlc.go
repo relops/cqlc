@@ -16,8 +16,9 @@ package cqlc
 import (
 	"bytes"
 	"fmt"
-	"github.com/gocql/gocql"
+	"github.com/relops/gocql"
 	"log"
+	"math/big"
 	"reflect"
 	"time"
 )
@@ -106,6 +107,7 @@ type SetValueStep interface {
 	SetMap(col MapColumn, value map[string]string) SetValueStep
 	SetArray(col ArrayColumn, value []string) SetValueStep
 	SetBytes(col BytesColumn, value []byte) SetValueStep
+	SetDecimal(col DecimalColumn, value *big.Rat) SetValueStep
 }
 
 type IncrementWhereStep interface {
@@ -292,6 +294,11 @@ func (c *Context) SetArray(col ArrayColumn, value []string) SetValueStep {
 }
 
 func (c *Context) SetBytes(col BytesColumn, value []byte) SetValueStep {
+	set(c, col, value)
+	return c
+}
+
+func (c *Context) SetDecimal(col DecimalColumn, value *big.Rat) SetValueStep {
 	set(c, col, value)
 	return c
 }

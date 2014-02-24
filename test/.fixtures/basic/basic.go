@@ -2,11 +2,12 @@ package main
 
 import (
 	"fmt"
-	"github.com/gocql/gocql"
 	"github.com/relops/cqlc/cqlc"
 	"github.com/relops/cqlc/integration"
+	"github.com/relops/gocql"
 	"log"
 	"math"
+	"math/big"
 	"os"
 	"reflect"
 	"time"
@@ -32,6 +33,7 @@ func main() {
 		VarcharColumn:   "bar",
 		FloatColumn:     math.MaxFloat32,
 		DoubleColumn:    math.MaxFloat64,
+		DecimalColumn:   big.NewRat(1, 3),
 		TimeuuidColumn:  gocql.TimeUUID(),
 		MapColumn:       map[string]string{"baz": "quux"},
 		ArrayColumn:     []string{"baz", "quux"},
@@ -46,6 +48,7 @@ func main() {
 		BASIC.INT64_COLUMN,
 		BASIC.FLOAT_COLUMN,
 		BASIC.DOUBLE_COLUMN,
+		BASIC.DECIMAL_COLUMN,
 		BASIC.TIMESTAMP_COLUMN,
 		BASIC.TIMEUUID_COLUMN,
 		BASIC.BOOLEAN_COLUMN,
@@ -71,6 +74,7 @@ func main() {
 		BASIC.INT64_COLUMN,
 		BASIC.FLOAT_COLUMN,
 		BASIC.DOUBLE_COLUMN,
+		BASIC.DECIMAL_COLUMN,
 		BASIC.TIMESTAMP_COLUMN,
 		BASIC.TIMEUUID_COLUMN,
 		BASIC.BOOLEAN_COLUMN,
@@ -129,6 +133,7 @@ func create(ctx *cqlc.Context, s *gocql.Session, basic Basic) {
 		SetString(BASIC.VARCHAR_COLUMN, basic.VarcharColumn).
 		SetMap(BASIC.MAP_COLUMN, basic.MapColumn).
 		SetArray(BASIC.ARRAY_COLUMN, basic.ArrayColumn).
+		SetDecimal(BASIC.DECIMAL_COLUMN, basic.DecimalColumn).
 		Exec(s)
 
 	if err != nil {

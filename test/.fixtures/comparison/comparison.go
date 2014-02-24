@@ -1,9 +1,9 @@
 package main
 
 import (
-	"github.com/gocql/gocql"
 	"github.com/relops/cqlc/cqlc"
 	"github.com/relops/cqlc/integration"
+	"github.com/relops/gocql"
 	"log"
 	"os"
 )

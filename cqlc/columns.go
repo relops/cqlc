@@ -1,7 +1,8 @@
 package cqlc
 
 import (
-	"github.com/gocql/gocql"
+	"github.com/relops/gocql"
+	"math/big"
 	"time"
 )
 
@@ -227,6 +228,34 @@ type ClusteredBooleanColumn interface {
 type LastClusteredBooleanColumn interface {
 	ClusteredBooleanColumn
 	In(value ...bool) Condition
+}
+
+type DecimalColumn interface {
+	Column
+	To(value **big.Rat) ColumnBinding
+}
+
+type PartitionedDecimalColumn interface {
+	DecimalColumn
+	Eq(value *big.Rat) Condition
+}
+
+type LastPartitionedDecimalColumn interface {
+	PartitionedDecimalColumn
+	In(value ...*big.Rat) Condition
+}
+
+type ClusteredDecimalColumn interface {
+	PartitionedDecimalColumn
+	Gt(value *big.Rat) Condition
+	Lt(value *big.Rat) Condition
+	Ge(value *big.Rat) Condition
+	Le(value *big.Rat) Condition
+}
+
+type LastClusteredDecimalColumn interface {
+	ClusteredDecimalColumn
+	In(value ...*big.Rat) Condition
 }
 
 type BytesColumn interface {

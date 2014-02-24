@@ -10,6 +10,7 @@ CREATE TABLE basic
     text_column varchar,
     float_column float,
     double_column double,
+    decimal_column decimal,
     timeuuid_column timeuuid,
     map_column map<text, text>,
     array_column list<text>,
