@@ -71,12 +71,12 @@ var literalTypes = map[ColumnDataType]string{
 	MapType:       "map[string]string",
 	ArrayType:     "[]string",
 	BytesType:     "[]byte",
-	DecimalType:   "*big.Rat",
+	DecimalType:   "*inf.Dec",
 }
 
 var customImportPaths = map[string]string{
 	"gocql.UUID": "github.com/relops/gocql",
-	"*big.Rat":   "math/big",
+	"*inf.Dec":   "speter.net/go/exp/math/dec/inf",
 }
 
 var columnTypes = map[ColumnDataType]string{

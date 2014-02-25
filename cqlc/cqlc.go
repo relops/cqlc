@@ -18,8 +18,8 @@ import (
 	"fmt"
 	"github.com/relops/gocql"
 	"log"
-	"math/big"
 	"reflect"
+	"speter.net/go/exp/math/dec/inf"
 	"time"
 )
 
@@ -107,7 +107,7 @@ type SetValueStep interface {
 	SetMap(col MapColumn, value map[string]string) SetValueStep
 	SetArray(col ArrayColumn, value []string) SetValueStep
 	SetBytes(col BytesColumn, value []byte) SetValueStep
-	SetDecimal(col DecimalColumn, value *big.Rat) SetValueStep
+	SetDecimal(col DecimalColumn, value *inf.Dec) SetValueStep
 }
 
 type IncrementWhereStep interface {
@@ -298,7 +298,7 @@ func (c *Context) SetBytes(col BytesColumn, value []byte) SetValueStep {
 	return c
 }
 
-func (c *Context) SetDecimal(col DecimalColumn, value *big.Rat) SetValueStep {
+func (c *Context) SetDecimal(col DecimalColumn, value *inf.Dec) SetValueStep {
 	set(c, col, value)
 	return c
 }

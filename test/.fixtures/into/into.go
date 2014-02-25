@@ -7,9 +7,9 @@ import (
 	"github.com/relops/gocql"
 	"log"
 	"math"
-	"math/big"
 	"os"
 	"reflect"
+	"speter.net/go/exp/math/dec/inf"
 	"time"
 )
 
@@ -33,7 +33,7 @@ func main() {
 		VarcharColumn:   "lorem",
 		FloatColumn:     math.MaxFloat32,
 		DoubleColumn:    math.MaxFloat64,
-		DecimalColumn:   big.NewRat(1, 9),
+		DecimalColumn:   inf.NewDec(1, 9),
 		TimeuuidColumn:  gocql.TimeUUID(),
 		MapColumn:       map[string]string{"baz": "quux"},
 		ArrayColumn:     []string{"baz", "quux"},
@@ -47,7 +47,7 @@ func main() {
 	}
 
 	var int32Column int32
-	var decimalColumn *big.Rat
+	var decimalColumn *inf.Dec
 
 	err = ctx.Select().
 		From(BASIC).

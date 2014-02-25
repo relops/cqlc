@@ -2,7 +2,7 @@ package cqlc
 
 import (
 	"github.com/relops/gocql"
-	"math/big"
+	"speter.net/go/exp/math/dec/inf"
 	"time"
 )
 
@@ -232,30 +232,30 @@ type LastClusteredBooleanColumn interface {
 
 type DecimalColumn interface {
 	Column
-	To(value **big.Rat) ColumnBinding
+	To(value **inf.Dec) ColumnBinding
 }
 
 type PartitionedDecimalColumn interface {
 	DecimalColumn
-	Eq(value *big.Rat) Condition
+	Eq(value *inf.Dec) Condition
 }
 
 type LastPartitionedDecimalColumn interface {
 	PartitionedDecimalColumn
-	In(value ...*big.Rat) Condition
+	In(value ...*inf.Dec) Condition
 }
 
 type ClusteredDecimalColumn interface {
 	PartitionedDecimalColumn
-	Gt(value *big.Rat) Condition
-	Lt(value *big.Rat) Condition
-	Ge(value *big.Rat) Condition
-	Le(value *big.Rat) Condition
+	Gt(value *inf.Dec) Condition
+	Lt(value *inf.Dec) Condition
+	Ge(value *inf.Dec) Condition
+	Le(value *inf.Dec) Condition
 }
 
 type LastClusteredDecimalColumn interface {
 	ClusteredDecimalColumn
-	In(value ...*big.Rat) Condition
+	In(value ...*inf.Dec) Condition
 }
 
 type BytesColumn interface {
