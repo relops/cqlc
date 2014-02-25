@@ -2,7 +2,7 @@ package generator
 
 import (
 	"fmt"
-	"github.com/gocql/gocql"
+	"github.com/relops/gocql"
 	"sort"
 	"strings"
 )
@@ -29,6 +29,7 @@ const (
 	MapType       ColumnDataType = 10
 	ArrayType     ColumnDataType = 11
 	BytesType     ColumnDataType = 12
+	DecimalType   ColumnDataType = 13
 )
 
 var keyTypes = map[string]ColumnKeyType{
@@ -49,6 +50,7 @@ var dataTypes = map[string]ColumnDataType{
 	"org.apache.cassandra.db.marshal.BooleanType":       BooleanType,
 	"org.apache.cassandra.db.marshal.CounterColumnType": CounterType,
 	"org.apache.cassandra.db.marshal.BytesType":         BytesType,
+	"org.apache.cassandra.db.marshal.DecimalType":       DecimalType,
 }
 
 var collectionDataTypes = map[string]ColumnDataType{
@@ -69,10 +71,12 @@ var literalTypes = map[ColumnDataType]string{
 	MapType:       "map[string]string",
 	ArrayType:     "[]string",
 	BytesType:     "[]byte",
+	DecimalType:   "*inf.Dec",
 }
 
 var customImportPaths = map[string]string{
-	"gocql.UUID": "github.com/gocql/gocql",
+	"gocql.UUID": "github.com/relops/gocql",
+	"*inf.Dec":   "speter.net/go/exp/math/dec/inf",
 }
 
 var columnTypes = map[ColumnDataType]string{
@@ -88,6 +92,7 @@ var columnTypes = map[ColumnDataType]string{
 	MapType:       "cqlc.MapColumn",
 	ArrayType:     "cqlc.ArrayColumn",
 	BytesType:     "cqlc.BytesColumn",
+	DecimalType:   "cqlc.DecimalColumn",
 }
 
 type Binding struct {

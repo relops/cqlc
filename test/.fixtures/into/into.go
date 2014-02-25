@@ -1,12 +1,15 @@
 package main
 
 import (
-	"github.com/gocql/gocql"
+	"fmt"
 	"github.com/relops/cqlc/cqlc"
 	"github.com/relops/cqlc/integration"
+	"github.com/relops/gocql"
 	"log"
 	"math"
 	"os"
+	"reflect"
+	"speter.net/go/exp/math/dec/inf"
 	"time"
 )
 
@@ -19,11 +22,6 @@ func main() {
 
 	ctx := cqlc.NewContext()
 
-	// basic := ReallyBasic{
-	// 	Id:          "foo",
-	// 	Int32Column: 999,
-	// }
-
 	basic := Basic{
 		Id:              "x",
 		Int32Column:     999,
@@ -35,6 +33,7 @@ func main() {
 		VarcharColumn:   "lorem",
 		FloatColumn:     math.MaxFloat32,
 		DoubleColumn:    math.MaxFloat64,
+		DecimalColumn:   inf.NewDec(1, 9),
 		TimeuuidColumn:  gocql.TimeUUID(),
 		MapColumn:       map[string]string{"baz": "quux"},
 		ArrayColumn:     []string{"baz", "quux"},
@@ -48,20 +47,23 @@ func main() {
 	}
 
 	var int32Column int32
+	var decimalColumn *inf.Dec
 
-	err = ctx.Select(). //REALLY_BASIC.INT32_COLUMN).
-				From(BASIC).
-				Where(BASIC.ID.Eq("x")).
-				Bind(BASIC.INT32_COLUMN.To(&int32Column)).
-				FetchOne(session)
+	err = ctx.Select().
+		From(BASIC).
+		Where(BASIC.ID.Eq("x")).
+		Bind(BASIC.INT32_COLUMN.To(&int32Column), BASIC.DECIMAL_COLUMN.To(&decimalColumn)).
+		FetchOne(session)
 
 	if err != nil {
 		log.Fatalf("Could not bind data: %v", err)
 		os.Exit(1)
 	}
 
-	if int32Column == 999 {
+	if int32Column == 999 && reflect.DeepEqual(decimalColumn, basic.DecimalColumn) {
 		result = "PASSED"
+	} else {
+		result = fmt.Sprintf("int32Column: %d, decimalColumn %v", int32Column, decimalColumn)
 	}
 
 	os.Stdout.WriteString(result)
