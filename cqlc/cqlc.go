@@ -16,7 +16,7 @@ package cqlc
 import (
 	"bytes"
 	"fmt"
-	"github.com/relops/gocql"
+	"github.com/gocql/gocql"
 	"log"
 	"reflect"
 	"speter.net/go/exp/math/dec/inf"
