@@ -15,6 +15,7 @@ package cqlc
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"github.com/gocql/gocql"
 	"log"
@@ -43,12 +44,17 @@ const (
 	CounterOperation OperationType = 4
 )
 
+var (
+	ErrCASBindings = errors.New("Invalid CAS bindings")
+)
+
 // Context represents the state of the CQL statement that is being built by the application.
 type Context struct {
 	Operation      OperationType
 	Table          Table
 	Columns        []Column
 	Bindings       []ColumnBinding
+	CASBindings    []ColumnBinding
 	Conditions     []Condition
 	ResultBindings map[string]ColumnBinding
 	Debug          bool
@@ -63,6 +69,10 @@ func NewContext() *Context {
 type Executable interface {
 	Exec(*gocql.Session) error
 	Batch(*gocql.Batch) error
+}
+
+type CompareAndSwap interface {
+	Swap(*gocql.Session) (bool, error)
 }
 
 type Fetchable interface {
@@ -96,6 +106,7 @@ type SetValueStep interface {
 	Executable
 	SelectWhereStep
 	Apply(cols ...ColumnBinding) SetValueStep
+	IfExists(cols ...ColumnBinding) CompareAndSwap
 	SetString(col StringColumn, value string) SetValueStep
 	SetInt32(col Int32Column, value int32) SetValueStep
 	SetInt64(col Int64Column, value int64) SetValueStep
@@ -238,8 +249,16 @@ func (c *Context) Store(b TableBinding) Executable {
 // Adds each column binding as a `SET col = ?` fragment in the resulting CQL
 func (c *Context) Apply(cols ...ColumnBinding) SetValueStep {
 	for _, col := range cols {
+		// TODO Can't we just append the whole list? Or just set it explicitly?
 		set(c, col.Column, col.Value)
 	}
+	return c
+}
+
+// Adds column bindings whose values will nbe populated if a CAS operation
+// is applied.
+func (c *Context) IfExists(cols ...ColumnBinding) CompareAndSwap {
+	c.CASBindings = cols
 	return c
 }
 
@@ -474,6 +493,27 @@ func (c *Context) Exec(s *gocql.Session) error {
 	return s.Query(stmt, placeHolders...).Exec()
 }
 
+// Returns true if the CAS operation was applied, false otherwise.
+// If the operation was applied, then the result bindings will not be popluated.
+func (c *Context) Swap(s *gocql.Session) (bool, error) {
+
+	if len(c.CASBindings) == 0 {
+		return false, ErrCASBindings
+	}
+
+	casPlaceHolders := make([]interface{}, len(c.CASBindings))
+	for i, binding := range c.CASBindings {
+		casPlaceHolders[i] = binding.Value
+	}
+
+	stmt, queryPlaceholders, err := BuildStatement(c)
+	if err != nil {
+		return false, err
+	}
+
+	return s.Query(stmt, queryPlaceholders...).ScanCAS(casPlaceHolders...)
+}
+
 func (c *Context) Batch(b *gocql.Batch) error {
 	stmt, placeHolders, err := BuildStatement(c)
 
@@ -491,6 +531,7 @@ func (c *Context) Batch(b *gocql.Batch) error {
 }
 
 func BuildStatement(c *Context) (stmt string, placeHolders []interface{}, err error) {
+	// TODO Does this function need to get exported?
 	stmt, err = c.RenderCQL()
 	if err != nil {
 		return stmt, nil, err
@@ -538,6 +579,8 @@ func (c *Context) RenderCQL() (string, error) {
 			} else {
 				renderInsert(c, &buf)
 			}
+
+			renderCAS(c, &buf)
 		}
 	case CounterOperation:
 		{
@@ -560,6 +603,7 @@ func (c *Context) Dispose() {
 	c.Table = nil
 	c.Bindings = nil
 	c.Conditions = nil
+	c.CASBindings = nil
 }
 
 func set(c *Context, col Column, value interface{}) {

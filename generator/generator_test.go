@@ -94,3 +94,11 @@ func TestCompositionGenerator(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, out, "PASSED")
 }
+
+func TestCasGenerator(t *testing.T) {
+
+	out, err := runFixture("cas", opts)
+
+	assert.NoError(t, err)
+	assert.Equal(t, out, "PASSED")
+}

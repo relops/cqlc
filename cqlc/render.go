@@ -89,6 +89,12 @@ func renderUpdate(ctx *Context, buf *bytes.Buffer, counterTable bool) {
 	renderWhereClause(ctx, buf)
 }
 
+func renderCAS(ctx *Context, buf *bytes.Buffer) {
+	if len(ctx.CASBindings) > 0 {
+		fmt.Fprint(buf, " IF NOT EXISTS")
+	}
+}
+
 func renderDelete(ctx *Context, buf *bytes.Buffer) {
 	fmt.Fprint(buf, "DELETE ")
 

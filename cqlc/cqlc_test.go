@@ -195,6 +195,25 @@ func (s *CqlTestSuite) TestInsert() {
 	assert.Equal(s.T(), cql, "INSERT INTO foo (bar, quux) VALUES (?,?)")
 }
 
+func (s *CqlTestSuite) TestCAS() {
+	barCol := &MockAsciiColumn{name: "bar"}
+	quuxCol := &MockInt32Column{name: "quux"}
+
+	var bar string
+	var quux int32
+
+	c := NewContext()
+
+	c.Upsert(s.table).
+		SetString(barCol, "baz").
+		SetInt32(quuxCol, 10).
+		IfExists(barCol.To(&bar), quuxCol.To(&quux))
+
+	cql, err := c.RenderCQL()
+	assert.NoError(s.T(), err)
+	assert.Equal(s.T(), cql, "INSERT INTO foo (bar, quux) VALUES (?,?) IF NOT EXISTS")
+}
+
 func (s *CqlTestSuite) TestUpdate() {
 	idCol := &MockAsciiColumn{name: "id"}
 	barCol := &MockAsciiColumn{name: "bar"}
