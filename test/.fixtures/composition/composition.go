@@ -48,29 +48,15 @@ func main() {
 	var tag string
 	var latitude float32
 
-	/*
-		err = ctx.Select().
-			From(FIRST_TIMELINE).
-			Where(FIRST_TIMELINE.WHEN.Eq(timestamp)).
-			Bind(FIRST_TIMELINE.TAG.To(&tag)).
-			FetchOne(session)
-
-		err = ctx.Select().
-			From(SECOND_TIMELINE).
-			Where(SECOND_TIMELINE.WHEN.Eq(timestamp)).
-			Bind(SECOND_TIMELINE.LATITUDE.To(&latitude)).
-			FetchOne(session)
-	*/
-
-	err = fetchOne(ctx, session, FIRST_TIMELINE, timestamp, FIRST_TIMELINE.TAG.To(&tag))
-	err = fetchOne(ctx, session, SECOND_TIMELINE, timestamp, SECOND_TIMELINE.LATITUDE.To(&latitude))
+	f1, err := fetchOne(ctx, session, FIRST_TIMELINE, timestamp, FIRST_TIMELINE.TAG.To(&tag))
+	f2, err := fetchOne(ctx, session, SECOND_TIMELINE, timestamp, SECOND_TIMELINE.LATITUDE.To(&latitude))
 
 	if err != nil {
 		log.Fatalf("Could not execute select: %v", err)
 		os.Exit(1)
 	}
 
-	if tag == "foobar" && math.Float32bits(latitude) == math.Float32bits(50.12) {
+	if f1 && f2 && tag == "foobar" && math.Float32bits(latitude) == math.Float32bits(50.12) {
 
 		// TODO Implement a FROM binding
 		t := "bar"
@@ -84,15 +70,15 @@ func main() {
 			os.Exit(1)
 		}
 
-		err = fetchOne(ctx, session, FIRST_TIMELINE, timestamp, FIRST_TIMELINE.TAG.To(&tag))
-		err = fetchOne(ctx, session, SECOND_TIMELINE, timestamp, SECOND_TIMELINE.LATITUDE.To(&latitude))
+		f1, err = fetchOne(ctx, session, FIRST_TIMELINE, timestamp, FIRST_TIMELINE.TAG.To(&tag))
+		f2, err = fetchOne(ctx, session, SECOND_TIMELINE, timestamp, SECOND_TIMELINE.LATITUDE.To(&latitude))
 
 		if err != nil {
 			log.Fatalf("Could not execute select: %v", err)
 			os.Exit(1)
 		}
 
-		if tag == t && math.Float32bits(latitude) == math.Float32bits(l) {
+		if f1 && f2 && tag == t && math.Float32bits(latitude) == math.Float32bits(l) {
 
 			err = deleteByTimestamp(ctx, session, FIRST_TIMELINE, timestamp)
 			err = deleteByTimestamp(ctx, session, SECOND_TIMELINE, timestamp)
@@ -105,15 +91,15 @@ func main() {
 			var tag string
 			var latitude float32
 
-			err = fetchOne(ctx, session, FIRST_TIMELINE, timestamp, FIRST_TIMELINE.TAG.To(&tag))
-			err = fetchOne(ctx, session, SECOND_TIMELINE, timestamp, SECOND_TIMELINE.LATITUDE.To(&latitude))
+			f1, err = fetchOne(ctx, session, FIRST_TIMELINE, timestamp, FIRST_TIMELINE.TAG.To(&tag))
+			f2, err = fetchOne(ctx, session, SECOND_TIMELINE, timestamp, SECOND_TIMELINE.LATITUDE.To(&latitude))
 
 			if err != nil {
 				log.Fatalf("Could not execute select: %v", err)
 				os.Exit(1)
 			}
 
-			if tag == "" && latitude == 0.0 {
+			if !f1 && !f2 && tag == "" && latitude == 0.0 {
 				result = "PASSED"
 			} else {
 				result = fmt.Sprintf("After delete - Tag was: %s; Latitude was %f", tag, latitude)
@@ -136,7 +122,7 @@ func upsert(ctx *cqlc.Context, s *gocql.Session, w WhenRowKey, t gocql.UUID, bin
 		Exec(s)
 }
 
-func fetchOne(ctx *cqlc.Context, s *gocql.Session, w WhenRowKey, t gocql.UUID, binding cqlc.ColumnBinding) error {
+func fetchOne(ctx *cqlc.Context, s *gocql.Session, w WhenRowKey, t gocql.UUID, binding cqlc.ColumnBinding) (bool, error) {
 	return ctx.
 		Select().
 		From(w).

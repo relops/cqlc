@@ -80,7 +80,8 @@ type Fetchable interface {
 }
 
 type UniqueFetchable interface {
-	FetchOne(*gocql.Session) error
+	// Returns true if the statement did return a result, false if it did not
+	FetchOne(*gocql.Session) (bool, error)
 }
 
 type Query interface {
@@ -337,11 +338,11 @@ func (c *Context) Bind(cols ...ColumnBinding) UniqueFetchable {
 	return c
 }
 
-func (c *Context) FetchOne(s *gocql.Session) error {
+func (c *Context) FetchOne(s *gocql.Session) (bool, error) {
 
 	iter, err := c.Fetch(s)
 	if err != nil {
-		return err
+		return false, err
 	}
 
 	cols := iter.Columns()
@@ -415,14 +416,14 @@ func (c *Context) FetchOne(s *gocql.Session) error {
 		}
 	}
 
-	iter.Scan(row...)
+	found := iter.Scan(row...)
 
 	err = iter.Close()
 	if err != nil {
-		return err
+		return found, err
 	}
 
-	return nil
+	return found, nil
 }
 
 func (c *Context) Fetch(s *gocql.Session) (*gocql.Iter, error) {

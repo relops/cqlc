@@ -32,13 +32,13 @@ func main() {
 
 	var b []byte
 
-	err = ctx.Select().
+	found, err := ctx.Select().
 		From(BASIC_BLOB).
 		Where(BASIC_BLOB.ID.Eq("baz")).
 		Bind(BASIC_BLOB.BLOB_COLUMN.To(&b)).
 		FetchOne(session)
 
-	if bytes.Equal(blob.BlobColumn, b) {
+	if found && bytes.Equal(blob.BlobColumn, b) {
 		result = "PASSED"
 	} else {
 		result = fmt.Sprintf("Blob was %s", string(b))

@@ -49,7 +49,7 @@ func main() {
 	var int32Column int32
 	var decimalColumn *inf.Dec
 
-	err = ctx.Select().
+	found, err := ctx.Select().
 		From(BASIC).
 		Where(BASIC.ID.Eq("x")).
 		Bind(BASIC.INT32_COLUMN.To(&int32Column), BASIC.DECIMAL_COLUMN.To(&decimalColumn)).
@@ -60,8 +60,28 @@ func main() {
 		os.Exit(1)
 	}
 
-	if int32Column == 999 && reflect.DeepEqual(decimalColumn, basic.DecimalColumn) {
-		result = "PASSED"
+	if err != nil {
+		log.Fatalf("Could not bind data: %v", err)
+		os.Exit(1)
+	}
+
+	if int32Column == 999 && reflect.DeepEqual(decimalColumn, basic.DecimalColumn) && found {
+
+		found, err := ctx.Select().
+			From(BASIC).
+			Where(BASIC.ID.Eq("y")).
+			Bind(BASIC.INT32_COLUMN.To(&int32Column), BASIC.DECIMAL_COLUMN.To(&decimalColumn)).
+			FetchOne(session)
+
+		if err != nil {
+			log.Fatalf("Could not bind data: %v", err)
+			os.Exit(1)
+		}
+
+		if !found {
+			result = "PASSED"
+		}
+
 	} else {
 		result = fmt.Sprintf("int32Column: %d, decimalColumn %v", int32Column, decimalColumn)
 	}

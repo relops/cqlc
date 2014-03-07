@@ -29,8 +29,8 @@ func main() {
 		log.Fatalf("Could not execute counter increment: %v", err)
 	}
 
-	counter := readCounter(session, "x")
-	if counter == 13 {
+	found, counter := readCounter(session, "x")
+	if found && counter == 13 {
 		result = "PASSED"
 	}
 
@@ -45,20 +45,20 @@ func main() {
 		log.Fatalf("Could not execute counter increment: %v", err)
 	}
 
-	counter = readCounter(session, "x")
-	if counter != 24 {
+	found, counter = readCounter(session, "x")
+	if !found && counter != 24 {
 		result = fmt.Sprintf("Expected 24, but counter was %d", counter)
 	}
 
 	os.Stdout.WriteString(result)
 }
 
-func readCounter(session *gocql.Session, key string) int64 {
+func readCounter(session *gocql.Session, key string) (bool, int64) {
 
 	var counter int64
 
 	ctx := cqlc.NewContext()
-	err := ctx.Select(COUNTER.COUNTER_COLUMN).
+	found, err := ctx.Select(COUNTER.COUNTER_COLUMN).
 		From(COUNTER).
 		Where(COUNTER.ID.Eq(key)).
 		Bind(COUNTER.COUNTER_COLUMN.To(&counter)).
@@ -69,5 +69,5 @@ func readCounter(session *gocql.Session, key string) int64 {
 		os.Exit(1)
 	}
 
-	return counter
+	return found, counter
 }
