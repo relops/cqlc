@@ -46,7 +46,11 @@ func main() {
 func fetchFirstReallyBasic(ctx *cqlc.Context, s *gocql.Session, key string) ReallyBasic {
 	iter, err := ctx.Select().From(REALLY_BASIC).Where(REALLY_BASIC.ID.Eq(key)).Fetch(s)
 
-	basics := BindReallyBasic(iter)
+	basics, err := BindReallyBasic(iter)
+	if err != nil {
+		log.Fatalf("Could not bind data: %v", err)
+		os.Exit(1)
+	}
 
 	err = iter.Close()
 	if err != nil {

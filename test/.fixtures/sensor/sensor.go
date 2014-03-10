@@ -38,7 +38,11 @@ func main() {
 		return
 	}
 
-	var events []Events = BindEvents(iter)
+	events, err := BindEvents(iter)
+	if err != nil {
+		log.Fatalf("Could not bind data: %v", err)
+		return
+	}
 
 	err = iter.Close()
 	if err != nil {

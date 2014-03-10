@@ -69,7 +69,11 @@ func expectComparisonResult(ctx *cqlc.Context,
 		os.Exit(1)
 	}
 
-	clustered := BindClusterByStringAndInt(iter)
+	clustered, err := BindClusterByStringAndInt(iter)
+	if err != nil {
+		log.Fatalf("Could not bind data: %v", err)
+		os.Exit(1)
+	}
 
 	err = iter.Close()
 	if err != nil {

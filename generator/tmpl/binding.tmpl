@@ -101,15 +101,16 @@ const (
         {{end}}
     }
 
-    func Bind{{$StructType}}(iter *gocql.Iter) []{{$StructType}} {
+    func Bind{{$StructType}}(iter *gocql.Iter) ([]{{$StructType}}, error) {
         array := make([]{{$StructType}}, 0)
-        Map{{$StructType}}(iter, func(t {{$StructType}}) {
+        err := Map{{$StructType}}(iter, func(t {{$StructType}}) (bool, error) {
             array = append(array, t)
+            return true, nil
         })
-        return array
+        return array, err
     }
 
-    func Map{{$StructType}}(iter *gocql.Iter, callback func(t {{$StructType}})) {
+    func Map{{$StructType}}(iter *gocql.Iter, callback func(t {{$StructType}}) (bool, error)) error {
         columns := iter.Columns()
         row := make([]interface{}, len(columns))
 
@@ -129,8 +130,16 @@ const (
                 break
             }
 
-            callback(t)
+            readNext, err := callback(t)
+            if err != nil {
+                return err
+            }
+            if !readNext {
+                return nil
+            }
         }
+
+        return nil
     }
 
     {{ if .IsCounter }}

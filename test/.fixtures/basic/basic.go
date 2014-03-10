@@ -99,9 +99,13 @@ func main() {
 
 func checkBasics(iter *gocql.Iter, basic Basic) (string, error) {
 	result := "FAILED"
-	basics := BindBasic(iter)
+	basics, err := BindBasic(iter)
+	if err != nil {
+		log.Fatalf("Could not bind data: %v", err)
+		return "", err
+	}
 
-	err := iter.Close()
+	err = iter.Close()
 	if err != nil {
 		log.Fatalf("Could not bind data: %v", err)
 		return "", err

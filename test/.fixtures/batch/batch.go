@@ -42,7 +42,11 @@ func main() {
 
 	iter, err := ctx.Select().From(BASIC_CLUSTERED).Where(BASIC_CLUSTERED.ID.Eq(0)).Fetch(session)
 
-	basics := BindBasicClustered(iter)
+	basics, err := BindBasicClustered(iter)
+	if err != nil {
+		log.Fatalf("Could not bind data: %v", err)
+		os.Exit(1)
+	}
 
 	err = iter.Close()
 	if err != nil {
