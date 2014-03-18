@@ -105,6 +105,8 @@ func TestCasGenerator(t *testing.T) {
 
 func TestPagingGenerator(t *testing.T) {
 
+	t.Skip("Skip until https://github.com/gocql/gocql/issues/110 is resolved")
+
 	out, err := runFixture("paging", opts)
 
 	assert.NoError(t, err)
