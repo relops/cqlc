@@ -102,3 +102,11 @@ func TestCasGenerator(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, out, "PASSED")
 }
+
+func TestPagingGenerator(t *testing.T) {
+
+	out, err := runFixture("paging", opts)
+
+	assert.NoError(t, err)
+	assert.Equal(t, out, "PASSED")
+}

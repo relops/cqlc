@@ -76,6 +76,7 @@ type CompareAndSwap interface {
 }
 
 type Fetchable interface {
+	Prepare(session *gocql.Session) (*gocql.Query, error)
 	Fetch(*gocql.Session) (*gocql.Iter, error)
 }
 
@@ -88,7 +89,6 @@ type Query interface {
 	Executable
 	Fetchable
 	Bindable
-	Prepare(session *gocql.Session) (*gocql.Query, error)
 }
 
 type SelectWhereStep interface {
