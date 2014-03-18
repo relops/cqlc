@@ -88,6 +88,7 @@ type Query interface {
 	Executable
 	Fetchable
 	Bindable
+	Prepare(session *gocql.Session) (*gocql.Query, error)
 }
 
 type SelectWhereStep interface {
@@ -427,6 +428,14 @@ func (c *Context) FetchOne(s *gocql.Session) (bool, error) {
 }
 
 func (c *Context) Fetch(s *gocql.Session) (*gocql.Iter, error) {
+	q, err := c.Prepare(s)
+	if err != nil {
+		return nil, err
+	}
+	return q.Iter(), nil
+}
+
+func (c *Context) Prepare(s *gocql.Session) (*gocql.Query, error) {
 
 	stmt, err := c.RenderCQL()
 	if err != nil {
@@ -476,8 +485,7 @@ func (c *Context) Fetch(s *gocql.Session) (*gocql.Iter, error) {
 		fmt.Printf("%+v bound to stmt: %s\n", placeHolders, stmt)
 	}
 
-	iter := s.Query(stmt, placeHolders...).Iter()
-	return iter, nil
+	return s.Query(stmt, placeHolders...), nil
 }
 
 func (c *Context) Exec(s *gocql.Session) error {
