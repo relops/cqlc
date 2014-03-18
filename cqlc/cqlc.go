@@ -355,63 +355,10 @@ func (c *Context) FetchOne(s *gocql.Session) (bool, error) {
 		binding, ok := c.ResultBindings[name]
 
 		if !ok {
-			// TODO implement a debug flag so that this only gets logged
-			// if the app wants it to be logged
-			//log.Printf("Unhandled bind column: %+v\n", cols[i])
-
-			// TODO Not sure if this will leak memory
-			switch cols[i].TypeInfo.Type {
-			case gocql.TypeVarchar, gocql.TypeAscii:
-				{
-					row[i] = new(string)
-				}
-			case gocql.TypeInt:
-				{
-					row[i] = new(int32)
-				}
-			case gocql.TypeBigInt:
-				{
-					row[i] = new(int64)
-				}
-			case gocql.TypeTimestamp:
-				{
-					row[i] = new(time.Time)
-				}
-			case gocql.TypeTimeUUID:
-				{
-					row[i] = new(gocql.UUID)
-				}
-			case gocql.TypeFloat:
-				{
-					row[i] = new(float32)
-				}
-			case gocql.TypeDouble:
-				{
-					row[i] = new(float64)
-				}
-			case gocql.TypeMap:
-				{
-					row[i] = new(map[string]string)
-				}
-			case gocql.TypeList:
-				{
-					row[i] = new([]string)
-				}
-			case gocql.TypeBoolean:
-				{
-					row[i] = new(bool)
-				}
-			case gocql.TypeBlob:
-				{
-					row[i] = new([]byte)
-				}
-			default:
-				{
-					// TODO Map all of the rest of the supported types
-					log.Printf("Could not map type info: %+v", cols[i].TypeInfo.Type)
-				}
+			row[i] = cols[i].TypeInfo.New()
+			if c.Debug && row[i] == nil {
+				log.Printf("Could not map type info: %+v", cols[i].TypeInfo.Type)
 			}
-
 		} else {
 			row[i] = binding.Value
 		}
