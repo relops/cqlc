@@ -16,7 +16,12 @@ var predicateTypes = map[PredicateType]string{
 }
 
 func renderSelect(ctx *Context, buf *bytes.Buffer) {
-	fmt.Fprint(buf, "SELECT ")
+
+	if ctx.ReadOptions.Distinct {
+		fmt.Fprint(buf, "SELECT DISTINCT ")
+	} else {
+		fmt.Fprint(buf, "SELECT ")
+	}
 
 	var colClause string
 	if len(ctx.Columns) == 0 {

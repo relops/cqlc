@@ -48,6 +48,10 @@ var (
 	ErrCASBindings = errors.New("Invalid CAS bindings")
 )
 
+type ReadOptions struct {
+	Distinct bool
+}
+
 // Context represents the state of the CQL statement that is being built by the application.
 type Context struct {
 	Operation      OperationType
@@ -58,12 +62,17 @@ type Context struct {
 	Conditions     []Condition
 	ResultBindings map[string]ColumnBinding
 	Debug          bool
+	ReadOptions    *ReadOptions
+}
+
+func defaultReadOptions() *ReadOptions {
+	return &ReadOptions{Distinct: false}
 }
 
 // NewContext creates a fresh Context instance.
 // If you want statement debugging, set the Debug property to true
 func NewContext() *Context {
-	return &Context{Debug: false}
+	return &Context{Debug: false, ReadOptions: defaultReadOptions()}
 }
 
 type Executable interface {
@@ -81,7 +90,7 @@ type Fetchable interface {
 }
 
 type UniqueFetchable interface {
-	// Returns true if the statement did return a result, false if it did not
+	// Returns true if the statement did return a result, false if it did not.
 	FetchOne(*gocql.Session) (bool, error)
 }
 
@@ -102,6 +111,9 @@ type SelectFromStep interface {
 
 type SelectSelectStep interface {
 	Select(cols ...Column) SelectFromStep
+	// Builds a SELECT DISTINCT statement in CQL - this operation can only be used
+	// with a partitioned column.
+	SelectDistinct(col PartitionedColumn) SelectFromStep
 }
 
 type SetValueStep interface {
@@ -151,6 +163,12 @@ type Column interface {
 	ColumnName() string
 }
 
+// PartitionedColumn is a marker interface to denote that a column is partitioned.
+type PartitionedColumn interface {
+	// Returns the column definition that a column family is partitioned by.
+	PartitionBy() Column
+}
+
 type Bindable interface {
 	Bind(cols ...ColumnBinding) UniqueFetchable
 }
@@ -179,6 +197,13 @@ func (m BindingError) Error() string {
 func (c *Context) Select(cols ...Column) SelectFromStep {
 	c.Columns = cols
 	c.Operation = ReadOperation
+	return c
+}
+
+func (c *Context) SelectDistinct(col PartitionedColumn) SelectFromStep {
+	c.Columns = []Column{col.PartitionBy()}
+	c.Operation = ReadOperation
+	c.ReadOptions.Distinct = true
 	return c
 }
 

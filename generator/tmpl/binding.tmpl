@@ -43,6 +43,9 @@ const (
                     binding := cqlc.ColumnBinding{Column: column, Value: value}
                     return cqlc.Condition{Binding: binding, Predicate: cqlc.EqPredicate}
                 }
+                func (b * {{$QualifiedColStructType}}Column ) PartitionBy() cqlc.Column {
+                    return b
+                }
                 {{ if $col.IsLastComponent }}
                     func (b * {{$QualifiedColStructType}}Column ) In(value ...{{valueType $col}}) cqlc.Condition {
                         column := &{{$QualifiedColStructType}}Column{}

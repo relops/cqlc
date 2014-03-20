@@ -75,6 +75,10 @@ func (t *MockAsciiColumn) Lt(value string) Condition {
 	return lt(t, value)
 }
 
+func (t *MockAsciiColumn) PartitionBy() Column {
+	return t
+}
+
 func (t *MockInt32Column) ColumnName() string {
 	return t.name
 }
@@ -183,6 +187,17 @@ func (s *CqlTestSuite) TestSelect() {
 	cql, err = c.RenderCQL()
 	assert.NoError(s.T(), err)
 	assert.Equal(s.T(), cql, "SELECT bar FROM foo WHERE id IN (?,?,?)")
+}
+
+func (s *CqlTestSuite) TestSelectDistinct() {
+
+	barCol := &MockAsciiColumn{name: "bar"}
+	c := NewContext()
+
+	c.SelectDistinct(barCol).From(s.table)
+	cql, err := c.RenderCQL()
+	assert.NoError(s.T(), err)
+	assert.Equal(s.T(), cql, "SELECT DISTINCT bar FROM foo")
 }
 
 func (s *CqlTestSuite) TestInsert() {

@@ -112,3 +112,11 @@ func TestPagingGenerator(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, out, "PASSED")
 }
+
+func TestDistinctGenerator(t *testing.T) {
+
+	out, err := runFixture("distinct", opts)
+
+	assert.NoError(t, err)
+	assert.Equal(t, out, "PASSED")
+}
