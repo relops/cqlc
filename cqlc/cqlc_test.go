@@ -200,6 +200,17 @@ func (s *CqlTestSuite) TestSelectDistinct() {
 	assert.Equal(s.T(), cql, "SELECT DISTINCT bar FROM foo")
 }
 
+func (s *CqlTestSuite) TestLimit() {
+
+	barCol := &MockAsciiColumn{name: "bar"}
+	c := NewContext()
+
+	c.SelectDistinct(barCol).From(s.table).Limit(99)
+	cql, err := c.RenderCQL()
+	assert.NoError(s.T(), err)
+	assert.Equal(s.T(), cql, "SELECT DISTINCT bar FROM foo LIMIT 99")
+}
+
 func (s *CqlTestSuite) TestInsert() {
 	barCol := &MockAsciiColumn{name: "bar"}
 	quuxCol := &MockInt32Column{name: "quux"}

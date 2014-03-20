@@ -128,3 +128,11 @@ func TestSecondaryGenerator(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, out, "PASSED")
 }
+
+func TestLimitGenerator(t *testing.T) {
+
+	out, err := runFixture("limit", opts)
+
+	assert.NoError(t, err)
+	assert.Equal(t, out, "PASSED")
+}

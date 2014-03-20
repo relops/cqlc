@@ -50,6 +50,7 @@ var (
 
 type ReadOptions struct {
 	Distinct bool
+	Limit    int
 }
 
 // Context represents the state of the CQL statement that is being built by the application.
@@ -98,11 +99,15 @@ type Query interface {
 	Executable
 	Fetchable
 	Bindable
+	// Limit constrains the number of rows returned by a query
+	Limit(limit int) Fetchable
 }
 
 type SelectWhereStep interface {
 	Fetchable
 	Where(conditions ...Condition) Query
+	// Limit constrains the number of rows returned by a query
+	Limit(lim int) Fetchable
 }
 
 type SelectFromStep interface {
@@ -204,6 +209,11 @@ func (c *Context) SelectDistinct(col PartitionedColumn) SelectFromStep {
 	c.Columns = []Column{col.PartitionBy()}
 	c.Operation = ReadOperation
 	c.ReadOptions.Distinct = true
+	return c
+}
+
+func (c *Context) Limit(lim int) Fetchable {
+	c.ReadOptions.Limit = lim
 	return c
 }
 

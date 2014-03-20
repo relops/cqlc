@@ -38,6 +38,10 @@ func renderSelect(ctx *Context, buf *bytes.Buffer) {
 		fmt.Fprint(buf, " ")
 		renderWhereClause(ctx, buf)
 	}
+
+	if ctx.ReadOptions.Limit > 0 {
+		fmt.Fprintf(buf, " LIMIT %d", ctx.ReadOptions.Limit)
+	}
 }
 
 func columnClause(cols []Column) string {
