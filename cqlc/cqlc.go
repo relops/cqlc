@@ -169,12 +169,6 @@ type PartitionedColumn interface {
 	PartitionBy() Column
 }
 
-// IndexedColumn is a marker interface to denote that a column that has a secondary index.
-type IndexedColumn interface {
-	// Returns the column definition of what the column family is indexed on.
-	IndexOn() Column
-}
-
 type Bindable interface {
 	Bind(cols ...ColumnBinding) UniqueFetchable
 }
