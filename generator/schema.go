@@ -111,6 +111,7 @@ type Column struct {
 	DataType        ColumnDataType
 	ComponentIndex  int
 	IsLastComponent bool
+	SecondaryIndex  bool
 }
 
 type ByComponentIndex []Column
@@ -159,13 +160,13 @@ func ColumnFamilies(host string, keyspace string, verbose bool) ([]ColumnFamily,
 			fmt.Printf("Reading metadata for %s.%s ...\n", keyspace, cf.Name)
 		}
 
-		iter := session.Query(`SELECT column_name, type, validator, component_index 
+		iter := session.Query(`SELECT column_name, type, validator, component_index, index_name
                                FROM system.schema_columns
                                WHERE keyspace_name = ? AND columnfamily_name = ?`, keyspace, cf.Name).Iter()
 		columns := make([]Column, 0)
 		var col Column
-		var colKeyType, validator string
-		for iter.Scan(&col.Name, &colKeyType, &validator, &col.ComponentIndex) {
+		var colKeyType, validator, secondaryIndex string
+		for iter.Scan(&col.Name, &colKeyType, &validator, &col.ComponentIndex, &secondaryIndex) {
 			col.KeyType = keyTypes[colKeyType]
 			dataType, present := dataTypes[validator]
 
@@ -189,6 +190,12 @@ func ColumnFamilies(host string, keyspace string, verbose bool) ([]ColumnFamily,
 
 			if col.DataType == CounterType {
 				columnFamilies[i].IsCounter = true
+			}
+
+			if secondaryIndex == "" {
+				col.SecondaryIndex = false
+			} else {
+				col.SecondaryIndex = true
 			}
 
 			columns = append(columns, col)

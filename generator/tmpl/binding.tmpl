@@ -32,6 +32,14 @@ const (
             return cqlc.ColumnBinding{Column: b, Value: value}
         }
 
+        {{ if $col.SecondaryIndex }}
+            func (b * {{$QualifiedColStructType}}Column ) Eq(value {{valueType $col}}) cqlc.Condition {
+                column := &{{$QualifiedColStructType}}Column{}
+                binding := cqlc.ColumnBinding{Column: column, Value: value}
+                return cqlc.Condition{Binding: binding, Predicate: cqlc.EqPredicate}
+            }
+        {{ end }}
+
         {{ if isCounterColumn $col }}
             func (b * {{$QualifiedColStructType}}Column ) CanIncrement() bool {
                 return true
@@ -55,11 +63,15 @@ const (
                 {{ end }}
             {{ end }}
             {{ if $col.SupportsClustering }}
-                func (b * {{$QualifiedColStructType}}Column ) Eq(value {{valueType $col}}) cqlc.Condition {
-                    column := &{{$QualifiedColStructType}}Column{}
-                    binding := cqlc.ColumnBinding{Column: column, Value: value}
-                    return cqlc.Condition{Binding: binding, Predicate: cqlc.EqPredicate}
-                }
+                
+                {{ if not $col.SecondaryIndex }}
+                    func (b * {{$QualifiedColStructType}}Column ) Eq(value {{valueType $col}}) cqlc.Condition {
+                        column := &{{$QualifiedColStructType}}Column{}
+                        binding := cqlc.ColumnBinding{Column: column, Value: value}
+                        return cqlc.Condition{Binding: binding, Predicate: cqlc.EqPredicate}
+                    }
+                {{ end }}
+
                 {{ if $col.IsLastComponent }}
                     func (b * {{$QualifiedColStructType}}Column ) In(value ...{{valueType $col}}) cqlc.Condition {
                         column := &{{$QualifiedColStructType}}Column{}

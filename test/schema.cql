@@ -81,3 +81,16 @@ CREATE TABLE events
     pressure int,
     PRIMARY KEY (sensor, timestamp)
 );
+
+-- Examples
+
+CREATE TABLE user_accounts (
+    username text,
+    email text,
+    password text,
+    last_visited timestamp,
+    country text,
+    PRIMARY KEY (username)
+);
+
+CREATE INDEX user_accounts_country ON user_accounts(country);

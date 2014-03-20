@@ -120,3 +120,11 @@ func TestDistinctGenerator(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, out, "PASSED")
 }
+
+func TestSecondaryGenerator(t *testing.T) {
+
+	out, err := runFixture("secondary", opts)
+
+	assert.NoError(t, err)
+	assert.Equal(t, out, "PASSED")
+}

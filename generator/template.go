@@ -42,6 +42,9 @@ func columnType(c Column) string {
 			replacement = ".LastPartitioned"
 		}
 		return strings.Replace(baseType, ".", replacement, 1)
+	} else if c.SecondaryIndex {
+		replacement := ".Equality"
+		return strings.Replace(baseType, ".", replacement, 1)
 	} else {
 		return baseType
 	}
