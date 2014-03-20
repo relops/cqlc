@@ -6,6 +6,7 @@ go:
 before_install:
   - go get github.com/stretchr/testify/assert
   - go get github.com/jteeuwen/go-bindata/...
+  - go get github.com/relops/csvb
   - export PATH=$PATH:/home/travis/gopath/bin:/usr/local/cassandra/bin
 
 install: 
