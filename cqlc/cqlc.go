@@ -51,6 +51,7 @@ var (
 type ReadOptions struct {
 	Distinct bool
 	Limit    int
+	OrderBy  Column
 }
 
 // Context represents the state of the CQL statement that is being built by the application.
@@ -99,8 +100,11 @@ type Query interface {
 	Executable
 	Fetchable
 	Bindable
+	// OrderBy sets the ordering of the returned query
+	OrderBy(col ClusteredColumn) Fetchable
 	// Limit constrains the number of rows returned by a query
 	Limit(limit int) Fetchable
+	// TODO Extract Limitable interface
 }
 
 type SelectWhereStep interface {
@@ -174,6 +178,12 @@ type PartitionedColumn interface {
 	PartitionBy() Column
 }
 
+// ClusteredColumn is a marker interface to denote that a column is clustered.
+type ClusteredColumn interface {
+	// Returns the column definition that a column family is clustered with.
+	ClusterWith() Column
+}
+
 type Bindable interface {
 	Bind(cols ...ColumnBinding) UniqueFetchable
 }
@@ -214,6 +224,11 @@ func (c *Context) SelectDistinct(col PartitionedColumn) SelectFromStep {
 
 func (c *Context) Limit(lim int) Fetchable {
 	c.ReadOptions.Limit = lim
+	return c
+}
+
+func (c *Context) OrderBy(col ClusteredColumn) Fetchable {
+	c.ReadOptions.OrderBy = col.ClusterWith()
 	return c
 }
 

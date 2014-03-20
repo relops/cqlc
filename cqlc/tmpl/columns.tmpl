@@ -31,6 +31,7 @@ type LastPartitioned{{ $t.Prefix }}Column interface {
 }
 
 type Clustered{{ $t.Prefix }}Column interface {
+	ClusteredColumn
 	Equality{{ $t.Prefix }}Column
 	Gt(value {{ $t.Literal }}) Condition
 	Lt(value {{ $t.Literal }}) Condition

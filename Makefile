@@ -2,7 +2,7 @@ schema:
 	cqlsh -f test/keyspace.cql
 	cqlsh -k cqlc -f test/schema.cql
 
-cqlc/standard_columns.go: cqlc/column_generator.go
+cqlc/standard_columns.go: cqlc/tmpl/columns.tmpl cqlc/column_generator.go
 	 cd cqlc; go run column_generator.go
 
 columns: cqlc/standard_columns.go 

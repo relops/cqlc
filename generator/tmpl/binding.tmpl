@@ -63,6 +63,10 @@ const (
                 {{ end }}
             {{ end }}
             {{ if $col.SupportsClustering }}
+
+                func (b * {{$QualifiedColStructType}}Column ) ClusterWith() cqlc.Column {
+                    return b
+                }
                 
                 {{ if not $col.SecondaryIndex }}
                     func (b * {{$QualifiedColStructType}}Column ) Eq(value {{valueType $col}}) cqlc.Condition {

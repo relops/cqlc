@@ -136,3 +136,11 @@ func TestLimitGenerator(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, out, "PASSED")
 }
+
+func TestOrderGenerator(t *testing.T) {
+
+	out, err := runFixture("order", opts)
+
+	assert.NoError(t, err)
+	assert.Equal(t, out, "PASSED")
+}

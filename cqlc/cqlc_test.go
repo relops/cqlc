@@ -79,6 +79,10 @@ func (t *MockAsciiColumn) PartitionBy() Column {
 	return t
 }
 
+func (t *MockInt32Column) ClusterWith() Column {
+	return t
+}
+
 func (t *MockInt32Column) ColumnName() string {
 	return t.name
 }
@@ -205,10 +209,22 @@ func (s *CqlTestSuite) TestLimit() {
 	barCol := &MockAsciiColumn{name: "bar"}
 	c := NewContext()
 
-	c.SelectDistinct(barCol).From(s.table).Limit(99)
+	c.Select(barCol).From(s.table).Limit(99)
 	cql, err := c.RenderCQL()
 	assert.NoError(s.T(), err)
-	assert.Equal(s.T(), cql, "SELECT DISTINCT bar FROM foo LIMIT 99")
+	assert.Equal(s.T(), cql, "SELECT bar FROM foo LIMIT 99")
+}
+
+func (s *CqlTestSuite) TestOrderBy() {
+
+	barCol := &MockAsciiColumn{name: "bar"}
+	quuxCol := &MockInt32Column{name: "quux"}
+	c := NewContext()
+
+	c.Select(barCol, quuxCol).From(s.table).Where(barCol.Eq("x")).OrderBy(quuxCol)
+	cql, err := c.RenderCQL()
+	assert.NoError(s.T(), err)
+	assert.Equal(s.T(), cql, "SELECT bar, quux FROM foo WHERE bar = ? ORDER BY quux")
 }
 
 func (s *CqlTestSuite) TestInsert() {

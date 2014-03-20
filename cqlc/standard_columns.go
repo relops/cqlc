@@ -31,6 +31,7 @@ type LastPartitionedStringColumn interface {
 }
 
 type ClusteredStringColumn interface {
+	ClusteredColumn
 	EqualityStringColumn
 	Gt(value string) Condition
 	Lt(value string) Condition
@@ -66,6 +67,7 @@ type LastPartitionedInt32Column interface {
 }
 
 type ClusteredInt32Column interface {
+	ClusteredColumn
 	EqualityInt32Column
 	Gt(value int32) Condition
 	Lt(value int32) Condition
@@ -101,6 +103,7 @@ type LastPartitionedInt64Column interface {
 }
 
 type ClusteredInt64Column interface {
+	ClusteredColumn
 	EqualityInt64Column
 	Gt(value int64) Condition
 	Lt(value int64) Condition
@@ -136,6 +139,7 @@ type LastPartitionedFloat32Column interface {
 }
 
 type ClusteredFloat32Column interface {
+	ClusteredColumn
 	EqualityFloat32Column
 	Gt(value float32) Condition
 	Lt(value float32) Condition
@@ -171,6 +175,7 @@ type LastPartitionedFloat64Column interface {
 }
 
 type ClusteredFloat64Column interface {
+	ClusteredColumn
 	EqualityFloat64Column
 	Gt(value float64) Condition
 	Lt(value float64) Condition
@@ -206,6 +211,7 @@ type LastPartitionedTimestampColumn interface {
 }
 
 type ClusteredTimestampColumn interface {
+	ClusteredColumn
 	EqualityTimestampColumn
 	Gt(value time.Time) Condition
 	Lt(value time.Time) Condition
@@ -241,6 +247,7 @@ type LastPartitionedTimeUUIDColumn interface {
 }
 
 type ClusteredTimeUUIDColumn interface {
+	ClusteredColumn
 	EqualityTimeUUIDColumn
 	Gt(value gocql.UUID) Condition
 	Lt(value gocql.UUID) Condition
@@ -276,6 +283,7 @@ type LastPartitionedBooleanColumn interface {
 }
 
 type ClusteredBooleanColumn interface {
+	ClusteredColumn
 	EqualityBooleanColumn
 	Gt(value bool) Condition
 	Lt(value bool) Condition
@@ -311,6 +319,7 @@ type LastPartitionedDecimalColumn interface {
 }
 
 type ClusteredDecimalColumn interface {
+	ClusteredColumn
 	EqualityDecimalColumn
 	Gt(value *inf.Dec) Condition
 	Lt(value *inf.Dec) Condition
@@ -346,6 +355,7 @@ type LastPartitionedBytesColumn interface {
 }
 
 type ClusteredBytesColumn interface {
+	ClusteredColumn
 	EqualityBytesColumn
 	Gt(value []byte) Condition
 	Lt(value []byte) Condition
