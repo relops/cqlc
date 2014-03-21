@@ -22,7 +22,11 @@ const (
     {{range $_, $col := $cf.Columns}}
         {{ $ColStructType := snakeToCamel $col.Name }}
         {{ $QualifiedColStructType := sprint $StructType $ColStructType }}
-        type {{$QualifiedColStructType}}Column struct{}
+        type {{$QualifiedColStructType}}Column struct{
+            {{ if $col.SupportsClustering }}
+            desc bool
+            {{ end }}
+        }
 
         func (b * {{$QualifiedColStructType}}Column ) ColumnName() string {
             return "{{$col.Name}}"
@@ -64,8 +68,17 @@ const (
             {{ end }}
             {{ if $col.SupportsClustering }}
 
-                func (b * {{$QualifiedColStructType}}Column ) ClusterWith() cqlc.Column {
+                func (b * {{$QualifiedColStructType}}Column ) ClusterWith() string {
+                    return b.ColumnName()
+                }
+
+                func (b * {{$QualifiedColStructType}}Column ) Desc() cqlc.ClusteredColumn {
+                    b.desc = true
                     return b
+                }
+
+                func (b * {{$QualifiedColStructType}}Column ) IsDescending() bool {
+                    return b.desc
                 }
                 
                 {{ if not $col.SecondaryIndex }}

@@ -17,6 +17,7 @@ type MockAsciiColumn struct {
 
 type MockInt32Column struct {
 	name string
+	desc bool
 }
 
 type MockCounterColumn struct {
@@ -79,8 +80,17 @@ func (t *MockAsciiColumn) PartitionBy() Column {
 	return t
 }
 
-func (t *MockInt32Column) ClusterWith() Column {
+func (t *MockInt32Column) ClusterWith() string {
+	return t.ColumnName()
+}
+
+func (t *MockInt32Column) Desc() ClusteredColumn {
+	t.desc = true
 	return t
+}
+
+func (t *MockInt32Column) IsDescending() bool {
+	return t.desc
 }
 
 func (t *MockInt32Column) ColumnName() string {
@@ -225,6 +235,11 @@ func (s *CqlTestSuite) TestOrderBy() {
 	cql, err := c.RenderCQL()
 	assert.NoError(s.T(), err)
 	assert.Equal(s.T(), cql, "SELECT bar, quux FROM foo WHERE bar = ? ORDER BY quux")
+
+	c.Select(barCol, quuxCol).From(s.table).Where(barCol.Eq("x")).OrderBy(quuxCol.Desc())
+	cql, err = c.RenderCQL()
+	assert.NoError(s.T(), err)
+	assert.Equal(s.T(), cql, "SELECT bar, quux FROM foo WHERE bar = ? ORDER BY quux DESC")
 }
 
 func (s *CqlTestSuite) TestInsert() {

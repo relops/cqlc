@@ -51,7 +51,8 @@ var (
 type ReadOptions struct {
 	Distinct bool
 	Limit    int
-	OrderBy  Column
+	OrderBy  string
+	Desc     bool
 }
 
 // Context represents the state of the CQL statement that is being built by the application.
@@ -180,8 +181,13 @@ type PartitionedColumn interface {
 
 // ClusteredColumn is a marker interface to denote that a column is clustered.
 type ClusteredColumn interface {
-	// Returns the column definition that a column family is clustered with.
-	ClusterWith() Column
+	// Returns the column name that a column family is clustered with.
+	ClusterWith() string
+	// This specifies descending ORDER BY for the column.
+	// If this method is not called, it an ascending order will be assumed.
+	Desc() ClusteredColumn
+	// Denotes whether a descending order should be applied
+	IsDescending() bool
 }
 
 type Bindable interface {
@@ -229,6 +235,7 @@ func (c *Context) Limit(lim int) Fetchable {
 
 func (c *Context) OrderBy(col ClusteredColumn) Fetchable {
 	c.ReadOptions.OrderBy = col.ClusterWith()
+	c.ReadOptions.Desc = col.IsDescending()
 	return c
 }
 

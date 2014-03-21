@@ -39,8 +39,11 @@ func renderSelect(ctx *Context, buf *bytes.Buffer) {
 		renderWhereClause(ctx, buf)
 	}
 
-	if ctx.ReadOptions.OrderBy != nil {
-		fmt.Fprintf(buf, " ORDER BY %s", ctx.ReadOptions.OrderBy.ColumnName())
+	if len(ctx.ReadOptions.OrderBy) > 0 {
+		fmt.Fprintf(buf, " ORDER BY %s", ctx.ReadOptions.OrderBy)
+		if ctx.ReadOptions.Desc {
+			fmt.Fprintf(buf, " DESC")
+		}
 	}
 
 	if ctx.ReadOptions.Limit > 0 {

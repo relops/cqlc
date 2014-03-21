@@ -7,6 +7,7 @@ import (
 	"github.com/relops/cqlc/integration"
 	"log"
 	"os"
+	"time"
 )
 
 func main() {
@@ -35,10 +36,40 @@ func main() {
 		os.Exit(1)
 	}
 
+	count, err := checkOrdering(session, EVENTS.TIMESTAMP)
+
+	if err != nil {
+		log.Fatal(err)
+		os.Exit(1)
+	}
+
+	if count == events {
+
+		count, err = checkOrdering(session, EVENTS.TIMESTAMP.Desc())
+
+		if err != nil {
+			log.Fatal(err)
+			os.Exit(1)
+		}
+
+		if count == events {
+			result = "PASSED"
+		}
+
+	} else {
+		result = fmt.Sprintf("Expected %d rows; got %d rows", events, count)
+	}
+
+	os.Stdout.WriteString(result)
+}
+
+func checkOrdering(session *gocql.Session, col cqlc.ClusteredColumn) (int, error) {
+
+	ctx := cqlc.NewContext()
 	iter, err := ctx.Select().
 		From(EVENTS).
 		Where(EVENTS.SENSOR.Eq(100)).
-		OrderBy(EVENTS.TIMESTAMP).
+		OrderBy(col).
 		Fetch(session)
 
 	if err != nil {
@@ -47,17 +78,29 @@ func main() {
 	}
 
 	count := 0
+	var previous time.Time
 
-	MapEvents(iter, func(e Events) (bool, error) {
+	err = MapEvents(iter, func(e Events) (bool, error) {
+
+		current := e.Timestamp.Time()
+
+		if !previous.IsZero() {
+			if col.IsDescending() {
+				if current.After(previous) {
+					return false, fmt.Errorf("Wrong ordering (DESC): previous was %v but current is %v", previous, current)
+				}
+			} else {
+				if current.Before(previous) {
+					return false, fmt.Errorf("Wrong ordering (ASC): previous was %v but current is %v", previous, current)
+				}
+			}
+		}
+
+		previous = current
 		count++
 		return true, nil
 	})
 
-	if count == events {
-		result = "PASSED"
-	} else {
-		result = fmt.Sprintf("Expected %d rows; got %d rows", events, count)
-	}
+	return count, err
 
-	os.Stdout.WriteString(result)
 }
