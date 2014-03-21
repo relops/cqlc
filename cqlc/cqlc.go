@@ -88,6 +88,9 @@ type CompareAndSwap interface {
 }
 
 type Fetchable interface {
+	Bindable
+	// Limit constrains the number of rows returned by a query
+	Limit(limit int) Fetchable
 	Prepare(session *gocql.Session) (*gocql.Query, error)
 	Fetch(*gocql.Session) (*gocql.Iter, error)
 }
@@ -100,19 +103,13 @@ type UniqueFetchable interface {
 type Query interface {
 	Executable
 	Fetchable
-	Bindable
 	// OrderBy sets the ordering of the returned query
 	OrderBy(col ClusteredColumn) Fetchable
-	// Limit constrains the number of rows returned by a query
-	Limit(limit int) Fetchable
-	// TODO Extract Limitable interface
 }
 
 type SelectWhereStep interface {
 	Fetchable
 	Where(conditions ...Condition) Query
-	// Limit constrains the number of rows returned by a query
-	Limit(lim int) Fetchable
 }
 
 type SelectFromStep interface {

@@ -73,8 +73,7 @@ const (
                 }
 
                 func (b * {{$QualifiedColStructType}}Column ) Desc() cqlc.ClusteredColumn {
-                    b.desc = true
-                    return b
+                    return &{{$QualifiedColStructType}}Column{desc: true}
                 }
 
                 func (b * {{$QualifiedColStructType}}Column ) IsDescending() bool {

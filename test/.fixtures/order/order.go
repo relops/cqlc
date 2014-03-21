@@ -20,15 +20,24 @@ func main() {
 	ctx := cqlc.NewContext()
 	batch := gocql.NewBatch(gocql.LoggedBatch)
 
-	events := 100
+	events := 1000
+
+	var first, last gocql.UUID
 
 	for i := 0; i < events; i++ {
+		ts := gocql.TimeUUID()
 		ctx.Upsert(EVENTS).
 			SetInt64(EVENTS.SENSOR, 100).
-			SetTimeUUID(EVENTS.TIMESTAMP, gocql.TimeUUID()).
+			SetTimeUUID(EVENTS.TIMESTAMP, ts).
 			SetFloat32(EVENTS.TEMPERATURE, 19.8).
 			SetInt32(EVENTS.PRESSURE, 357).
 			Batch(batch)
+		switch i {
+		case 0:
+			first = ts
+		case events - 1:
+			last = ts
+		}
 	}
 
 	if err := session.ExecuteBatch(batch); err != nil {
@@ -53,7 +62,29 @@ func main() {
 		}
 
 		if count == events {
-			result = "PASSED"
+
+			firstRead, err := checkOrderedLimit(session, EVENTS.TIMESTAMP)
+			if err != nil {
+				log.Fatal(err)
+				os.Exit(1)
+			}
+
+			lastRead, err := checkOrderedLimit(session, EVENTS.TIMESTAMP.Desc())
+			if err != nil {
+				log.Fatal(err)
+				os.Exit(1)
+			}
+
+			if first == firstRead {
+				if last == lastRead {
+					result = "PASSED"
+				} else {
+					result = fmt.Sprintf("Expected last %v; got %v", last.Time(), lastRead.Time())
+				}
+
+			} else {
+				result = fmt.Sprintf("Expected first %v; got %v", first.Time(), firstRead.Time())
+			}
 		}
 
 	} else {
@@ -61,6 +92,20 @@ func main() {
 	}
 
 	os.Stdout.WriteString(result)
+}
+
+func checkOrderedLimit(session *gocql.Session, col cqlc.ClusteredColumn) (gocql.UUID, error) {
+	var u gocql.UUID
+	ctx := cqlc.NewContext()
+	_, err := ctx.Select().
+		From(EVENTS).
+		Where(EVENTS.SENSOR.Eq(100)).
+		OrderBy(col).
+		Limit(1).
+		Bind(EVENTS.TIMESTAMP.To(&u)).
+		FetchOne(session)
+
+	return u, err
 }
 
 func checkOrdering(session *gocql.Session, col cqlc.ClusteredColumn) (int, error) {
