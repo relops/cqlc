@@ -21,6 +21,7 @@ import (
 	"log"
 	"reflect"
 	"speter.net/go/exp/math/dec/inf"
+	"strings"
 	"time"
 )
 
@@ -483,7 +484,7 @@ func (c *Context) Prepare(s *gocql.Session) (*gocql.Query, error) {
 	c.Dispose()
 
 	if c.Debug {
-		fmt.Printf("%+v bound to stmt: %s\n", placeHolders, stmt)
+		debugStmt(stmt, placeHolders)
 	}
 
 	return s.Query(stmt, placeHolders...), nil
@@ -497,7 +498,7 @@ func (c *Context) Exec(s *gocql.Session) error {
 	}
 
 	if c.Debug {
-		fmt.Printf("%+v bound to stmt: %s\n", placeHolders, stmt)
+		debugStmt(stmt, placeHolders)
 	}
 
 	return s.Query(stmt, placeHolders...).Exec()
@@ -532,12 +533,21 @@ func (c *Context) Batch(b *gocql.Batch) error {
 	}
 
 	if c.Debug {
-		fmt.Printf("%+v bound to stmt: %s\n", placeHolders, stmt)
+		debugStmt(stmt, placeHolders)
 	}
 
 	b.Query(stmt, placeHolders...)
 
 	return nil
+}
+
+func debugStmt(stmt string, placeHolders []interface{}) {
+	infused := strings.Replace(stmt, "?", " %+v", -1)
+	var buffer bytes.Buffer
+	buffer.WriteString("CQL: ")
+	buffer.WriteString(infused)
+	buffer.WriteString("\n")
+	fmt.Printf(buffer.String(), placeHolders...)
 }
 
 func BuildStatement(c *Context) (stmt string, placeHolders []interface{}, err error) {
