@@ -126,6 +126,12 @@ const (
         {{end}}
     }
 
+    {{range $_, $col := $cf.Columns}}
+        func (s * {{$StructType}}) {{snakeToCamel $col.Name}}Value() {{valueType $col}} {
+            return s.{{snakeToCamel $col.Name}}
+        }
+    {{end}}
+
     type {{$StructType}}Def struct {
         {{range $_, $col := $cf.Columns}}
             {{toUpper $col.Name}} {{columnType $col}}

@@ -71,7 +71,23 @@ CREATE TABLE second_timeline
     PRIMARY KEY (when)
 );
 
--- Examples
+-- Pair of orginal and a clone
+
+CREATE TABLE original
+(
+    id ascii,    
+    date timestamp,
+    comment text,
+    PRIMARY KEY (id, date)
+);
+
+CREATE TABLE clone
+(
+    id ascii,
+    date timestamp,
+    comment text,
+    PRIMARY KEY (id, date)
+);
 
 CREATE TABLE events
 (

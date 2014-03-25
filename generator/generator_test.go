@@ -144,3 +144,11 @@ func TestOrderGenerator(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, out, "PASSED")
 }
+
+func TestLikeGenerator(t *testing.T) {
+
+	out, err := runFixture("like", opts)
+
+	assert.NoError(t, err)
+	assert.Equal(t, out, "PASSED")
+}
