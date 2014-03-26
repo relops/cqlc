@@ -152,3 +152,11 @@ func TestLikeGenerator(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, out, "PASSED")
 }
+
+func TestReverseGenerator(t *testing.T) {
+
+	out, err := runFixture("reverse", opts)
+
+	assert.NoError(t, err)
+	assert.Equal(t, out, "PASSED")
+}

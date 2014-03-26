@@ -71,7 +71,9 @@ CREATE TABLE second_timeline
     PRIMARY KEY (when)
 );
 
-create table timeseries (
+-- Verify that reverse cluster ordering works as expected
+
+create table reverse_timeseries (
   event_type text,
   insertion_time timestamp,
   event blob,
