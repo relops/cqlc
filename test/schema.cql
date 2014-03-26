@@ -71,6 +71,14 @@ CREATE TABLE second_timeline
     PRIMARY KEY (when)
 );
 
+create table timeseries (
+  event_type text,
+  insertion_time timestamp,
+  event blob,
+  PRIMARY KEY (event_type, insertion_time)
+)
+WITH CLUSTERING ORDER BY (insertion_time DESC);
+
 -- Pair of orginal and a clone
 
 CREATE TABLE original

@@ -30,6 +30,7 @@ const (
 	ArrayType     ColumnDataType = 11
 	BytesType     ColumnDataType = 12
 	DecimalType   ColumnDataType = 13
+	ReversedType  ColumnDataType = 14
 )
 
 var keyTypes = map[string]ColumnKeyType{
@@ -53,9 +54,10 @@ var dataTypes = map[string]ColumnDataType{
 	"org.apache.cassandra.db.marshal.DecimalType":       DecimalType,
 }
 
-var collectionDataTypes = map[string]ColumnDataType{
-	"org.apache.cassandra.db.marshal.MapType":  MapType,
-	"org.apache.cassandra.db.marshal.ListType": ArrayType,
+var templateDataTypes = map[string]ColumnDataType{
+	"org.apache.cassandra.db.marshal.MapType":      MapType,
+	"org.apache.cassandra.db.marshal.ListType":     ArrayType,
+	"org.apache.cassandra.db.marshal.ReversedType": ReversedType,
 }
 
 var literalTypes = map[ColumnDataType]string{
@@ -168,9 +170,9 @@ func ColumnFamilies(host string, keyspace string, verbose bool) ([]ColumnFamily,
 		var colKeyType, validator, secondaryIndex string
 		for iter.Scan(&col.Name, &colKeyType, &validator, &col.ComponentIndex, &secondaryIndex) {
 			col.KeyType = keyTypes[colKeyType]
-			dataType, present := dataTypes[validator]
+			dataType, ok := dataTypes[validator]
 
-			if !present {
+			if !ok {
 				// TODO This is extremely hacky, must clean this up
 				// Basically a map<text,text> type will come through as:
 				// org.apache.cassandra.db.marshal.MapType(org.apache.cassandra.db.marshal.UTF8Type,org.apache.cassandra.db.marshal.UTF8Type)
@@ -179,10 +181,23 @@ func ColumnFamilies(host string, keyspace string, verbose bool) ([]ColumnFamily,
 					// TODO should error out here really, since we can't map the type
 					fmt.Printf("Unmapped data type: %s\n", validator)
 				}
-				dataType = collectionDataTypes[parts[0]]
-				if dataType == 0 {
-					// TODO should error out here really, since we can't map the type
-					fmt.Printf("Unmapped data type: %s\n", validator)
+
+				dataType = templateDataTypes[parts[0]]
+				switch dataType {
+				case ReversedType:
+					{
+						// Ugly hack to get reversed columns going
+						s := strings.Replace(parts[1], ")", "", -1)
+						dataType, ok = dataTypes[s]
+						if !ok {
+							fmt.Printf("Unmapped data type: %s\n", validator)
+						}
+					}
+				case 0:
+					{
+						// TODO should error out here really, since we can't map the type
+						fmt.Printf("Unmapped data type: %s\n", validator)
+					}
 				}
 			}
 
