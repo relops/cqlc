@@ -6,7 +6,7 @@ import (
 	"os"
 
 	"github.com/jessevdk/go-flags"
-	"github.com/philipsoutham/cqlc/generator"
+	"github.com/relops/cqlc/generator"
 )
 
 var opts generator.Options
