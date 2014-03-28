@@ -2,9 +2,10 @@ package generator
 
 import (
 	"fmt"
-	"github.com/gocql/gocql"
 	"sort"
 	"strings"
+
+	"github.com/gocql/gocql"
 )
 
 type ColumnKeyType uint
@@ -130,20 +131,28 @@ func (c *Column) SupportsClustering() bool {
 	return c.KeyType == ClusteringKey
 }
 
-func ColumnFamilies(host string, keyspace string, verbose bool) ([]ColumnFamily, error) {
+func ColumnFamilies(opts *Options) ([]ColumnFamily, error) {
+	verbose := len(opts.Verbose) > 0
+	cluster := gocql.NewCluster(opts.Instance)
 
-	cluster := gocql.NewCluster(host)
+	if opts.Username != "" && opts.Password != "" {
+		cluster.Authenticator = gocql.PasswordAuthenticator{
+			Username: opts.Username,
+			Password: opts.Password,
+		}
+	}
+
 	session, err := cluster.CreateSession()
 
 	if err != nil {
 		fmt.Errorf("Connect error", err)
 	}
 
-	fmt.Printf("Reading schema from keyspace: %s\n", keyspace)
+	fmt.Printf("Reading schema from keyspace: %s\n", opts.Keyspace)
 
-	iter := session.Query(`SELECT columnfamily_name 
+	iter := session.Query(`SELECT columnfamily_name
                            FROM system.schema_columnfamilies
-                           WHERE keyspace_name = ?`, keyspace).Iter()
+                           WHERE keyspace_name = ?`, opts.Keyspace).Iter()
 
 	columnFamilies := make([]ColumnFamily, 0)
 	var cf ColumnFamily
@@ -159,12 +168,12 @@ func ColumnFamilies(host string, keyspace string, verbose bool) ([]ColumnFamily,
 	for i, cf := range columnFamilies {
 
 		if verbose {
-			fmt.Printf("Reading metadata for %s.%s ...\n", keyspace, cf.Name)
+			fmt.Printf("Reading metadata for %s.%s ...\n", opts.Keyspace, cf.Name)
 		}
 
 		iter := session.Query(`SELECT column_name, type, validator, component_index, index_name
                                FROM system.schema_columns
-                               WHERE keyspace_name = ? AND columnfamily_name = ?`, keyspace, cf.Name).Iter()
+                               WHERE keyspace_name = ? AND columnfamily_name = ?`, opts.Keyspace, cf.Name).Iter()
 		columns := make([]Column, 0)
 		var col Column
 		var colKeyType, validator, secondaryIndex string
@@ -244,7 +253,7 @@ func ColumnFamilies(host string, keyspace string, verbose bool) ([]ColumnFamily,
 
 		if verbose {
 			for _, col := range columns {
-				fmt.Printf("[%s.%s] Column: %+v\n", keyspace, cf.Name, col)
+				fmt.Printf("[%s.%s] Column: %+v\n", opts.Keyspace, cf.Name, col)
 			}
 		}
 

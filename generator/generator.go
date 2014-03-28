@@ -18,12 +18,14 @@ var (
 
 type Options struct {
 	Instance string `short:"i" long:"instance" description:"The Cassandra instance to connect to"`
-	Keyspace string `short:"k" long:"keyspace" description:"The keyspace to that contains the target schema"`
+	Keyspace string `short:"k" long:"keyspace" description:"The keyspace that contains the target schema"`
 	Package  string `short:"p" long:"package" description:"The name of the target package for the generated code"`
 	Output   string `short:"o" long:"output" description:"The file to write the generated bindings to"`
 	Version  func() `short:"V" long:"version" description:"Print cqlc version and exit"`
 	Verbose  []bool `short:"v" long:"verbose" description:"Show verbose debug information"`
 	Symbols  bool   `short:"s" long:"symbols" description:"Generate compile symbols for each column family"`
+	Username string `short:"u" long:"username" description:"Username for authentication"`
+	Password string `short:"w" long:"password" description:"Password for authentication"`
 }
 
 type Provenance struct {
@@ -57,6 +59,9 @@ func validateOptions(opts *Options) error {
 	if opts.Instance == "" || opts.Keyspace == "" || opts.Package == "" || opts.Output == "" {
 		return ErrInvalidOptions
 	}
+	if (opts.Username == "" && opts.Password != "") || (opts.Username != "" && opts.Password == "") {
+		return ErrInvalidOptions
+	}
 	return nil
 }
 
@@ -81,7 +86,7 @@ func coalesceImports(cf []ColumnFamily) []string {
 
 func generateBinding(opts *Options, version string, w io.Writer) error {
 
-	cf, err := ColumnFamilies(opts.Instance, opts.Keyspace, len(opts.Verbose) > 0)
+	cf, err := ColumnFamilies(opts)
 
 	if err != nil {
 		return err
