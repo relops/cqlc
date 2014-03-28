@@ -1,10 +1,10 @@
 package generator
 
 import (
-    "bytes"
-    "compress/gzip"
-    "fmt"
-    "io"
+	"bytes"
+	"compress/gzip"
+	"fmt"
+	"io"
 )
 
 func bindata_read(data []byte, name string) ([]byte, error) {
@@ -156,11 +156,10 @@ func generator_tmpl_binding_tmpl() ([]byte, error) {
 		0x6e, 0xb8, 0x2a, 0x7b, 0x14, 0xfb, 0xa4, 0xd8, 0x2e, 0x83, 0xd8, 0xa1,
 		0x6e, 0xff, 0xa5, 0x7e, 0xfc, 0x1d, 0x00, 0x00, 0xff, 0xff, 0x87, 0x40,
 		0xcf, 0xd1, 0xf5, 0x24, 0x00, 0x00,
-		},
+	},
 		"generator/tmpl/binding.tmpl",
 	)
 }
-
 
 // Asset loads and returns the asset for the given name.
 // It returns an error if the asset could not be found or
@@ -173,7 +172,6 @@ func Asset(name string) ([]byte, error) {
 }
 
 // _bindata is a table, holding each asset generator, mapped to its name.
-var _bindata = map[string] func() ([]byte, error) {
+var _bindata = map[string]func() ([]byte, error){
 	"generator/tmpl/binding.tmpl": generator_tmpl_binding_tmpl,
-
 }
