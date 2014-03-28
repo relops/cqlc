@@ -2,10 +2,11 @@ package main
 
 import (
 	"fmt"
-	"github.com/jessevdk/go-flags"
-	"github.com/relops/cqlc/generator"
 	"log"
 	"os"
+
+	"github.com/jessevdk/go-flags"
+	"github.com/philipsoutham/cqlc/generator"
 )
 
 var opts generator.Options
