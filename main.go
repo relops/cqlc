@@ -2,17 +2,16 @@ package main
 
 import (
 	"fmt"
-	"log"
-	"os"
-
 	"github.com/jessevdk/go-flags"
 	"github.com/relops/cqlc/generator"
+	"log"
+	"os"
 )
 
 var opts generator.Options
 var parser = flags.NewParser(&opts, flags.Default)
 
-var VERSION string = "0.9.29"
+var VERSION string = "0.9.30"
 
 func init() {
 	opts.Version = printVersionAndExit

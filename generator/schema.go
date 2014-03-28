@@ -2,10 +2,9 @@ package generator
 
 import (
 	"fmt"
+	"github.com/gocql/gocql"
 	"sort"
 	"strings"
-
-	"github.com/gocql/gocql"
 )
 
 type ColumnKeyType uint
