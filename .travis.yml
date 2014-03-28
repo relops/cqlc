@@ -4,6 +4,7 @@ go:
   - 1.2
 
 before_install:
+  - go get github.com/cihub/seelog
   - go get github.com/stretchr/testify/assert
   - go get github.com/jteeuwen/go-bindata/...
   - go get github.com/relops/csvb
