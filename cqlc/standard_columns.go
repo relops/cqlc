@@ -3,12 +3,11 @@
 package cqlc
 
 import (
+	"time"
+
 	"github.com/gocql/gocql"
 	"speter.net/go/exp/math/dec/inf"
-	"time"
 )
-
-
 
 type StringColumn interface {
 	Column
@@ -44,8 +43,6 @@ type LastClusteredStringColumn interface {
 	In(value ...string) Condition
 }
 
-
-
 type Int32Column interface {
 	Column
 	To(value *int32) ColumnBinding
@@ -79,8 +76,6 @@ type LastClusteredInt32Column interface {
 	ClusteredInt32Column
 	In(value ...int32) Condition
 }
-
-
 
 type Int64Column interface {
 	Column
@@ -116,8 +111,6 @@ type LastClusteredInt64Column interface {
 	In(value ...int64) Condition
 }
 
-
-
 type Float32Column interface {
 	Column
 	To(value *float32) ColumnBinding
@@ -151,8 +144,6 @@ type LastClusteredFloat32Column interface {
 	ClusteredFloat32Column
 	In(value ...float32) Condition
 }
-
-
 
 type Float64Column interface {
 	Column
@@ -188,8 +179,6 @@ type LastClusteredFloat64Column interface {
 	In(value ...float64) Condition
 }
 
-
-
 type TimestampColumn interface {
 	Column
 	To(value *time.Time) ColumnBinding
@@ -224,43 +213,63 @@ type LastClusteredTimestampColumn interface {
 	In(value ...time.Time) Condition
 }
 
-
-
-type TimeUUIDColumn interface {
+type UUIDColumn interface {
 	Column
 	To(value *gocql.UUID) ColumnBinding
 }
 
-type EqualityTimeUUIDColumn interface {
-	TimeUUIDColumn
+type TimeUUIDColumn interface {
+	UUIDColumn
+}
+
+type EqualityUUIDColumn interface {
+	UUIDColumn
 	Eq(value gocql.UUID) Condition
 }
 
-type PartitionedTimeUUIDColumn interface {
+type PartitionedUUIDColumn interface {
 	PartitionedColumn
-	EqualityTimeUUIDColumn
+	EqualityUUIDColumn
 }
 
-type LastPartitionedTimeUUIDColumn interface {
-	PartitionedTimeUUIDColumn
+type LastPartitionedUUIDColumn interface {
+	PartitionedUUIDColumn
 	In(value ...gocql.UUID) Condition
 }
 
-type ClusteredTimeUUIDColumn interface {
+type ClusteredUUIDColumn interface {
 	ClusteredColumn
-	EqualityTimeUUIDColumn
+	EqualityUUIDColumn
 	Gt(value gocql.UUID) Condition
 	Lt(value gocql.UUID) Condition
 	Ge(value gocql.UUID) Condition
 	Le(value gocql.UUID) Condition
 }
 
-type LastClusteredTimeUUIDColumn interface {
-	ClusteredTimeUUIDColumn
+type LastClusteredUUIDColumn interface {
+	ClusteredUUIDColumn
 	In(value ...gocql.UUID) Condition
 }
 
+type EqualityTimeUUIDColumn interface {
+	EqualityUUIDColumn
+}
 
+type PartitionedTimeUUIDColumn interface {
+	PartitionedUUIDColumn
+}
+
+type LastPartitionedTimeUUIDColumn interface {
+	LastPartitionedUUIDColumn
+}
+
+type ClusteredTimeUUIDColumn interface {
+	ClusteredUUIDColumn
+}
+
+type LastClusteredTimeUUIDColumn interface {
+	LastClusteredUUIDColumn
+}
 
 type BooleanColumn interface {
 	Column
@@ -296,8 +305,6 @@ type LastClusteredBooleanColumn interface {
 	In(value ...bool) Condition
 }
 
-
-
 type DecimalColumn interface {
 	Column
 	To(value **inf.Dec) ColumnBinding
@@ -332,8 +339,6 @@ type LastClusteredDecimalColumn interface {
 	In(value ...*inf.Dec) Condition
 }
 
-
-
 type BytesColumn interface {
 	Column
 	To(value *[]byte) ColumnBinding
@@ -367,4 +372,3 @@ type LastClusteredBytesColumn interface {
 	ClusteredBytesColumn
 	In(value ...[]byte) Condition
 }
-

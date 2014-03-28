@@ -12,26 +12,27 @@ type ColumnKeyType uint
 type ColumnDataType uint
 
 const (
-	PartitionKey  ColumnKeyType = 1
-	ClusteringKey ColumnKeyType = 2
-	RegularColumn ColumnKeyType = 3
+	PartitionKey ColumnKeyType = iota + 1
+	ClusteringKey
+	RegularColumn
 )
 
 const (
-	StringType    ColumnDataType = 1
-	Int32Type     ColumnDataType = 2
-	LongType      ColumnDataType = 3
-	FloatType     ColumnDataType = 4
-	DoubleType    ColumnDataType = 5
-	TimestampType ColumnDataType = 6
-	BooleanType   ColumnDataType = 7
-	TimeUUIDType  ColumnDataType = 8
-	CounterType   ColumnDataType = 9
-	MapType       ColumnDataType = 10
-	ArrayType     ColumnDataType = 11
-	BytesType     ColumnDataType = 12
-	DecimalType   ColumnDataType = 13
-	ReversedType  ColumnDataType = 14
+	StringType ColumnDataType = iota + 1
+	Int32Type
+	LongType
+	FloatType
+	DoubleType
+	TimestampType
+	BooleanType
+	TimeUUIDType
+	CounterType
+	MapType
+	ArrayType
+	BytesType
+	DecimalType
+	ReversedType
+	UUIDType
 )
 
 var keyTypes = map[string]ColumnKeyType{
@@ -53,12 +54,14 @@ var dataTypes = map[string]ColumnDataType{
 	"org.apache.cassandra.db.marshal.CounterColumnType": CounterType,
 	"org.apache.cassandra.db.marshal.BytesType":         BytesType,
 	"org.apache.cassandra.db.marshal.DecimalType":       DecimalType,
+	"org.apache.cassandra.db.marshal.UUIDType":          UUIDType,
 }
 
 var templateDataTypes = map[string]ColumnDataType{
 	"org.apache.cassandra.db.marshal.MapType":      MapType,
 	"org.apache.cassandra.db.marshal.ListType":     ArrayType,
 	"org.apache.cassandra.db.marshal.ReversedType": ReversedType,
+	"org.apache.cassandra.db.marshal.SetType":      ArrayType,
 }
 
 var literalTypes = map[ColumnDataType]string{
@@ -75,6 +78,7 @@ var literalTypes = map[ColumnDataType]string{
 	ArrayType:     "[]string",
 	BytesType:     "[]byte",
 	DecimalType:   "*inf.Dec",
+	UUIDType:      "gocql.UUID",
 }
 
 var customImportPaths = map[string]string{
@@ -96,6 +100,7 @@ var columnTypes = map[ColumnDataType]string{
 	ArrayType:     "cqlc.ArrayColumn",
 	BytesType:     "cqlc.BytesColumn",
 	DecimalType:   "cqlc.DecimalColumn",
+	UUIDType:      "cqlc.UUIDColumn",
 }
 
 type Binding struct {

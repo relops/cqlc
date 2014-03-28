@@ -17,32 +17,33 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
-	"github.com/gocql/gocql"
 	"log"
 	"reflect"
-	"speter.net/go/exp/math/dec/inf"
 	"strings"
 	"time"
+
+	"github.com/gocql/gocql"
+	"speter.net/go/exp/math/dec/inf"
 )
 
 type OperationType int
 type PredicateType int
 
 const (
-	EqPredicate PredicateType = 1
-	GtPredicate PredicateType = 2
-	GePredicate PredicateType = 3
-	LtPredicate PredicateType = 4
-	LePredicate PredicateType = 5
-	InPredicate PredicateType = 6
+	EqPredicate PredicateType = iota + 1
+	GtPredicate
+	GePredicate
+	LtPredicate
+	LePredicate
+	InPredicate
 )
 
 const (
-	None             OperationType = 0
-	ReadOperation    OperationType = 1
-	WriteOperation   OperationType = 2
-	DeleteOperation  OperationType = 3
-	CounterOperation OperationType = 4
+	None OperationType = iota
+	ReadOperation
+	WriteOperation
+	DeleteOperation
+	CounterOperation
 )
 
 var (
@@ -136,8 +137,10 @@ type SetValueStep interface {
 	SetFloat64(col Float64Column, value float64) SetValueStep
 	SetTimestamp(col TimestampColumn, value time.Time) SetValueStep
 	SetTimeUUID(col TimeUUIDColumn, value gocql.UUID) SetValueStep
+	SetUUID(col UUIDColumn, value gocql.UUID) SetValueStep
 	SetBoolean(col BooleanColumn, value bool) SetValueStep
 	SetMap(col MapColumn, value map[string]string) SetValueStep
+	SetSet(col ArrayColumn, value []string) SetValueStep
 	SetArray(col ArrayColumn, value []string) SetValueStep
 	SetBytes(col BytesColumn, value []byte) SetValueStep
 	SetDecimal(col DecimalColumn, value *inf.Dec) SetValueStep
@@ -354,6 +357,11 @@ func (c *Context) SetTimeUUID(col TimeUUIDColumn, value gocql.UUID) SetValueStep
 	return c
 }
 
+func (c *Context) SetUUID(col UUIDColumn, value gocql.UUID) SetValueStep {
+	set(c, col, value)
+	return c
+}
+
 func (c *Context) SetBoolean(col BooleanColumn, value bool) SetValueStep {
 	set(c, col, value)
 	return c
@@ -365,6 +373,11 @@ func (c *Context) SetMap(col MapColumn, value map[string]string) SetValueStep {
 }
 
 func (c *Context) SetArray(col ArrayColumn, value []string) SetValueStep {
+	set(c, col, value)
+	return c
+}
+
+func (c *Context) SetSet(col ArrayColumn, value []string) SetValueStep {
 	set(c, col, value)
 	return c
 }
