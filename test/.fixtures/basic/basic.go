@@ -40,6 +40,7 @@ func main() {
 		UuidColumn:      uuid,
 		MapColumn:       map[string]string{"baz": "quux"},
 		ArrayColumn:     []string{"baz", "quux"},
+		SetColumn:       []string{"baz", "quux"},
 	}
 
 	create(ctx, session, basic)
@@ -59,7 +60,8 @@ func main() {
 		BASIC.TEXT_COLUMN,
 		BASIC.VARCHAR_COLUMN,
 		BASIC.MAP_COLUMN,
-		BASIC.ARRAY_COLUMN).
+		BASIC.ARRAY_COLUMN,
+		BASIC.SET_COLUMN).
 		From(BASIC).
 		Where(BASIC.ID.Eq("x")).
 		Fetch(session)
@@ -86,7 +88,8 @@ func main() {
 		BASIC.TEXT_COLUMN,
 		BASIC.VARCHAR_COLUMN,
 		BASIC.MAP_COLUMN,
-		BASIC.ARRAY_COLUMN).
+		BASIC.ARRAY_COLUMN,
+		BASIC.SET_COLUMN).
 		From(BASIC).
 		Fetch(session)
 
@@ -143,6 +146,7 @@ func create(ctx *cqlc.Context, s *gocql.Session, basic Basic) {
 		SetString(BASIC.VARCHAR_COLUMN, basic.VarcharColumn).
 		SetMap(BASIC.MAP_COLUMN, basic.MapColumn).
 		SetArray(BASIC.ARRAY_COLUMN, basic.ArrayColumn).
+		SetArray(BASIC.SET_COLUMN, basic.SetColumn).
 		SetDecimal(BASIC.DECIMAL_COLUMN, basic.DecimalColumn).
 		Exec(s)
 

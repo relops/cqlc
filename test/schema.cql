@@ -15,6 +15,7 @@ CREATE TABLE basic
     uuid_column uuid,
     map_column map<text, text>,
     array_column list<text>,
+    set_column set<text>,
     PRIMARY KEY (id)
 );
 

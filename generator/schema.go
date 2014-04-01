@@ -59,6 +59,7 @@ var dataTypes = map[string]ColumnDataType{
 var templateDataTypes = map[string]ColumnDataType{
 	"org.apache.cassandra.db.marshal.MapType":      MapType,
 	"org.apache.cassandra.db.marshal.ListType":     ArrayType,
+	"org.apache.cassandra.db.marshal.SetType":      ArrayType,
 	"org.apache.cassandra.db.marshal.ReversedType": ReversedType,
 }
 
