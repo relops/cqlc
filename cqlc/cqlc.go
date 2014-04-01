@@ -29,20 +29,20 @@ type OperationType int
 type PredicateType int
 
 const (
-	EqPredicate PredicateType = 1
-	GtPredicate PredicateType = 2
-	GePredicate PredicateType = 3
-	LtPredicate PredicateType = 4
-	LePredicate PredicateType = 5
-	InPredicate PredicateType = 6
+	EqPredicate PredicateType = iota
+	GtPredicate
+	GePredicate
+	LtPredicate
+	LePredicate
+	InPredicate
 )
 
 const (
-	None             OperationType = 0
-	ReadOperation    OperationType = 1
-	WriteOperation   OperationType = 2
-	DeleteOperation  OperationType = 3
-	CounterOperation OperationType = 4
+	None OperationType = iota
+	ReadOperation
+	WriteOperation
+	DeleteOperation
+	CounterOperation
 )
 
 var (

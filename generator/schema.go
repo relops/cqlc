@@ -11,27 +11,27 @@ type ColumnKeyType uint
 type ColumnDataType uint
 
 const (
-	PartitionKey  ColumnKeyType = 1
-	ClusteringKey ColumnKeyType = 2
-	RegularColumn ColumnKeyType = 3
+	PartitionKey ColumnKeyType = iota
+	ClusteringKey
+	RegularColumn
 )
 
 const (
-	StringType    ColumnDataType = 1
-	Int32Type     ColumnDataType = 2
-	LongType      ColumnDataType = 3
-	FloatType     ColumnDataType = 4
-	DoubleType    ColumnDataType = 5
-	TimestampType ColumnDataType = 6
-	BooleanType   ColumnDataType = 7
-	TimeUUIDType  ColumnDataType = 8
-	CounterType   ColumnDataType = 9
-	MapType       ColumnDataType = 10
-	ArrayType     ColumnDataType = 11
-	BytesType     ColumnDataType = 12
-	DecimalType   ColumnDataType = 13
-	ReversedType  ColumnDataType = 14
-	UUIDType      ColumnDataType = 15
+	StringType ColumnDataType = iota
+	Int32Type
+	LongType
+	FloatType
+	DoubleType
+	TimestampType
+	BooleanType
+	TimeUUIDType
+	UUIDType
+	CounterType
+	MapType
+	ArrayType
+	BytesType
+	DecimalType
+	ReversedType
 )
 
 var keyTypes = map[string]ColumnKeyType{
