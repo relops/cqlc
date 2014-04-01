@@ -136,6 +136,7 @@ type SetValueStep interface {
 	SetFloat64(col Float64Column, value float64) SetValueStep
 	SetTimestamp(col TimestampColumn, value time.Time) SetValueStep
 	SetTimeUUID(col TimeUUIDColumn, value gocql.UUID) SetValueStep
+	SetUUID(col UUIDColumn, value gocql.UUID) SetValueStep
 	SetBoolean(col BooleanColumn, value bool) SetValueStep
 	SetMap(col MapColumn, value map[string]string) SetValueStep
 	SetArray(col ArrayColumn, value []string) SetValueStep
@@ -350,6 +351,11 @@ func (c *Context) SetTimestamp(col TimestampColumn, value time.Time) SetValueSte
 }
 
 func (c *Context) SetTimeUUID(col TimeUUIDColumn, value gocql.UUID) SetValueStep {
+	set(c, col, value)
+	return c
+}
+
+func (c *Context) SetUUID(col UUIDColumn, value gocql.UUID) SetValueStep {
 	set(c, col, value)
 	return c
 }

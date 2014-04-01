@@ -12,6 +12,7 @@ CREATE TABLE basic
     double_column double,
     decimal_column decimal,
     timeuuid_column timeuuid,
+    uuid_column uuid,
     map_column map<text, text>,
     array_column list<text>,
     PRIMARY KEY (id)

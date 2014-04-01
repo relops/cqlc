@@ -45,6 +45,7 @@ var types = []TypeInfo{
 	TypeInfo{Prefix: "Float64", Literal: "float64"},
 	TypeInfo{Prefix: "Timestamp", Literal: "time.Time"},
 	TypeInfo{Prefix: "TimeUUID", Literal: "gocql.UUID"},
+	TypeInfo{Prefix: "UUID", Literal: "gocql.UUID"},
 	TypeInfo{Prefix: "Boolean", Literal: "bool"},
 	TypeInfo{Prefix: "Decimal", Literal: "*inf.Dec"},
 	TypeInfo{Prefix: "Bytes", Literal: "[]byte"},

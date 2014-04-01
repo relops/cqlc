@@ -31,6 +31,7 @@ const (
 	BytesType     ColumnDataType = 12
 	DecimalType   ColumnDataType = 13
 	ReversedType  ColumnDataType = 14
+	UUIDType      ColumnDataType = 15
 )
 
 var keyTypes = map[string]ColumnKeyType{
@@ -47,6 +48,7 @@ var dataTypes = map[string]ColumnDataType{
 	"org.apache.cassandra.db.marshal.FloatType":         FloatType,
 	"org.apache.cassandra.db.marshal.DoubleType":        DoubleType,
 	"org.apache.cassandra.db.marshal.TimestampType":     TimestampType,
+	"org.apache.cassandra.db.marshal.UUIDType":          UUIDType,
 	"org.apache.cassandra.db.marshal.TimeUUIDType":      TimeUUIDType,
 	"org.apache.cassandra.db.marshal.BooleanType":       BooleanType,
 	"org.apache.cassandra.db.marshal.CounterColumnType": CounterType,
@@ -68,6 +70,7 @@ var literalTypes = map[ColumnDataType]string{
 	DoubleType:    "float64",
 	TimestampType: "time.Time",
 	TimeUUIDType:  "gocql.UUID",
+	UUIDType:      "gocql.UUID",
 	BooleanType:   "bool",
 	CounterType:   "int64",
 	MapType:       "map[string]string",
@@ -89,6 +92,7 @@ var columnTypes = map[ColumnDataType]string{
 	DoubleType:    "cqlc.Float64Column",
 	TimestampType: "cqlc.TimestampColumn",
 	TimeUUIDType:  "cqlc.TimeUUIDColumn",
+	UUIDType:      "cqlc.UUIDColumn",
 	BooleanType:   "cqlc.BooleanColumn",
 	CounterType:   "cqlc.CounterColumn",
 	MapType:       "cqlc.MapColumn",

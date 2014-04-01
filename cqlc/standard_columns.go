@@ -262,6 +262,42 @@ type LastClusteredTimeUUIDColumn interface {
 
 
 
+type UUIDColumn interface {
+	Column
+	To(value *gocql.UUID) ColumnBinding
+}
+
+type EqualityUUIDColumn interface {
+	UUIDColumn
+	Eq(value gocql.UUID) Condition
+}
+
+type PartitionedUUIDColumn interface {
+	PartitionedColumn
+	EqualityUUIDColumn
+}
+
+type LastPartitionedUUIDColumn interface {
+	PartitionedUUIDColumn
+	In(value ...gocql.UUID) Condition
+}
+
+type ClusteredUUIDColumn interface {
+	ClusteredColumn
+	EqualityUUIDColumn
+	Gt(value gocql.UUID) Condition
+	Lt(value gocql.UUID) Condition
+	Ge(value gocql.UUID) Condition
+	Le(value gocql.UUID) Condition
+}
+
+type LastClusteredUUIDColumn interface {
+	ClusteredUUIDColumn
+	In(value ...gocql.UUID) Condition
+}
+
+
+
 type BooleanColumn interface {
 	Column
 	To(value *bool) ColumnBinding

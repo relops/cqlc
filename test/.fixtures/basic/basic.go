@@ -22,6 +22,8 @@ func main() {
 
 	ctx := cqlc.NewContext()
 
+	uuid, _ := gocql.RandomUUID()
+
 	basic := Basic{
 		Id:              "x",
 		Int32Column:     111,
@@ -35,6 +37,7 @@ func main() {
 		DoubleColumn:    math.MaxFloat64,
 		DecimalColumn:   inf.NewDec(1, 3),
 		TimeuuidColumn:  gocql.TimeUUID(),
+		UuidColumn:      uuid,
 		MapColumn:       map[string]string{"baz": "quux"},
 		ArrayColumn:     []string{"baz", "quux"},
 	}
@@ -51,6 +54,7 @@ func main() {
 		BASIC.DECIMAL_COLUMN,
 		BASIC.TIMESTAMP_COLUMN,
 		BASIC.TIMEUUID_COLUMN,
+		BASIC.UUID_COLUMN,
 		BASIC.BOOLEAN_COLUMN,
 		BASIC.TEXT_COLUMN,
 		BASIC.VARCHAR_COLUMN,
@@ -77,6 +81,7 @@ func main() {
 		BASIC.DECIMAL_COLUMN,
 		BASIC.TIMESTAMP_COLUMN,
 		BASIC.TIMEUUID_COLUMN,
+		BASIC.UUID_COLUMN,
 		BASIC.BOOLEAN_COLUMN,
 		BASIC.TEXT_COLUMN,
 		BASIC.VARCHAR_COLUMN,
@@ -131,6 +136,7 @@ func create(ctx *cqlc.Context, s *gocql.Session, basic Basic) {
 		SetFloat64(BASIC.DOUBLE_COLUMN, basic.DoubleColumn).
 		SetString(BASIC.ASCII_COLUMN, basic.AsciiColumn).
 		SetTimestamp(BASIC.TIMESTAMP_COLUMN, basic.TimestampColumn).
+		SetUUID(BASIC.UUID_COLUMN, basic.UuidColumn).
 		SetTimeUUID(BASIC.TIMEUUID_COLUMN, basic.TimeuuidColumn).
 		SetBoolean(BASIC.BOOLEAN_COLUMN, basic.BooleanColumn).
 		SetString(BASIC.TEXT_COLUMN, basic.TextColumn).
