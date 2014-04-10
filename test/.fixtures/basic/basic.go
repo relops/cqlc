@@ -16,7 +16,7 @@ import (
 func main() {
 
 	session := integration.TestSession("127.0.0.1", "cqlc")
-	integration.Truncate(session, BASIC)
+	cqlc.Truncate(session, BASIC)
 
 	result := "FAILED"
 

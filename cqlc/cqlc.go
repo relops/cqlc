@@ -632,6 +632,11 @@ func (c *Context) Dispose() {
 	c.CASBindings = nil
 }
 
+func Truncate(s *gocql.Session, t Table) error {
+	stmt := fmt.Sprintf("TRUNCATE %s", t.TableName())
+	return s.Query(stmt).Exec()
+}
+
 func set(c *Context, col Column, value interface{}) {
 	c.Bindings = append(c.Bindings, ColumnBinding{Column: col, Value: value})
 }
