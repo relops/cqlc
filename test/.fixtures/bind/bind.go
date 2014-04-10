@@ -32,7 +32,7 @@ func main() {
 
 	query := ctx.Select().From(REALLY_BASIC).Where(REALLY_BASIC.ID.Eq("y"))
 
-	fetched := ReallyBasic{}
+	var fetched ReallyBasic
 	found, err := query.Into(REALLY_BASIC.To(&fetched)).FetchOne(s)
 
 	if err != nil {
