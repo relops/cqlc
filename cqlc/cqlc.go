@@ -106,6 +106,8 @@ type Query interface {
 	Fetchable
 	// OrderBy sets the ordering of the returned query
 	OrderBy(col ClusteredColumn) Fetchable
+	// Into sets the target binding to fetch the result of a single row query into
+	Into(TableBinding) UniqueFetchable
 }
 
 type SelectWhereStep interface {
@@ -301,6 +303,13 @@ func (c *Context) Store(b TableBinding) Executable {
 	c.Table = b.Table
 	c.Operation = WriteOperation
 	c.Bindings = b.Columns
+	return c
+}
+
+func (c *Context) Into(b TableBinding) UniqueFetchable {
+	c.Table = b.Table
+	c.Operation = ReadOperation
+	c.Bind(b.Columns...)
 	return c
 }
 

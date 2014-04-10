@@ -204,6 +204,17 @@ const (
         return cqlc.TableBinding{Table: &{{$StructType}}Def{}, Columns: cols}
     }
 
+    func (s * {{$StructType}}Def ) To(v *{{$StructType}}) cqlc.TableBinding {
+        cols := []cqlc.ColumnBinding{
+        {{range $_, $col := $cf.Columns}}
+            {{ $ColStructType := snakeToCamel $col.Name }}
+            {{ $QualifiedColStructType := sprint $StructType $ColStructType }}
+            cqlc.ColumnBinding{Column: &{{ $QualifiedColStructType }}Column{}, Value: &v.{{snakeToCamel $col.Name}}},
+        {{end}}
+        }
+        return cqlc.TableBinding{Table: &{{$StructType}}Def{}, Columns: cols}
+    }
+
     func (s * {{$StructType}}Def ) ColumnDefinitions() []cqlc.Column {
         return []cqlc.Column{
             {{range $_, $col := $cf.Columns}}

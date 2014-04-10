@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"github.com/gocql/gocql"
 	"github.com/relops/cqlc/cqlc"
 	"github.com/relops/cqlc/integration"
 	"log"
@@ -12,8 +11,8 @@ import (
 
 func main() {
 
-	session := integration.TestSession("127.0.0.1", "cqlc")
-	integration.Truncate(session, REALLY_BASIC)
+	s := integration.TestSession("127.0.0.1", "cqlc")
+	cqlc.Truncate(s, REALLY_BASIC)
 
 	result := "FAILED"
 
@@ -24,45 +23,30 @@ func main() {
 		Int32Column: 2001,
 	}
 
-	err := ctx.Store(REALLY_BASIC.Bind(basic)).Exec(session)
+	err := ctx.Store(REALLY_BASIC.Bind(basic)).Exec(s)
 
 	if err != nil {
-		log.Fatalf("Could not bind data: %v", err)
+		log.Fatalf("Could not store data: %v", err)
 		os.Exit(1)
 	}
 
-	fetched := fetchFirstReallyBasic(ctx, session, "y")
+	query := ctx.Select().From(REALLY_BASIC).Where(REALLY_BASIC.ID.Eq("y"))
 
-	if reflect.DeepEqual(fetched, basic) {
-		result = "PASSED"
-	} else {
-		result = fmt.Sprintf("[%+v] [%+v]", fetched, basic)
+	fetched := ReallyBasic{}
+	found, err := query.Into(REALLY_BASIC.To(&fetched)).FetchOne(s)
+
+	if err != nil {
+		log.Fatalf("Could not retrieve data: %v", err)
+		os.Exit(1)
+	}
+
+	if found {
+		if reflect.DeepEqual(fetched, basic) {
+			result = "PASSED"
+		} else {
+			result = fmt.Sprintf("[%+v] [%+v]", fetched, basic)
+		}
 	}
 
 	os.Stdout.WriteString(result)
-
-}
-
-func fetchFirstReallyBasic(ctx *cqlc.Context, s *gocql.Session, key string) ReallyBasic {
-	iter, err := ctx.Select().From(REALLY_BASIC).Where(REALLY_BASIC.ID.Eq(key)).Fetch(s)
-
-	basics, err := BindReallyBasic(iter)
-	if err != nil {
-		log.Fatalf("Could not bind data: %v", err)
-		os.Exit(1)
-	}
-
-	err = iter.Close()
-	if err != nil {
-		log.Fatalf("Could not bind data: %v", err)
-		os.Exit(1)
-	}
-
-	if len(basics) != 1 {
-		log.Fatalf("Could not fetch data for key: %s", key)
-		os.Exit(1)
-	}
-
-	return basics[0]
-
 }
