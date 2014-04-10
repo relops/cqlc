@@ -106,8 +106,6 @@ type Query interface {
 	Fetchable
 	// OrderBy sets the ordering of the returned query
 	OrderBy(col ClusteredColumn) Fetchable
-	// Into sets the target binding to fetch the result of a single row query into
-	Into(TableBinding) UniqueFetchable
 }
 
 type SelectWhereStep interface {
@@ -193,6 +191,8 @@ type ClusteredColumn interface {
 
 type Bindable interface {
 	Bind(cols ...ColumnBinding) UniqueFetchable
+	// Into sets the target binding to fetch the result of a single row query into
+	Into(TableBinding) UniqueFetchable
 }
 
 type Condition struct {
