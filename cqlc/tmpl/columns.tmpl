@@ -45,3 +45,21 @@ type LastClustered{{ $t.Prefix }}Column interface {
 }
 
 {{ end }}
+
+type SetValueStep interface {
+	Executable
+	SelectWhereStep
+	Apply(cols ...ColumnBinding) SetValueStep
+	IfExists(cols ...ColumnBinding) CompareAndSwap
+
+	{{ range $_, $t := .types }}
+	Set{{ $t.Prefix }}(col {{ $t.Prefix }}Column, value {{ $t.Literal }} ) SetValueStep
+	{{ end }}
+}
+
+{{ range $_, $t := .types }}
+func (c *Context) Set{{ $t.Prefix }}(col {{ $t.Prefix }}Column, value {{ $t.Literal }} ) SetValueStep {
+	set(c, col, value)
+	return c
+}
+{{ end }}

@@ -404,3 +404,91 @@ type LastClusteredBytesColumn interface {
 	In(value ...[]byte) Condition
 }
 
+
+
+type SetValueStep interface {
+	Executable
+	SelectWhereStep
+	Apply(cols ...ColumnBinding) SetValueStep
+	IfExists(cols ...ColumnBinding) CompareAndSwap
+
+	
+	SetString(col StringColumn, value string ) SetValueStep
+	
+	SetInt32(col Int32Column, value int32 ) SetValueStep
+	
+	SetInt64(col Int64Column, value int64 ) SetValueStep
+	
+	SetFloat32(col Float32Column, value float32 ) SetValueStep
+	
+	SetFloat64(col Float64Column, value float64 ) SetValueStep
+	
+	SetTimestamp(col TimestampColumn, value time.Time ) SetValueStep
+	
+	SetTimeUUID(col TimeUUIDColumn, value gocql.UUID ) SetValueStep
+	
+	SetUUID(col UUIDColumn, value gocql.UUID ) SetValueStep
+	
+	SetBoolean(col BooleanColumn, value bool ) SetValueStep
+	
+	SetDecimal(col DecimalColumn, value *inf.Dec ) SetValueStep
+	
+	SetBytes(col BytesColumn, value []byte ) SetValueStep
+	
+}
+
+
+func (c *Context) SetString(col StringColumn, value string ) SetValueStep {
+	set(c, col, value)
+	return c
+}
+
+func (c *Context) SetInt32(col Int32Column, value int32 ) SetValueStep {
+	set(c, col, value)
+	return c
+}
+
+func (c *Context) SetInt64(col Int64Column, value int64 ) SetValueStep {
+	set(c, col, value)
+	return c
+}
+
+func (c *Context) SetFloat32(col Float32Column, value float32 ) SetValueStep {
+	set(c, col, value)
+	return c
+}
+
+func (c *Context) SetFloat64(col Float64Column, value float64 ) SetValueStep {
+	set(c, col, value)
+	return c
+}
+
+func (c *Context) SetTimestamp(col TimestampColumn, value time.Time ) SetValueStep {
+	set(c, col, value)
+	return c
+}
+
+func (c *Context) SetTimeUUID(col TimeUUIDColumn, value gocql.UUID ) SetValueStep {
+	set(c, col, value)
+	return c
+}
+
+func (c *Context) SetUUID(col UUIDColumn, value gocql.UUID ) SetValueStep {
+	set(c, col, value)
+	return c
+}
+
+func (c *Context) SetBoolean(col BooleanColumn, value bool ) SetValueStep {
+	set(c, col, value)
+	return c
+}
+
+func (c *Context) SetDecimal(col DecimalColumn, value *inf.Dec ) SetValueStep {
+	set(c, col, value)
+	return c
+}
+
+func (c *Context) SetBytes(col BytesColumn, value []byte ) SetValueStep {
+	set(c, col, value)
+	return c
+}

@@ -20,9 +20,7 @@ import (
 	"github.com/gocql/gocql"
 	"log"
 	"reflect"
-	"speter.net/go/exp/math/dec/inf"
 	"strings"
-	"time"
 )
 
 type OperationType int
@@ -122,26 +120,6 @@ type SelectSelectStep interface {
 	// Builds a SELECT DISTINCT statement in CQL - this operation can only be used
 	// with a partitioned column.
 	SelectDistinct(col PartitionedColumn) SelectFromStep
-}
-
-type SetValueStep interface {
-	Executable
-	SelectWhereStep
-	Apply(cols ...ColumnBinding) SetValueStep
-	IfExists(cols ...ColumnBinding) CompareAndSwap
-	SetString(col StringColumn, value string) SetValueStep
-	SetInt32(col Int32Column, value int32) SetValueStep
-	SetInt64(col Int64Column, value int64) SetValueStep
-	SetFloat32(col Float32Column, value float32) SetValueStep
-	SetFloat64(col Float64Column, value float64) SetValueStep
-	SetTimestamp(col TimestampColumn, value time.Time) SetValueStep
-	SetTimeUUID(col TimeUUIDColumn, value gocql.UUID) SetValueStep
-	SetUUID(col UUIDColumn, value gocql.UUID) SetValueStep
-	SetBoolean(col BooleanColumn, value bool) SetValueStep
-	SetMap(col MapColumn, value map[string]string) SetValueStep
-	SetArray(col ArrayColumn, value []string) SetValueStep
-	SetBytes(col BytesColumn, value []byte) SetValueStep
-	SetDecimal(col DecimalColumn, value *inf.Dec) SetValueStep
 }
 
 type IncrementWhereStep interface {
@@ -326,71 +304,6 @@ func (c *Context) Apply(cols ...ColumnBinding) SetValueStep {
 // is applied.
 func (c *Context) IfExists(cols ...ColumnBinding) CompareAndSwap {
 	c.CASBindings = cols
-	return c
-}
-
-func (c *Context) SetString(col StringColumn, value string) SetValueStep {
-	set(c, col, value)
-	return c
-}
-
-func (c *Context) SetInt32(col Int32Column, value int32) SetValueStep {
-	set(c, col, value)
-	return c
-}
-
-func (c *Context) SetInt64(col Int64Column, value int64) SetValueStep {
-	set(c, col, value)
-	return c
-}
-
-func (c *Context) SetFloat32(col Float32Column, value float32) SetValueStep {
-	set(c, col, value)
-	return c
-}
-
-func (c *Context) SetFloat64(col Float64Column, value float64) SetValueStep {
-	set(c, col, value)
-	return c
-}
-
-func (c *Context) SetTimestamp(col TimestampColumn, value time.Time) SetValueStep {
-	set(c, col, value)
-	return c
-}
-
-func (c *Context) SetTimeUUID(col TimeUUIDColumn, value gocql.UUID) SetValueStep {
-	set(c, col, value)
-	return c
-}
-
-func (c *Context) SetUUID(col UUIDColumn, value gocql.UUID) SetValueStep {
-	set(c, col, value)
-	return c
-}
-
-func (c *Context) SetBoolean(col BooleanColumn, value bool) SetValueStep {
-	set(c, col, value)
-	return c
-}
-
-func (c *Context) SetMap(col MapColumn, value map[string]string) SetValueStep {
-	set(c, col, value)
-	return c
-}
-
-func (c *Context) SetArray(col ArrayColumn, value []string) SetValueStep {
-	set(c, col, value)
-	return c
-}
-
-func (c *Context) SetBytes(col BytesColumn, value []byte) SetValueStep {
-	set(c, col, value)
-	return c
-}
-
-func (c *Context) SetDecimal(col DecimalColumn, value *inf.Dec) SetValueStep {
-	set(c, col, value)
 	return c
 }
 
