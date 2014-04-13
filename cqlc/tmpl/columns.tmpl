@@ -55,6 +55,19 @@ type SetValueStep interface {
 	{{ range $_, $t := .types }}
 	Set{{ $t.Prefix }}(col {{ $t.Prefix }}Column, value {{ $t.Literal }} ) SetValueStep
 	{{ end }}
+
+	SetMap(col MapColumn, value map[string]string) SetValueStep
+	SetArray(col ArrayColumn, value []string) SetValueStep
+}
+
+func (c *Context) SetMap(col MapColumn, value map[string]string) SetValueStep {
+	set(c, col, value)
+	return c
+}
+
+func (c *Context) SetArray(col ArrayColumn, value []string) SetValueStep {
+	set(c, col, value)
+	return c
 }
 
 {{ range $_, $t := .types }}

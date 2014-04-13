@@ -435,6 +435,19 @@ type SetValueStep interface {
 	
 	SetBytes(col BytesColumn, value []byte ) SetValueStep
 	
+
+	SetMap(col MapColumn, value map[string]string) SetValueStep
+	SetArray(col ArrayColumn, value []string) SetValueStep
+}
+
+func (c *Context) SetMap(col MapColumn, value map[string]string) SetValueStep {
+	set(c, col, value)
+	return c
+}
+
+func (c *Context) SetArray(col ArrayColumn, value []string) SetValueStep {
+	set(c, col, value)
+	return c
 }
 
 
