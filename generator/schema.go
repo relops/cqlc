@@ -166,7 +166,7 @@ func ColumnFamilies(opts *Options) ([]ColumnFamily, error) {
 
 	err = iter.Close()
 	if err != nil {
-		fmt.Errorf("Read error", err)
+		fmt.Errorf("Read error: %s", err)
 	}
 
 	for i, cf := range columnFamilies {
