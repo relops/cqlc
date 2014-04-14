@@ -406,6 +406,52 @@ type LastClusteredBytesColumn interface {
 
 
 
+
+type StringSliceColumn interface {
+	Column
+}
+
+type Int32SliceColumn interface {
+	Column
+}
+
+type Int64SliceColumn interface {
+	Column
+}
+
+type Float32SliceColumn interface {
+	Column
+}
+
+type Float64SliceColumn interface {
+	Column
+}
+
+type TimestampSliceColumn interface {
+	Column
+}
+
+type TimeUUIDSliceColumn interface {
+	Column
+}
+
+type UUIDSliceColumn interface {
+	Column
+}
+
+type BooleanSliceColumn interface {
+	Column
+}
+
+type DecimalSliceColumn interface {
+	Column
+}
+
+type BytesSliceColumn interface {
+	Column
+}
+
+
 type SetValueStep interface {
 	Executable
 	SelectWhereStep
@@ -413,31 +459,55 @@ type SetValueStep interface {
 	IfExists(cols ...ColumnBinding) CompareAndSwap
 
 	
-	SetString(col StringColumn, value string ) SetValueStep
+	SetString(col StringColumn, value string) SetValueStep
 	
-	SetInt32(col Int32Column, value int32 ) SetValueStep
+	SetInt32(col Int32Column, value int32) SetValueStep
 	
-	SetInt64(col Int64Column, value int64 ) SetValueStep
+	SetInt64(col Int64Column, value int64) SetValueStep
 	
-	SetFloat32(col Float32Column, value float32 ) SetValueStep
+	SetFloat32(col Float32Column, value float32) SetValueStep
 	
-	SetFloat64(col Float64Column, value float64 ) SetValueStep
+	SetFloat64(col Float64Column, value float64) SetValueStep
 	
-	SetTimestamp(col TimestampColumn, value time.Time ) SetValueStep
+	SetTimestamp(col TimestampColumn, value time.Time) SetValueStep
 	
-	SetTimeUUID(col TimeUUIDColumn, value gocql.UUID ) SetValueStep
+	SetTimeUUID(col TimeUUIDColumn, value gocql.UUID) SetValueStep
 	
-	SetUUID(col UUIDColumn, value gocql.UUID ) SetValueStep
+	SetUUID(col UUIDColumn, value gocql.UUID) SetValueStep
 	
-	SetBoolean(col BooleanColumn, value bool ) SetValueStep
+	SetBoolean(col BooleanColumn, value bool) SetValueStep
 	
-	SetDecimal(col DecimalColumn, value *inf.Dec ) SetValueStep
+	SetDecimal(col DecimalColumn, value *inf.Dec) SetValueStep
 	
-	SetBytes(col BytesColumn, value []byte ) SetValueStep
+	SetBytes(col BytesColumn, value []byte) SetValueStep
 	
 
 	SetMap(col MapColumn, value map[string]string) SetValueStep
-	SetArray(col ArrayColumn, value []string) SetValueStep
+	//SetArray(col ArrayColumn, value []string) SetValueStep
+
+	
+	SetStringSlice(col StringSliceColumn, value []string) SetValueStep
+	
+	SetInt32Slice(col Int32SliceColumn, value []int32) SetValueStep
+	
+	SetInt64Slice(col Int64SliceColumn, value []int64) SetValueStep
+	
+	SetFloat32Slice(col Float32SliceColumn, value []float32) SetValueStep
+	
+	SetFloat64Slice(col Float64SliceColumn, value []float64) SetValueStep
+	
+	SetTimestampSlice(col TimestampSliceColumn, value []time.Time) SetValueStep
+	
+	SetTimeUUIDSlice(col TimeUUIDSliceColumn, value []gocql.UUID) SetValueStep
+	
+	SetUUIDSlice(col UUIDSliceColumn, value []gocql.UUID) SetValueStep
+	
+	SetBooleanSlice(col BooleanSliceColumn, value []bool) SetValueStep
+	
+	SetDecimalSlice(col DecimalSliceColumn, value []*inf.Dec) SetValueStep
+	
+	SetBytesSlice(col BytesSliceColumn, value [][]byte) SetValueStep
+	
 }
 
 func (c *Context) SetMap(col MapColumn, value map[string]string) SetValueStep {
@@ -445,63 +515,121 @@ func (c *Context) SetMap(col MapColumn, value map[string]string) SetValueStep {
 	return c
 }
 
-func (c *Context) SetArray(col ArrayColumn, value []string) SetValueStep {
+/*func (c *Context) SetArray(col ArrayColumn, value []string) SetValueStep {
+	set(c, col, value)
+	return c
+}*/
+
+
+func (c *Context) SetString(col StringColumn, value string) SetValueStep {
+	set(c, col, value)
+	return c
+}
+
+func (c *Context) SetInt32(col Int32Column, value int32) SetValueStep {
+	set(c, col, value)
+	return c
+}
+
+func (c *Context) SetInt64(col Int64Column, value int64) SetValueStep {
+	set(c, col, value)
+	return c
+}
+
+func (c *Context) SetFloat32(col Float32Column, value float32) SetValueStep {
+	set(c, col, value)
+	return c
+}
+
+func (c *Context) SetFloat64(col Float64Column, value float64) SetValueStep {
+	set(c, col, value)
+	return c
+}
+
+func (c *Context) SetTimestamp(col TimestampColumn, value time.Time) SetValueStep {
+	set(c, col, value)
+	return c
+}
+
+func (c *Context) SetTimeUUID(col TimeUUIDColumn, value gocql.UUID) SetValueStep {
+	set(c, col, value)
+	return c
+}
+
+func (c *Context) SetUUID(col UUIDColumn, value gocql.UUID) SetValueStep {
+	set(c, col, value)
+	return c
+}
+
+func (c *Context) SetBoolean(col BooleanColumn, value bool) SetValueStep {
+	set(c, col, value)
+	return c
+}
+
+func (c *Context) SetDecimal(col DecimalColumn, value *inf.Dec) SetValueStep {
+	set(c, col, value)
+	return c
+}
+
+func (c *Context) SetBytes(col BytesColumn, value []byte) SetValueStep {
 	set(c, col, value)
 	return c
 }
 
 
-func (c *Context) SetString(col StringColumn, value string ) SetValueStep {
+
+func (c *Context) SetStringSlice(col StringSliceColumn, value []string) SetValueStep {
 	set(c, col, value)
 	return c
 }
 
-func (c *Context) SetInt32(col Int32Column, value int32 ) SetValueStep {
+func (c *Context) SetInt32Slice(col Int32SliceColumn, value []int32) SetValueStep {
 	set(c, col, value)
 	return c
 }
 
-func (c *Context) SetInt64(col Int64Column, value int64 ) SetValueStep {
+func (c *Context) SetInt64Slice(col Int64SliceColumn, value []int64) SetValueStep {
 	set(c, col, value)
 	return c
 }
 
-func (c *Context) SetFloat32(col Float32Column, value float32 ) SetValueStep {
+func (c *Context) SetFloat32Slice(col Float32SliceColumn, value []float32) SetValueStep {
 	set(c, col, value)
 	return c
 }
 
-func (c *Context) SetFloat64(col Float64Column, value float64 ) SetValueStep {
+func (c *Context) SetFloat64Slice(col Float64SliceColumn, value []float64) SetValueStep {
 	set(c, col, value)
 	return c
 }
 
-func (c *Context) SetTimestamp(col TimestampColumn, value time.Time ) SetValueStep {
+func (c *Context) SetTimestampSlice(col TimestampSliceColumn, value []time.Time) SetValueStep {
 	set(c, col, value)
 	return c
 }
 
-func (c *Context) SetTimeUUID(col TimeUUIDColumn, value gocql.UUID ) SetValueStep {
+func (c *Context) SetTimeUUIDSlice(col TimeUUIDSliceColumn, value []gocql.UUID) SetValueStep {
 	set(c, col, value)
 	return c
 }
 
-func (c *Context) SetUUID(col UUIDColumn, value gocql.UUID ) SetValueStep {
+func (c *Context) SetUUIDSlice(col UUIDSliceColumn, value []gocql.UUID) SetValueStep {
 	set(c, col, value)
 	return c
 }
 
-func (c *Context) SetBoolean(col BooleanColumn, value bool ) SetValueStep {
+func (c *Context) SetBooleanSlice(col BooleanSliceColumn, value []bool) SetValueStep {
 	set(c, col, value)
 	return c
 }
 
-func (c *Context) SetDecimal(col DecimalColumn, value *inf.Dec ) SetValueStep {
+func (c *Context) SetDecimalSlice(col DecimalSliceColumn, value []*inf.Dec) SetValueStep {
 	set(c, col, value)
 	return c
 }
 
-func (c *Context) SetBytes(col BytesColumn, value []byte ) SetValueStep {
+func (c *Context) SetBytesSlice(col BytesSliceColumn, value [][]byte) SetValueStep {
 	set(c, col, value)
 	return c
 }
+

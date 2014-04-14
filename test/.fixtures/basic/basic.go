@@ -145,8 +145,8 @@ func create(ctx *cqlc.Context, s *gocql.Session, basic Basic) {
 		SetString(BASIC.TEXT_COLUMN, basic.TextColumn).
 		SetString(BASIC.VARCHAR_COLUMN, basic.VarcharColumn).
 		SetMap(BASIC.MAP_COLUMN, basic.MapColumn).
-		SetArray(BASIC.ARRAY_COLUMN, basic.ArrayColumn).
-		SetArray(BASIC.SET_COLUMN, basic.SetColumn).
+		SetStringSlice(BASIC.ARRAY_COLUMN, basic.ArrayColumn).
+		SetStringSlice(BASIC.SET_COLUMN, basic.SetColumn).
 		SetDecimal(BASIC.DECIMAL_COLUMN, basic.DecimalColumn).
 		Exec(s)
 
