@@ -515,11 +515,6 @@ func (c *Context) SetMap(col MapColumn, value map[string]string) SetValueStep {
 	return c
 }
 
-/*func (c *Context) SetArray(col ArrayColumn, value []string) SetValueStep {
-	set(c, col, value)
-	return c
-}*/
-
 
 func (c *Context) SetString(col StringColumn, value string) SetValueStep {
 	set(c, col, value)

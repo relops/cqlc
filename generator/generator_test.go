@@ -160,3 +160,11 @@ func TestReverseGenerator(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, out, "PASSED")
 }
+
+func TestCollections(t *testing.T) {
+
+	out, err := runFixture("collections", opts)
+
+	assert.NoError(t, err)
+	assert.Equal(t, out, "PASSED")
+}
