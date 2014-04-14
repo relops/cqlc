@@ -160,35 +160,6 @@ func ColumnFamilies(opts *Options) ([]ColumnFamily, error) {
 
 			dataInfo, err := ParseValidator(validator)
 
-			// if !ok {
-			// 	// TODO This is extremely hacky, must clean this up
-			// 	// Basically a map<text,text> type will come through as:
-			// 	// org.apache.cassandra.db.marshal.MapType(org.apache.cassandra.db.marshal.UTF8Type,org.apache.cassandra.db.marshal.UTF8Type)
-			// 	parts := strings.Split(validator, "(")
-			// 	if len(parts) == 0 {
-			// 		// TODO should error out here really, since we can't map the type
-			// 		fmt.Printf("Unmapped data type: %s\n", validator)
-			// 	}
-
-			// 	dataType = templateDataTypes[parts[0]]
-			// 	switch dataType {
-			// 	case ReversedType:
-			// 		{
-			// 			// Ugly hack to get reversed columns going
-			// 			s := strings.Replace(parts[1], ")", "", -1)
-			// 			dataType, ok = DataTypes[s]
-			// 			if !ok {
-			// 				fmt.Printf("Unmapped data type: %s\n", validator)
-			// 			}
-			// 		}
-			// 	case 0:
-			// 		{
-			// 			// TODO should error out here really, since we can't map the type
-			// 			fmt.Printf("Unmapped data type: %s\n", validator)
-			// 		}
-			// 	}
-			// }
-
 			if err != nil {
 				// TODO Should we not exit here?
 				fmt.Printf("Unmapped data type: %s\n", validator)

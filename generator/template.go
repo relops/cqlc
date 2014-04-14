@@ -51,12 +51,10 @@ func columnType(c Column) string {
 	switch c.DataInfo.GenericType {
 	case meta.SliceType:
 		{
-			//fmt.Printf("Column: %+v (%s)\n", c, baseType)
 			baseType = strings.Replace(baseType, "_", "Slice", 1)
 		}
 	case meta.MapType:
 		{
-			//fmt.Printf("Column: %+v (%s)\n", c, baseType)
 			// TODO This is very hacky - basically the types need to to be strings
 			// in order to template out properly
 			// Resolving these to integer enums is not helpful, as this example shows
