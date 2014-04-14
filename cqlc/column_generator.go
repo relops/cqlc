@@ -64,10 +64,10 @@ func main() {
 	var b bytes.Buffer
 	t.Execute(&b, params)
 
-	if err := ioutil.WriteFile("standard_columns.go", b.Bytes(), os.ModePerm); err != nil {
+	if err := ioutil.WriteFile("columns.go", b.Bytes(), os.ModePerm); err != nil {
 		log.Errorf("Could not write templated file: %s", err)
 		return
 	}
 
-	log.Info("Regenerated standard columns")
+	log.Info("Regenerated columns")
 }
