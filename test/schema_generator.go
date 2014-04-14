@@ -33,22 +33,24 @@ func init() {
 }
 
 type TypeInfo struct {
-	Prefix string
-	Cql    string
+	Pre string
+	Cql string
+	Lit string
+	Ex  string
 }
 
 var types = []TypeInfo{
-	TypeInfo{Prefix: "String", Cql: "text"},
-	TypeInfo{Prefix: "Int32", Cql: "int"},
-	TypeInfo{Prefix: "Int64", Cql: "bigint"},
-	TypeInfo{Prefix: "Float32", Cql: "float"},
-	TypeInfo{Prefix: "Float64", Cql: "double"},
-	TypeInfo{Prefix: "Timestamp", Cql: "timestamp"},
-	TypeInfo{Prefix: "TimeUUID", Cql: "timeuuid"},
-	TypeInfo{Prefix: "UUID", Cql: "uuid"},
-	TypeInfo{Prefix: "Boolean", Cql: "boolean"},
-	TypeInfo{Prefix: "Decimal", Cql: "decimal"},
-	TypeInfo{Prefix: "Bytes", Cql: "blob"},
+	TypeInfo{Pre: "String", Cql: "text", Lit: "string", Ex: "\"x\""},
+	TypeInfo{Pre: "Int32", Cql: "int", Lit: "int32", Ex: "1"},
+	TypeInfo{Pre: "Int64", Cql: "bigint", Lit: "int64", Ex: "1"},
+	TypeInfo{Pre: "Float32", Cql: "float", Lit: "float32", Ex: "1.1"},
+	TypeInfo{Pre: "Float64", Cql: "double", Lit: "float64", Ex: "1.1"},
+	TypeInfo{Pre: "Timestamp", Cql: "timestamp", Lit: "time.Time", Ex: "time.Now()"},
+	TypeInfo{Pre: "TimeUUID", Cql: "timeuuid", Lit: "gocql.UUID", Ex: "gocql.TimeUUID()"},
+	TypeInfo{Pre: "UUID", Cql: "uuid", Lit: "gocql.UUID", Ex: "gocql.TimeUUID()"},
+	TypeInfo{Pre: "Boolean", Cql: "boolean", Lit: "bool", Ex: "true"},
+	TypeInfo{Pre: "Decimal", Cql: "decimal", Lit: "*inf.Dec", Ex: "inf.NewDec(1,1)"},
+	TypeInfo{Pre: "Bytes", Cql: "blob", Lit: "[]byte", Ex: "[]byte(\"x\")"},
 }
 
 func main() {
@@ -70,4 +72,20 @@ func main() {
 	}
 
 	log.Info("Regenerated test schema")
+
+	t, err = template.New("input.tmpl").ParseFiles("tmpl/input.tmpl")
+	if err != nil {
+		log.Errorf("Could not open template: %s", err)
+		return
+	}
+
+	b.Reset()
+	t.Execute(&b, params)
+
+	if err := ioutil.WriteFile(".fixtures/collections/input.go", b.Bytes(), os.ModePerm); err != nil {
+		log.Errorf("Could not write templated file: %s", err)
+		return
+	}
+
+	log.Info("Regenerated test input data")
 }

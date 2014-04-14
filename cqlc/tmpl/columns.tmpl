@@ -52,6 +52,17 @@ type {{ $t.Prefix }}SliceColumn interface {
 }
 {{ end }}
 
+{{ $inner := .types }}
+{{ $outer := .types }}
+
+{{ range $_, $ot := $outer }}
+{{ range $_, $it := $inner }}
+{{ if ne $ot.Prefix "Bytes" }}
+type {{ $ot.Prefix }}{{ $it.Prefix }}MapColumn interface {
+	Column
+}
+{{ end }}{{ end }}{{ end }}
+
 type SetValueStep interface {
 	Executable
 	SelectWhereStep
@@ -62,18 +73,25 @@ type SetValueStep interface {
 	Set{{ $t.Prefix }}(col {{ $t.Prefix }}Column, value {{ $t.Literal }}) SetValueStep
 	{{ end }}
 
-	SetMap(col MapColumn, value map[string]string) SetValueStep
-	//SetArray(col ArrayColumn, value []string) SetValueStep
+	{{ range $_, $ot := $outer }}
+	{{ range $_, $it := $inner }}
+	{{ if ne $ot.Prefix "Bytes" }}
+	Set{{ $ot.Prefix }}{{ $it.Prefix }}Map(col {{ $ot.Prefix }}{{ $it.Prefix }}MapColumn, value map[{{ $ot.Literal }}]{{ $it.Literal }}) SetValueStep
+	{{ end }}{{ end }}{{ end }}
 
 	{{ range $_, $t := .types }}
 	Set{{ $t.Prefix }}Slice(col {{ $t.Prefix }}SliceColumn, value []{{ $t.Literal }}) SetValueStep
 	{{ end }}
 }
 
-func (c *Context) SetMap(col MapColumn, value map[string]string) SetValueStep {
+{{ range $_, $ot := $outer }}
+{{ range $_, $it := $inner }}
+{{ if ne $ot.Prefix "Bytes" }}
+func (c *Context) Set{{ $ot.Prefix }}{{ $it.Prefix }}Map(col {{ $ot.Prefix }}{{ $it.Prefix }}MapColumn, value map[{{ $ot.Literal }}]{{ $it.Literal }}) SetValueStep {
 	set(c, col, value)
 	return c
 }
+{{ end }}{{ end }}{{ end }}
 
 {{ range $_, $t := .types }}
 func (c *Context) Set{{ $t.Prefix }}(col {{ $t.Prefix }}Column, value {{ $t.Literal }}) SetValueStep {

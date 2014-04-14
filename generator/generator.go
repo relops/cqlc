@@ -123,12 +123,18 @@ func importPaths(families []ColumnFamily) (imports []string) {
 	// Ideally need to use a set
 	paths := make(map[string]bool)
 
+	f := func(literal string) {
+		if strings.Contains(literal, ".") {
+			paths[literal] = true
+		}
+	}
+
 	for _, cf := range families {
 		for _, col := range cf.Columns {
-			literal := literalTypes[col.DataType]
-			if strings.Contains(literal, ".") {
-				paths[literal] = true
-			}
+			literal := literalTypes[col.DataInfo.DomainType]
+			f(literal)
+			literal = literalTypes[col.DataInfo.RangeType]
+			f(literal)
 		}
 	}
 

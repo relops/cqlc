@@ -20,30 +20,26 @@ func main() {
 
 	result := "FAILED"
 
-	input := Collections{
-		Id: 10,
-	}
-
-	input.StringColumn = []string{"a", "b", "c"}
+	Input.Id = 12
 
 	ctx := cqlc.NewContext()
-	if err := ctx.Store(COLLECTIONS.Bind(input)).Exec(s); err != nil {
+	if err := ctx.Store(COLLECTIONS.Bind(Input)).Exec(s); err != nil {
 		log.Fatalf("Could not store collections: %v", err)
 		os.Exit(1)
 	}
 
 	var output Collections
-	found, err := ctx.Select().From(COLLECTIONS).Where(COLLECTIONS.ID.Eq(10)).Into(COLLECTIONS.To(&output)).FetchOne(s)
+	found, err := ctx.Select().From(COLLECTIONS).Where(COLLECTIONS.ID.Eq(Input.Id)).Into(COLLECTIONS.To(&output)).FetchOne(s)
 	if err != nil {
 		log.Fatalf("Could not store collections: %v", err)
 		os.Exit(1)
 	}
 
 	if found {
-		if reflect.DeepEqual(input, output) {
+		if reflect.DeepEqual(Input, output) {
 			result = "PASSED"
 		} else {
-			result = fmt.Sprintf("Expected %+v but got %+v", input, output)
+			result = fmt.Sprintf("Expected %+v but got %+v", Input, output)
 		}
 	}
 

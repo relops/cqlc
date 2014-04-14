@@ -1,37 +1,23 @@
 package generator
 
 import (
+	"errors"
 	"fmt"
 	"github.com/gocql/gocql"
+	"github.com/relops/cqlc/meta"
 	"sort"
-	"strings"
+)
+
+var (
+	ErrTypeUnknown = errors.New("unknown data type")
 )
 
 type ColumnKeyType uint
-type ColumnDataType uint
 
 const (
 	PartitionKey ColumnKeyType = iota
 	ClusteringKey
 	RegularColumn
-)
-
-const (
-	StringType ColumnDataType = iota
-	Int32Type
-	LongType
-	FloatType
-	DoubleType
-	TimestampType
-	BooleanType
-	TimeUUIDType
-	UUIDType
-	CounterType
-	MapType
-	ArrayType
-	BytesType
-	DecimalType
-	ReversedType
 )
 
 var keyTypes = map[string]ColumnKeyType{
@@ -40,44 +26,33 @@ var keyTypes = map[string]ColumnKeyType{
 	"regular":        RegularColumn,
 }
 
-var dataTypes = map[string]ColumnDataType{
-	"org.apache.cassandra.db.marshal.AsciiType":         StringType,
-	"org.apache.cassandra.db.marshal.UTF8Type":          StringType,
-	"org.apache.cassandra.db.marshal.Int32Type":         Int32Type,
-	"org.apache.cassandra.db.marshal.LongType":          LongType,
-	"org.apache.cassandra.db.marshal.FloatType":         FloatType,
-	"org.apache.cassandra.db.marshal.DoubleType":        DoubleType,
-	"org.apache.cassandra.db.marshal.TimestampType":     TimestampType,
-	"org.apache.cassandra.db.marshal.UUIDType":          UUIDType,
-	"org.apache.cassandra.db.marshal.TimeUUIDType":      TimeUUIDType,
-	"org.apache.cassandra.db.marshal.BooleanType":       BooleanType,
-	"org.apache.cassandra.db.marshal.CounterColumnType": CounterType,
-	"org.apache.cassandra.db.marshal.BytesType":         BytesType,
-	"org.apache.cassandra.db.marshal.DecimalType":       DecimalType,
+var templateDataTypes = map[string]meta.ColumnDataType{
+	"org.apache.cassandra.db.marshal.MapType":      meta.MapType,
+	"org.apache.cassandra.db.marshal.ListType":     meta.SliceType,
+	"org.apache.cassandra.db.marshal.SetType":      meta.SliceType,
+	"org.apache.cassandra.db.marshal.ReversedType": meta.ReversedType,
 }
 
-var templateDataTypes = map[string]ColumnDataType{
-	"org.apache.cassandra.db.marshal.MapType":      MapType,
-	"org.apache.cassandra.db.marshal.ListType":     ArrayType,
-	"org.apache.cassandra.db.marshal.SetType":      ArrayType,
-	"org.apache.cassandra.db.marshal.ReversedType": ReversedType,
+type ColumnDataInfo struct {
+	DomainType  meta.ColumnDataType
+	RangeType   meta.ColumnDataType
+	GenericType meta.ColumnDataType
 }
 
-var literalTypes = map[ColumnDataType]string{
-	StringType:    "string",
-	Int32Type:     "int32",
-	LongType:      "int64",
-	FloatType:     "float32",
-	DoubleType:    "float64",
-	TimestampType: "time.Time",
-	TimeUUIDType:  "gocql.UUID",
-	UUIDType:      "gocql.UUID",
-	BooleanType:   "bool",
-	CounterType:   "int64",
-	MapType:       "map[string]string",
-	ArrayType:     "[]string",
-	BytesType:     "[]byte",
-	DecimalType:   "*inf.Dec",
+var literalTypes = map[meta.ColumnDataType]string{
+	meta.StringType:    "string",
+	meta.Int32Type:     "int32",
+	meta.LongType:      "int64",
+	meta.FloatType:     "float32",
+	meta.DoubleType:    "float64",
+	meta.TimestampType: "time.Time",
+	meta.TimeUUIDType:  "gocql.UUID",
+	meta.UUIDType:      "gocql.UUID",
+	meta.BooleanType:   "bool",
+	meta.CounterType:   "int64",
+	meta.MapType:       "map[string]string",
+	meta.BytesType:     "[]byte",
+	meta.DecimalType:   "*inf.Dec",
 }
 
 var customImportPaths = map[string]string{
@@ -85,21 +60,20 @@ var customImportPaths = map[string]string{
 	"*inf.Dec":   "speter.net/go/exp/math/dec/inf",
 }
 
-var columnTypes = map[ColumnDataType]string{
-	StringType:    "cqlc.StringColumn",
-	Int32Type:     "cqlc.Int32Column",
-	LongType:      "cqlc.Int64Column",
-	FloatType:     "cqlc.Float32Column",
-	DoubleType:    "cqlc.Float64Column",
-	TimestampType: "cqlc.TimestampColumn",
-	TimeUUIDType:  "cqlc.TimeUUIDColumn",
-	UUIDType:      "cqlc.UUIDColumn",
-	BooleanType:   "cqlc.BooleanColumn",
-	CounterType:   "cqlc.CounterColumn",
-	MapType:       "cqlc.MapColumn",
-	ArrayType:     "cqlc.ArrayColumn",
-	BytesType:     "cqlc.BytesColumn",
-	DecimalType:   "cqlc.DecimalColumn",
+var columnTypes = map[meta.ColumnDataType]string{
+	meta.StringType:    "cqlc.String_Column",
+	meta.Int32Type:     "cqlc.Int32_Column",
+	meta.LongType:      "cqlc.Int64_Column",
+	meta.FloatType:     "cqlc.Float32_Column",
+	meta.DoubleType:    "cqlc.Float64_Column",
+	meta.TimestampType: "cqlc.Timestamp_Column",
+	meta.TimeUUIDType:  "cqlc.TimeUUID_Column",
+	meta.UUIDType:      "cqlc.UUID_Column",
+	meta.BooleanType:   "cqlc.Boolean_Column",
+	meta.CounterType:   "cqlc.Counter_Column",
+	meta.MapType:       "cqlc.Map_Column",
+	meta.BytesType:     "cqlc.Bytes_Column",
+	meta.DecimalType:   "cqlc.Decimal_Column",
 }
 
 type Binding struct {
@@ -115,7 +89,7 @@ type ColumnFamily struct {
 type Column struct {
 	Name            string
 	KeyType         ColumnKeyType
-	DataType        ColumnDataType
+	DataInfo        ColumnDataInfo
 	ComponentIndex  int
 	IsLastComponent bool
 	SecondaryIndex  bool
@@ -183,40 +157,46 @@ func ColumnFamilies(opts *Options) ([]ColumnFamily, error) {
 		var colKeyType, validator, secondaryIndex string
 		for iter.Scan(&col.Name, &colKeyType, &validator, &col.ComponentIndex, &secondaryIndex) {
 			col.KeyType = keyTypes[colKeyType]
-			dataType, ok := dataTypes[validator]
 
-			if !ok {
-				// TODO This is extremely hacky, must clean this up
-				// Basically a map<text,text> type will come through as:
-				// org.apache.cassandra.db.marshal.MapType(org.apache.cassandra.db.marshal.UTF8Type,org.apache.cassandra.db.marshal.UTF8Type)
-				parts := strings.Split(validator, "(")
-				if len(parts) == 0 {
-					// TODO should error out here really, since we can't map the type
-					fmt.Printf("Unmapped data type: %s\n", validator)
-				}
+			dataInfo, err := ParseValidator(validator)
 
-				dataType = templateDataTypes[parts[0]]
-				switch dataType {
-				case ReversedType:
-					{
-						// Ugly hack to get reversed columns going
-						s := strings.Replace(parts[1], ")", "", -1)
-						dataType, ok = dataTypes[s]
-						if !ok {
-							fmt.Printf("Unmapped data type: %s\n", validator)
-						}
-					}
-				case 0:
-					{
-						// TODO should error out here really, since we can't map the type
-						fmt.Printf("Unmapped data type: %s\n", validator)
-					}
-				}
+			// if !ok {
+			// 	// TODO This is extremely hacky, must clean this up
+			// 	// Basically a map<text,text> type will come through as:
+			// 	// org.apache.cassandra.db.marshal.MapType(org.apache.cassandra.db.marshal.UTF8Type,org.apache.cassandra.db.marshal.UTF8Type)
+			// 	parts := strings.Split(validator, "(")
+			// 	if len(parts) == 0 {
+			// 		// TODO should error out here really, since we can't map the type
+			// 		fmt.Printf("Unmapped data type: %s\n", validator)
+			// 	}
+
+			// 	dataType = templateDataTypes[parts[0]]
+			// 	switch dataType {
+			// 	case ReversedType:
+			// 		{
+			// 			// Ugly hack to get reversed columns going
+			// 			s := strings.Replace(parts[1], ")", "", -1)
+			// 			dataType, ok = DataTypes[s]
+			// 			if !ok {
+			// 				fmt.Printf("Unmapped data type: %s\n", validator)
+			// 			}
+			// 		}
+			// 	case 0:
+			// 		{
+			// 			// TODO should error out here really, since we can't map the type
+			// 			fmt.Printf("Unmapped data type: %s\n", validator)
+			// 		}
+			// 	}
+			// }
+
+			if err != nil {
+				// TODO Should we not exit here?
+				fmt.Printf("Unmapped data type: %s\n", validator)
 			}
 
-			col.DataType = dataType
+			col.DataInfo = dataInfo
 
-			if col.DataType == CounterType {
+			if col.DataInfo.DomainType == meta.CounterType {
 				columnFamilies[i].IsCounter = true
 			}
 

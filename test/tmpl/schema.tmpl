@@ -4,8 +4,7 @@ CREATE TABLE collections
 (
     id int,
     {{ range $_, $t := .types }}
-    {{ $t.Prefix }}_column list<{{ $t.Cql }}>,
+    {{ $t.Pre }}_column list<{{ $t.Cql }}>,
     {{ end }}
-    
     PRIMARY KEY (id)
 );
