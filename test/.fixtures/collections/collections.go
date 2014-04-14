@@ -1,7 +1,7 @@
 package main
 
 import (
-	//"fmt"
+	"fmt"
 	//"github.com/gocql/gocql"
 	"github.com/relops/cqlc/cqlc"
 	"github.com/relops/cqlc/integration"
@@ -24,6 +24,8 @@ func main() {
 		Id: 10,
 	}
 
+	input.StringColumn = []string{"a", "b", "c"}
+
 	ctx := cqlc.NewContext()
 	if err := ctx.Store(COLLECTIONS.Bind(input)).Exec(s); err != nil {
 		log.Fatalf("Could not store collections: %v", err)
@@ -40,6 +42,8 @@ func main() {
 	if found {
 		if reflect.DeepEqual(input, output) {
 			result = "PASSED"
+		} else {
+			result = fmt.Sprintf("Expected %+v but got %+v", input, output)
 		}
 	}
 
