@@ -21,7 +21,7 @@ bindata: generator/binding_tmpl.go
 
 validator: generator/validator_parser.go
 
-input: test/.fixtures/collections/input.go
+input: test/.fixtures/collections/input.go test/collections.cql
 
 generator/binding_tmpl.go: generator/tmpl/binding.tmpl
 	go-bindata -pkg=generator -o=generator/binding_tmpl.go generator/tmpl

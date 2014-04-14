@@ -6,7 +6,6 @@ import (
 	"github.com/relops/cqlc/integration"
 	"log"
 	"os"
-	"reflect"
 )
 
 func main() {
@@ -32,10 +31,14 @@ func main() {
 	}
 
 	if found {
-		if reflect.DeepEqual(Input, output) {
+
+		lhs := fmt.Sprintf("%+v", Input)
+		rhs := fmt.Sprintf("%+v", output)
+
+		if lhs == rhs {
 			result = "PASSED"
 		} else {
-			result = fmt.Sprintf("Expected %+v but got %+v", Input, output)
+			result = fmt.Sprintf("Expected %s but got %s", lhs, rhs)
 		}
 	}
 

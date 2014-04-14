@@ -8,8 +8,16 @@ import (
 	"speter.net/go/exp/math/dec/inf"
 )
 
+{{ $inner := .types }}
+{{ $outer := .types }}
+
 var Input = Collections{
 	{{ range $_, $t := .types }}
     {{ $t.Pre }}Column: []{{ $t.Lit }}{{"{"}}{{ $t.Ex }}{{"}"}},
     {{ end }}
+    {{ range $_, $ot := $outer }}
+	{{ range $_, $it := $inner }}
+	{{ if ne $ot.Pre "Bytes" }}
+	{{ $ot.Pre }}{{ $it.Pre }}Column: map[{{ $ot.Lit }}]{{ $it.Lit }}{{"{"}}{{ $ot.Ex }}:{{ $it.Ex }}{{"}"}},
+	{{ end }}{{ end }}{{ end }}
 }

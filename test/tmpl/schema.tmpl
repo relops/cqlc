@@ -6,5 +6,15 @@ CREATE TABLE collections
     {{ range $_, $t := .types }}
     {{ $t.Pre }}_column list<{{ $t.Cql }}>,
     {{ end }}
+
+    {{ $inner := .types }}
+	{{ $outer := .types }}
+
+	{{ range $_, $ot := $outer }}
+	{{ range $_, $it := $inner }}
+	{{ if ne $ot.Pre "Bytes" }}
+	{{ $ot.Pre }}_{{ $it.Pre }}_column map<{{ $ot.Cql }},{{ $it.Cql }}>,
+	{{ end }}{{ end }}{{ end }}
+
     PRIMARY KEY (id)
 );
