@@ -26,13 +26,6 @@ var keyTypes = map[string]ColumnKeyType{
 	"regular":        RegularColumn,
 }
 
-var templateDataTypes = map[string]meta.ColumnDataType{
-	"org.apache.cassandra.db.marshal.MapType":      meta.MapType,
-	"org.apache.cassandra.db.marshal.ListType":     meta.SliceType,
-	"org.apache.cassandra.db.marshal.SetType":      meta.SliceType,
-	"org.apache.cassandra.db.marshal.ReversedType": meta.ReversedType,
-}
-
 type ColumnDataInfo struct {
 	DomainType  meta.ColumnDataType
 	RangeType   meta.ColumnDataType
