@@ -45,7 +45,7 @@ var types = []TypeInfo{
 	TypeInfo{Pre: "Int64", Cql: "bigint", Lit: "int64", Ex: "1"},
 	TypeInfo{Pre: "Float32", Cql: "float", Lit: "float32", Ex: "1.1"},
 	TypeInfo{Pre: "Float64", Cql: "double", Lit: "float64", Ex: "1.1"},
-	//TypeInfo{Pre: "Timestamp", Cql: "timestamp", Lit: "time.Time", Ex: "time.Now()"},
+	TypeInfo{Pre: "Timestamp", Cql: "timestamp", Lit: "time.Time", Ex: "time.Now().UTC().Truncate(time.Millisecond)"},
 	TypeInfo{Pre: "Timeuuid", Cql: "timeuuid", Lit: "gocql.UUID", Ex: "gocql.TimeUUID()"},
 	TypeInfo{Pre: "Uuid", Cql: "uuid", Lit: "gocql.UUID", Ex: "gocql.TimeUUID()"},
 	TypeInfo{Pre: "Boolean", Cql: "boolean", Lit: "bool", Ex: "true"},
