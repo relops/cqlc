@@ -102,22 +102,8 @@ func (c *Column) SupportsClustering() bool {
 	return c.KeyType == ClusteringKey
 }
 
-func ColumnFamilies(opts *Options) ([]ColumnFamily, error) {
+func ColumnFamilies(session *gocql.Session, opts *Options) ([]ColumnFamily, error) {
 	verbose := len(opts.Verbose) > 0
-	cluster := gocql.NewCluster(opts.Instance)
-
-	if opts.Username != "" && opts.Password != "" {
-		cluster.Authenticator = gocql.PasswordAuthenticator{
-			Username: opts.Username,
-			Password: opts.Password,
-		}
-	}
-
-	session, err := cluster.CreateSession()
-
-	if err != nil {
-		fmt.Errorf("Connect error", err)
-	}
 
 	fmt.Printf("Reading schema from keyspace: %s\n", opts.Keyspace)
 
@@ -131,7 +117,7 @@ func ColumnFamilies(opts *Options) ([]ColumnFamily, error) {
 		columnFamilies = append(columnFamilies, cf)
 	}
 
-	err = iter.Close()
+	err := iter.Close()
 	if err != nil {
 		fmt.Errorf("Read error: %s", err)
 	}
