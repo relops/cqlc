@@ -3,6 +3,8 @@ package generator
 import (
 	"bytes"
 	"errors"
+	"fmt"
+	"github.com/gocql/gocql"
 	"go/format"
 	"io"
 	"io/ioutil"
@@ -29,8 +31,12 @@ type Options struct {
 }
 
 type Provenance struct {
-	Version   string
-	Timestamp time.Time
+	Version       string
+	Timestamp     time.Time
+	NegotiatedCQL string
+	ServerCQL     string
+	ServerRelease string
+	HostId        gocql.UUID
 }
 
 func Generate(opts *Options, version string) error {
@@ -86,15 +92,43 @@ func coalesceImports(cf []ColumnFamily) []string {
 
 func generateBinding(opts *Options, version string, w io.Writer) error {
 
-	cf, err := ColumnFamilies(opts)
+	cluster := gocql.NewCluster(opts.Instance)
+
+	if opts.Username != "" && opts.Password != "" {
+		cluster.Authenticator = gocql.PasswordAuthenticator{
+			Username: opts.Username,
+			Password: opts.Password,
+		}
+	}
+
+	s, err := cluster.CreateSession()
+	defer s.Close()
+
+	if err != nil {
+		return fmt.Errorf("Connect error", err)
+	}
+
+	var release, cqlVersion string
+	var hostId gocql.UUID
+	err = s.Query(`SELECT release_version, cql_version, host_id 
+		           FROM system.local`).Scan(&release, &cqlVersion, &hostId)
+	if err != nil {
+		return fmt.Errorf("System metadata error", err)
+	}
+
+	cf, err := ColumnFamilies(s, opts)
 
 	if err != nil {
 		return err
 	}
 
 	provenance := Provenance{
-		Version:   version,
-		Timestamp: time.Now(),
+		Version:       version,
+		Timestamp:     time.Now(),
+		HostId:        hostId,
+		NegotiatedCQL: cluster.CQLVersion,
+		ServerCQL:     cqlVersion,
+		ServerRelease: release,
 	}
 
 	meta := make(map[string]interface{})
