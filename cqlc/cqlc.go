@@ -26,6 +26,7 @@ import (
 type OperationType int
 type PredicateType int
 type CollectionType int
+type CollectionOperationType int
 
 const (
 	EqPredicate PredicateType = iota
@@ -49,6 +50,13 @@ const (
 	ListType
 	SetType
 	MapType
+)
+
+const (
+	Noop CollectionOperationType = iota
+	Append
+	Prepend
+	DeleteByValue
 )
 
 var (
@@ -196,8 +204,9 @@ type ColumnBinding struct {
 	Column Column
 	Value  interface{}
 	// If Incremental is true, this column should be interpreted as an incremental operation on a collection column
-	Incremental    bool
-	CollectionType CollectionType
+	Incremental             bool
+	CollectionType          CollectionType
+	CollectionOperationType CollectionOperationType
 }
 
 type TableBinding struct {
@@ -581,7 +590,12 @@ func set(c *Context, col Column, value interface{}) {
 }
 
 func appendList(c *Context, col ListColumn, values interface{}) {
-	b := ColumnBinding{Column: col, Value: values, Incremental: true, CollectionType: ListType}
+	b := ColumnBinding{Column: col, Value: values, Incremental: true, CollectionType: ListType, CollectionOperationType: Append}
+	c.Bindings = append(c.Bindings, b)
+}
+
+func prependList(c *Context, col ListColumn, values interface{}) {
+	b := ColumnBinding{Column: col, Value: values, Incremental: true, CollectionType: ListType, CollectionOperationType: Prepend}
 	c.Bindings = append(c.Bindings, b)
 }
 

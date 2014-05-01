@@ -83,6 +83,7 @@ type SetValueStep interface {
 	{{ range $_, $t := .types }}
 	Set{{ $t.Prefix }}Slice(col {{ $t.Prefix }}SliceColumn, value []{{ $t.Literal }}) SetValueStep
 	Append{{ $t.Prefix }}Slice(col {{ $t.Prefix }}SliceColumn, values ...{{ $t.Literal }}) SetValueStep
+	Prepend{{ $t.Prefix }}Slice(col {{ $t.Prefix }}SliceColumn, values ...{{ $t.Literal }}) SetValueStep
 	{{ end }}
 }
 
@@ -109,6 +110,10 @@ func (c *Context) Set{{ $t.Prefix }}Slice(col {{ $t.Prefix }}SliceColumn, value 
 }
 func (c *Context) Append{{ $t.Prefix }}Slice(col {{ $t.Prefix }}SliceColumn, values ...{{ $t.Literal }}) SetValueStep {
 	appendList(c, col, values)
+	return c
+}
+func (c *Context) Prepend{{ $t.Prefix }}Slice(col {{ $t.Prefix }}SliceColumn, values ...{{ $t.Literal }}) SetValueStep {
+	prependList(c, col, values)
 	return c
 }
 {{ end }}
