@@ -14,7 +14,4 @@ install:
   - go get -v ./...
 
 script:
-  - make test
-
-services:
-  - cassandra
+  - bash integration.sh
