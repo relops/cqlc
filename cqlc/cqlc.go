@@ -25,6 +25,7 @@ import (
 
 type OperationType int
 type PredicateType int
+type CollectionType int
 
 const (
 	EqPredicate PredicateType = iota
@@ -41,6 +42,13 @@ const (
 	WriteOperation
 	DeleteOperation
 	CounterOperation
+)
+
+const (
+	NoCollectionType CollectionType = iota
+	ListType
+	SetType
+	MapType
 )
 
 var (
@@ -150,6 +158,12 @@ type Column interface {
 	ColumnName() string
 }
 
+// ListColumn is a marker interface to denote that column maps to CQL list type
+type ListColumn interface {
+	Column
+	ListType() Column
+}
+
 // PartitionedColumn is a marker interface to denote that a column is partitioned.
 type PartitionedColumn interface {
 	// Returns the column definition that a column family is partitioned by.
@@ -181,6 +195,9 @@ type Condition struct {
 type ColumnBinding struct {
 	Column Column
 	Value  interface{}
+	// If Incremental is true, this column should be interpreted as an incremental operation on a collection column
+	Incremental    bool
+	CollectionType CollectionType
 }
 
 type TableBinding struct {
@@ -561,6 +578,11 @@ func Truncate(s *gocql.Session, t Table) error {
 
 func set(c *Context, col Column, value interface{}) {
 	c.Bindings = append(c.Bindings, ColumnBinding{Column: col, Value: value})
+}
+
+func appendList(c *Context, col ListColumn, values interface{}) {
+	b := ColumnBinding{Column: col, Value: values, Incremental: true, CollectionType: ListType}
+	c.Bindings = append(c.Bindings, b)
 }
 
 func (c *Context) hasConditions() bool {

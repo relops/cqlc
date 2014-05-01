@@ -94,7 +94,13 @@ func renderUpdate(ctx *Context, buf *bytes.Buffer, counterTable bool) {
 		if counterTable {
 			setFragments[i] = fmt.Sprintf("%s = %s + ?", col, col)
 		} else {
-			setFragments[i] = fmt.Sprintf("%s = ?", col)
+
+			switch binding.CollectionType {
+			case ListType:
+				setFragments[i] = fmt.Sprintf("%s = %s + ?", col, col)
+			default:
+				setFragments[i] = fmt.Sprintf("%s = ?", col)
+			}
 		}
 	}
 

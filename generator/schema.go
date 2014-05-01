@@ -102,6 +102,10 @@ func (c *Column) SupportsClustering() bool {
 	return c.KeyType == ClusteringKey
 }
 
+func (c *Column) IsListType() bool {
+	return c.DataInfo.GenericType == meta.SliceType
+}
+
 func ColumnFamilies(session *gocql.Session, opts *Options) ([]ColumnFamily, error) {
 	verbose := len(opts.Verbose) > 0
 

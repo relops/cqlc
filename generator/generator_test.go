@@ -168,3 +168,11 @@ func TestCollections(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, out, "PASSED")
 }
+
+func TestIncremental(t *testing.T) {
+
+	out, err := runFixture("incremental", opts)
+
+	assert.NoError(t, err)
+	assert.Equal(t, out, "PASSED")
+}

@@ -48,7 +48,8 @@ type LastClustered{{ $t.Prefix }}Column interface {
 
 {{ range $_, $t := .types }}
 type {{ $t.Prefix }}SliceColumn interface {
-	Column
+	ListColumn
+	To(value *[]{{ $t.Literal }}) ColumnBinding
 }
 {{ end }}
 
@@ -81,6 +82,7 @@ type SetValueStep interface {
 
 	{{ range $_, $t := .types }}
 	Set{{ $t.Prefix }}Slice(col {{ $t.Prefix }}SliceColumn, value []{{ $t.Literal }}) SetValueStep
+	Append{{ $t.Prefix }}Slice(col {{ $t.Prefix }}SliceColumn, values ...{{ $t.Literal }}) SetValueStep
 	{{ end }}
 }
 
@@ -103,6 +105,10 @@ func (c *Context) Set{{ $t.Prefix }}(col {{ $t.Prefix }}Column, value {{ $t.Lite
 {{ range $_, $t := .types }}
 func (c *Context) Set{{ $t.Prefix }}Slice(col {{ $t.Prefix }}SliceColumn, value []{{ $t.Literal }}) SetValueStep {
 	set(c, col, value)
+	return c
+}
+func (c *Context) Append{{ $t.Prefix }}Slice(col {{ $t.Prefix }}SliceColumn, values ...{{ $t.Literal }}) SetValueStep {
+	appendList(c, col, values)
 	return c
 }
 {{ end }}

@@ -34,6 +34,14 @@ const (
             return "{{$col.Name}}"
         }
 
+        {{ if $col.IsListType }}
+
+            func (b * {{$QualifiedColStructType}}Column ) ListType() cqlc.Column {
+                return &{{ $QualifiedColStructType }}Column{}
+            }
+
+        {{ end }}
+
         func (b * {{$QualifiedColStructType}}Column ) To(value *{{valueType $col}}) cqlc.ColumnBinding {
             return cqlc.ColumnBinding{Column: b, Value: value}
         }
@@ -245,7 +253,7 @@ const (
         {{ $ColStructType := snakeToCamel $col.Name }}
         {{ $QualifiedColStructType := sprint $StructType $ColStructType }}
         func (s *{{$StructType}}Def) {{ $ColStructType }}Column() {{columnType $col}} {
-            return &{{ $QualifiedColStructType }}Column{}    
+            return &{{ $QualifiedColStructType }}Column{}
         }
     {{end}}
 
