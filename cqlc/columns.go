@@ -1428,46 +1428,57 @@ type SetValueStep interface {
 	SetStringSlice(col StringSliceColumn, value []string) SetValueStep
 	AppendStringSlice(col StringSliceColumn, values ...string) SetValueStep
 	PrependStringSlice(col StringSliceColumn, values ...string) SetValueStep
+	RemoveStringSlice(col StringSliceColumn, values ...string) SetValueStep
 	
 	SetInt32Slice(col Int32SliceColumn, value []int32) SetValueStep
 	AppendInt32Slice(col Int32SliceColumn, values ...int32) SetValueStep
 	PrependInt32Slice(col Int32SliceColumn, values ...int32) SetValueStep
+	RemoveInt32Slice(col Int32SliceColumn, values ...int32) SetValueStep
 	
 	SetInt64Slice(col Int64SliceColumn, value []int64) SetValueStep
 	AppendInt64Slice(col Int64SliceColumn, values ...int64) SetValueStep
 	PrependInt64Slice(col Int64SliceColumn, values ...int64) SetValueStep
+	RemoveInt64Slice(col Int64SliceColumn, values ...int64) SetValueStep
 	
 	SetFloat32Slice(col Float32SliceColumn, value []float32) SetValueStep
 	AppendFloat32Slice(col Float32SliceColumn, values ...float32) SetValueStep
 	PrependFloat32Slice(col Float32SliceColumn, values ...float32) SetValueStep
+	RemoveFloat32Slice(col Float32SliceColumn, values ...float32) SetValueStep
 	
 	SetFloat64Slice(col Float64SliceColumn, value []float64) SetValueStep
 	AppendFloat64Slice(col Float64SliceColumn, values ...float64) SetValueStep
 	PrependFloat64Slice(col Float64SliceColumn, values ...float64) SetValueStep
+	RemoveFloat64Slice(col Float64SliceColumn, values ...float64) SetValueStep
 	
 	SetTimestampSlice(col TimestampSliceColumn, value []time.Time) SetValueStep
 	AppendTimestampSlice(col TimestampSliceColumn, values ...time.Time) SetValueStep
 	PrependTimestampSlice(col TimestampSliceColumn, values ...time.Time) SetValueStep
+	RemoveTimestampSlice(col TimestampSliceColumn, values ...time.Time) SetValueStep
 	
 	SetTimeUUIDSlice(col TimeUUIDSliceColumn, value []gocql.UUID) SetValueStep
 	AppendTimeUUIDSlice(col TimeUUIDSliceColumn, values ...gocql.UUID) SetValueStep
 	PrependTimeUUIDSlice(col TimeUUIDSliceColumn, values ...gocql.UUID) SetValueStep
+	RemoveTimeUUIDSlice(col TimeUUIDSliceColumn, values ...gocql.UUID) SetValueStep
 	
 	SetUUIDSlice(col UUIDSliceColumn, value []gocql.UUID) SetValueStep
 	AppendUUIDSlice(col UUIDSliceColumn, values ...gocql.UUID) SetValueStep
 	PrependUUIDSlice(col UUIDSliceColumn, values ...gocql.UUID) SetValueStep
+	RemoveUUIDSlice(col UUIDSliceColumn, values ...gocql.UUID) SetValueStep
 	
 	SetBooleanSlice(col BooleanSliceColumn, value []bool) SetValueStep
 	AppendBooleanSlice(col BooleanSliceColumn, values ...bool) SetValueStep
 	PrependBooleanSlice(col BooleanSliceColumn, values ...bool) SetValueStep
+	RemoveBooleanSlice(col BooleanSliceColumn, values ...bool) SetValueStep
 	
 	SetDecimalSlice(col DecimalSliceColumn, value []*inf.Dec) SetValueStep
 	AppendDecimalSlice(col DecimalSliceColumn, values ...*inf.Dec) SetValueStep
 	PrependDecimalSlice(col DecimalSliceColumn, values ...*inf.Dec) SetValueStep
+	RemoveDecimalSlice(col DecimalSliceColumn, values ...*inf.Dec) SetValueStep
 	
 	SetBytesSlice(col BytesSliceColumn, value [][]byte) SetValueStep
 	AppendBytesSlice(col BytesSliceColumn, values ...[]byte) SetValueStep
 	PrependBytesSlice(col BytesSliceColumn, values ...[]byte) SetValueStep
+	RemoveBytesSlice(col BytesSliceColumn, values ...[]byte) SetValueStep
 	
 }
 
@@ -2225,6 +2236,10 @@ func (c *Context) PrependStringSlice(col StringSliceColumn, values ...string) Se
 	prependList(c, col, values)
 	return c
 }
+func (c *Context) RemoveStringSlice(col StringSliceColumn, values ...string) SetValueStep {
+	removeList(c, col, values)
+	return c
+}
 
 func (c *Context) SetInt32Slice(col Int32SliceColumn, value []int32) SetValueStep {
 	set(c, col, value)
@@ -2236,6 +2251,10 @@ func (c *Context) AppendInt32Slice(col Int32SliceColumn, values ...int32) SetVal
 }
 func (c *Context) PrependInt32Slice(col Int32SliceColumn, values ...int32) SetValueStep {
 	prependList(c, col, values)
+	return c
+}
+func (c *Context) RemoveInt32Slice(col Int32SliceColumn, values ...int32) SetValueStep {
+	removeList(c, col, values)
 	return c
 }
 
@@ -2251,6 +2270,10 @@ func (c *Context) PrependInt64Slice(col Int64SliceColumn, values ...int64) SetVa
 	prependList(c, col, values)
 	return c
 }
+func (c *Context) RemoveInt64Slice(col Int64SliceColumn, values ...int64) SetValueStep {
+	removeList(c, col, values)
+	return c
+}
 
 func (c *Context) SetFloat32Slice(col Float32SliceColumn, value []float32) SetValueStep {
 	set(c, col, value)
@@ -2262,6 +2285,10 @@ func (c *Context) AppendFloat32Slice(col Float32SliceColumn, values ...float32) 
 }
 func (c *Context) PrependFloat32Slice(col Float32SliceColumn, values ...float32) SetValueStep {
 	prependList(c, col, values)
+	return c
+}
+func (c *Context) RemoveFloat32Slice(col Float32SliceColumn, values ...float32) SetValueStep {
+	removeList(c, col, values)
 	return c
 }
 
@@ -2277,6 +2304,10 @@ func (c *Context) PrependFloat64Slice(col Float64SliceColumn, values ...float64)
 	prependList(c, col, values)
 	return c
 }
+func (c *Context) RemoveFloat64Slice(col Float64SliceColumn, values ...float64) SetValueStep {
+	removeList(c, col, values)
+	return c
+}
 
 func (c *Context) SetTimestampSlice(col TimestampSliceColumn, value []time.Time) SetValueStep {
 	set(c, col, value)
@@ -2288,6 +2319,10 @@ func (c *Context) AppendTimestampSlice(col TimestampSliceColumn, values ...time.
 }
 func (c *Context) PrependTimestampSlice(col TimestampSliceColumn, values ...time.Time) SetValueStep {
 	prependList(c, col, values)
+	return c
+}
+func (c *Context) RemoveTimestampSlice(col TimestampSliceColumn, values ...time.Time) SetValueStep {
+	removeList(c, col, values)
 	return c
 }
 
@@ -2303,6 +2338,10 @@ func (c *Context) PrependTimeUUIDSlice(col TimeUUIDSliceColumn, values ...gocql.
 	prependList(c, col, values)
 	return c
 }
+func (c *Context) RemoveTimeUUIDSlice(col TimeUUIDSliceColumn, values ...gocql.UUID) SetValueStep {
+	removeList(c, col, values)
+	return c
+}
 
 func (c *Context) SetUUIDSlice(col UUIDSliceColumn, value []gocql.UUID) SetValueStep {
 	set(c, col, value)
@@ -2314,6 +2353,10 @@ func (c *Context) AppendUUIDSlice(col UUIDSliceColumn, values ...gocql.UUID) Set
 }
 func (c *Context) PrependUUIDSlice(col UUIDSliceColumn, values ...gocql.UUID) SetValueStep {
 	prependList(c, col, values)
+	return c
+}
+func (c *Context) RemoveUUIDSlice(col UUIDSliceColumn, values ...gocql.UUID) SetValueStep {
+	removeList(c, col, values)
 	return c
 }
 
@@ -2329,6 +2372,10 @@ func (c *Context) PrependBooleanSlice(col BooleanSliceColumn, values ...bool) Se
 	prependList(c, col, values)
 	return c
 }
+func (c *Context) RemoveBooleanSlice(col BooleanSliceColumn, values ...bool) SetValueStep {
+	removeList(c, col, values)
+	return c
+}
 
 func (c *Context) SetDecimalSlice(col DecimalSliceColumn, value []*inf.Dec) SetValueStep {
 	set(c, col, value)
@@ -2342,6 +2389,10 @@ func (c *Context) PrependDecimalSlice(col DecimalSliceColumn, values ...*inf.Dec
 	prependList(c, col, values)
 	return c
 }
+func (c *Context) RemoveDecimalSlice(col DecimalSliceColumn, values ...*inf.Dec) SetValueStep {
+	removeList(c, col, values)
+	return c
+}
 
 func (c *Context) SetBytesSlice(col BytesSliceColumn, value [][]byte) SetValueStep {
 	set(c, col, value)
@@ -2353,6 +2404,10 @@ func (c *Context) AppendBytesSlice(col BytesSliceColumn, values ...[]byte) SetVa
 }
 func (c *Context) PrependBytesSlice(col BytesSliceColumn, values ...[]byte) SetValueStep {
 	prependList(c, col, values)
+	return c
+}
+func (c *Context) RemoveBytesSlice(col BytesSliceColumn, values ...[]byte) SetValueStep {
+	removeList(c, col, values)
 	return c
 }
 

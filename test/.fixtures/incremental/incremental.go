@@ -73,7 +73,30 @@ func main() {
 					if found {
 
 						if reflect.DeepEqual([]int32{0, 1, 2, 3, 4}, output) {
-							result = "PASSED"
+
+							if err := ctx.Upsert(COLLECTIONS).RemoveInt32Slice(COLLECTIONS.INT32_COLUMN, 3, 1).Where(COLLECTIONS.ID.Eq(20)).Exec(s); err != nil {
+								log.Fatalf("Could not increment collections: %v", err)
+								os.Exit(1)
+							}
+
+							var output []int32
+							found, err := ctx.Select(COLLECTIONS.INT32_COLUMN).
+								From(COLLECTIONS).
+								Where(COLLECTIONS.ID.Eq(20)).
+								Bind(COLLECTIONS.INT32_COLUMN.To(&output)).
+								FetchOne(s)
+							if err != nil {
+								log.Fatalf("Could not retreive collections: %v", err)
+								os.Exit(1)
+							}
+
+							if found {
+
+								if reflect.DeepEqual([]int32{0, 2, 4}, output) {
+									result = "PASSED"
+								}
+							}
+
 						}
 					}
 				}

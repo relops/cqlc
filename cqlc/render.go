@@ -102,6 +102,8 @@ func renderUpdate(ctx *Context, buf *bytes.Buffer, counterTable bool) {
 					setFragments[i] = fmt.Sprintf("%s = %s + ?", col, col)
 				case Prepend:
 					setFragments[i] = fmt.Sprintf("%s = ? + %s", col, col)
+				case RemoveByValue:
+					setFragments[i] = fmt.Sprintf("%s = %s - ?", col, col)
 				}
 			default:
 				setFragments[i] = fmt.Sprintf("%s = ?", col)

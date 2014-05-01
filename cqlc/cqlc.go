@@ -56,7 +56,7 @@ const (
 	Noop CollectionOperationType = iota
 	Append
 	Prepend
-	DeleteByValue
+	RemoveByValue
 )
 
 var (
@@ -596,6 +596,11 @@ func appendList(c *Context, col ListColumn, values interface{}) {
 
 func prependList(c *Context, col ListColumn, values interface{}) {
 	b := ColumnBinding{Column: col, Value: values, Incremental: true, CollectionType: ListType, CollectionOperationType: Prepend}
+	c.Bindings = append(c.Bindings, b)
+}
+
+func removeList(c *Context, col ListColumn, values interface{}) {
+	b := ColumnBinding{Column: col, Value: values, Incremental: true, CollectionType: ListType, CollectionOperationType: RemoveByValue}
 	c.Bindings = append(c.Bindings, b)
 }
 
