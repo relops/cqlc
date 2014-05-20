@@ -19,6 +19,16 @@ func TestSession(host string, keyspace string) *gocql.Session {
 	return session
 }
 
+func ClusterTestSession(host string) *gocql.Session {
+	cluster := gocql.NewCluster(host)
+	session, err := cluster.CreateSession()
+	if err != nil {
+		log.Fatalf("Could not connect to cassandra: %v", err)
+		os.Exit(1)
+	}
+	return session
+}
+
 // Deprecated in favor of cqlc.Truncate(*gocql.Session, cqlc.Table)
 func Truncate(session *gocql.Session, table cqlc.Table) {
 	stmt := fmt.Sprintf("truncate %s", table.TableName())

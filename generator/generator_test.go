@@ -174,3 +174,11 @@ func TestIncremental(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, out, "PASSED")
 }
+
+func TestKeyspace(t *testing.T) {
+
+	out, err := runFixture("keyspace", opts)
+
+	assert.NoError(t, err)
+	assert.Equal(t, out, "PASSED")
+}

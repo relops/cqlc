@@ -32,7 +32,12 @@ func renderSelect(ctx *Context, buf *bytes.Buffer) {
 	}
 
 	fmt.Fprint(buf, colClause)
-	fmt.Fprintf(buf, " FROM %s", ctx.Table.TableName())
+
+	if ctx.Keyspace == "" {
+		fmt.Fprintf(buf, " FROM %s", ctx.Table.TableName())
+	} else {
+		fmt.Fprintf(buf, " FROM %s.%s", ctx.Keyspace, ctx.Table.TableName())
+	}
 
 	if ctx.hasConditions() {
 		fmt.Fprint(buf, " ")
@@ -60,7 +65,12 @@ func columnClause(cols []Column) string {
 }
 
 func renderInsert(ctx *Context, buf *bytes.Buffer) {
-	fmt.Fprintf(buf, "INSERT INTO %s (", ctx.Table.TableName())
+
+	if ctx.Keyspace == "" {
+		fmt.Fprintf(buf, "INSERT INTO %s (", ctx.Table.TableName())
+	} else {
+		fmt.Fprintf(buf, "INSERT INTO %s.%s (", ctx.Keyspace, ctx.Table.TableName())
+	}
 
 	colFragments := make([]string, len(ctx.Bindings))
 	for i, binding := range ctx.Bindings {
@@ -85,7 +95,11 @@ func renderInsert(ctx *Context, buf *bytes.Buffer) {
 
 func renderUpdate(ctx *Context, buf *bytes.Buffer, counterTable bool) {
 
-	fmt.Fprintf(buf, "UPDATE %s SET ", ctx.Table.TableName())
+	if ctx.Keyspace == "" {
+		fmt.Fprintf(buf, "UPDATE %s SET ", ctx.Table.TableName())
+	} else {
+		fmt.Fprintf(buf, "UPDATE %s.%s SET ", ctx.Keyspace, ctx.Table.TableName())
+	}
 
 	setFragments := make([]string, len(ctx.Bindings))
 	for i, binding := range ctx.Bindings {
@@ -132,7 +146,12 @@ func renderDelete(ctx *Context, buf *bytes.Buffer) {
 		fmt.Fprint(buf, " ")
 	}
 
-	fmt.Fprintf(buf, "FROM %s ", ctx.Table.TableName())
+	if ctx.Keyspace == "" {
+		fmt.Fprintf(buf, "FROM %s ", ctx.Table.TableName())
+	} else {
+		fmt.Fprintf(buf, "FROM %s.%s ", ctx.Keyspace, ctx.Table.TableName())
+	}
+
 	renderWhereClause(ctx, buf)
 }
 

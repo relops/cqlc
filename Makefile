@@ -8,6 +8,8 @@ schema: test/collections.cql
 	cqlsh -f test/keyspace.cql
 	cqlsh -k cqlc -f test/schema.cql
 	cqlsh -k cqlc -f test/collections.cql
+	cqlsh -k cqlc -f test/shared.cql
+	cqlsh -k cqlc2 -f test/shared.cql
 
 cqlc/columns.go: cqlc/tmpl/columns.tmpl cqlc/column_generator.go
 	cd cqlc; go run column_generator.go

@@ -81,6 +81,7 @@ type Context struct {
 	ResultBindings map[string]ColumnBinding
 	Debug          bool
 	ReadOptions    *ReadOptions
+	Keyspace       string
 }
 
 func defaultReadOptions() *ReadOptions {
