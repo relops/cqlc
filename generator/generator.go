@@ -31,6 +31,7 @@ type Options struct {
 }
 
 type Provenance struct {
+	Keyspace      string
 	Version       string
 	Timestamp     time.Time
 	NegotiatedCQL string
@@ -123,6 +124,7 @@ func generateBinding(opts *Options, version string, w io.Writer) error {
 	}
 
 	provenance := Provenance{
+		Keyspace:      opts.Keyspace,
 		Version:       version,
 		Timestamp:     time.Now(),
 		HostId:        hostId,

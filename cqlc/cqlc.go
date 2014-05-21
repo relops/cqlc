@@ -160,6 +160,7 @@ type CounterTable interface {
 
 type Table interface {
 	TableName() string
+	Keyspace() string
 	ColumnDefinitions() []Column
 }
 

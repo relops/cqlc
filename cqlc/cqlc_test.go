@@ -7,8 +7,9 @@ import (
 )
 
 type MockTable struct {
-	name    string
-	columns []Column
+	name     string
+	keyspace string
+	columns  []Column
 }
 
 type MockAsciiColumn struct {
@@ -26,6 +27,10 @@ type MockCounterColumn struct {
 
 func (t *MockTable) TableName() string {
 	return t.name
+}
+
+func (t *MockTable) Keyspace() string {
+	return t.keyspace
 }
 
 func (t *MockTable) SupportsUpsert() bool {
@@ -153,6 +158,7 @@ type CqlTestSuite struct {
 func (s *CqlTestSuite) SetupTest() {
 	s.table = &MockTable{}
 	s.table.name = "foo"
+	s.table.keyspace = "ks"
 	s.table.columns = []Column{
 		&MockAsciiColumn{name: "bar"},
 	}
