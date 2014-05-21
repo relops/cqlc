@@ -15,8 +15,24 @@ func main() {
 	result := runWithKeyspace(s, "cqlc")
 	if result == "PASSED" {
 		result = runWithKeyspace(s, "cqlc2")
+		if result == "PASSED" {
+			result = runWithStaticKeyspace(s)
+		}
 	}
 	os.Stdout.WriteString(result)
+}
+
+func runWithStaticKeyspace(s *gocql.Session) string {
+	truncate := fmt.Sprintf("TRUNCATE %s.%s", SHARED.Keyspace(), SHARED.TableName())
+	if err := s.Query(truncate).Exec(); err != nil {
+		log.Fatalf("Could not connect to cassandra: %v", err)
+		os.Exit(1)
+	}
+
+	ctx := cqlc.NewContext()
+	ctx.StaticKeyspace = true
+
+	return runWithContext(s, ctx)
 }
 
 func runWithKeyspace(s *gocql.Session, keyspace string) string {
@@ -27,10 +43,15 @@ func runWithKeyspace(s *gocql.Session, keyspace string) string {
 		os.Exit(1)
 	}
 
-	result := "FAILED"
-
 	ctx := cqlc.NewContext()
 	ctx.Keyspace = keyspace
+
+	return runWithContext(s, ctx)
+}
+
+func runWithContext(s *gocql.Session, ctx *cqlc.Context) string {
+
+	result := "FAILED"
 
 	shared := Shared{
 		Id:    "foo",

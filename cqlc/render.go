@@ -33,8 +33,10 @@ func renderSelect(ctx *Context, buf *bytes.Buffer) {
 
 	fmt.Fprint(buf, colClause)
 
-	if ctx.Keyspace == "" {
+	if ctx.Keyspace == "" && !ctx.StaticKeyspace {
 		fmt.Fprintf(buf, " FROM %s", ctx.Table.TableName())
+	} else if ctx.StaticKeyspace {
+		fmt.Fprintf(buf, " FROM %s.%s", ctx.Table.Keyspace(), ctx.Table.TableName())
 	} else {
 		fmt.Fprintf(buf, " FROM %s.%s", ctx.Keyspace, ctx.Table.TableName())
 	}
@@ -66,8 +68,10 @@ func columnClause(cols []Column) string {
 
 func renderInsert(ctx *Context, buf *bytes.Buffer) {
 
-	if ctx.Keyspace == "" {
+	if ctx.Keyspace == "" && !ctx.StaticKeyspace {
 		fmt.Fprintf(buf, "INSERT INTO %s (", ctx.Table.TableName())
+	} else if ctx.StaticKeyspace {
+		fmt.Fprintf(buf, "INSERT INTO %s.%s (", ctx.Table.Keyspace(), ctx.Table.TableName())
 	} else {
 		fmt.Fprintf(buf, "INSERT INTO %s.%s (", ctx.Keyspace, ctx.Table.TableName())
 	}
@@ -95,8 +99,10 @@ func renderInsert(ctx *Context, buf *bytes.Buffer) {
 
 func renderUpdate(ctx *Context, buf *bytes.Buffer, counterTable bool) {
 
-	if ctx.Keyspace == "" {
+	if ctx.Keyspace == "" && !ctx.StaticKeyspace {
 		fmt.Fprintf(buf, "UPDATE %s SET ", ctx.Table.TableName())
+	} else if ctx.StaticKeyspace {
+		fmt.Fprintf(buf, "UPDATE %s.%s SET ", ctx.Table.Keyspace(), ctx.Table.TableName())
 	} else {
 		fmt.Fprintf(buf, "UPDATE %s.%s SET ", ctx.Keyspace, ctx.Table.TableName())
 	}
@@ -146,8 +152,10 @@ func renderDelete(ctx *Context, buf *bytes.Buffer) {
 		fmt.Fprint(buf, " ")
 	}
 
-	if ctx.Keyspace == "" {
+	if ctx.Keyspace == "" && !ctx.StaticKeyspace {
 		fmt.Fprintf(buf, "FROM %s ", ctx.Table.TableName())
+	} else if ctx.StaticKeyspace {
+		fmt.Fprintf(buf, "FROM %s.%s ", ctx.Table.Keyspace(), ctx.Table.TableName())
 	} else {
 		fmt.Fprintf(buf, "FROM %s.%s ", ctx.Keyspace, ctx.Table.TableName())
 	}

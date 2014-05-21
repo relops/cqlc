@@ -79,9 +79,13 @@ type Context struct {
 	CASBindings    []ColumnBinding
 	Conditions     []Condition
 	ResultBindings map[string]ColumnBinding
-	Debug          bool
-	ReadOptions    *ReadOptions
-	Keyspace       string
+	// Debug flag will cause all CQL statements to get logged
+	Debug       bool
+	ReadOptions *ReadOptions
+	// Setting Keyspace to a non-zero value will cause CQL statements to be qualified by this keyspace.
+	Keyspace string
+	// Setting StaticKeyspace to true will cause the generated CQL to be qualified by the keyspace the code was generated against.
+	StaticKeyspace bool
 }
 
 func defaultReadOptions() *ReadOptions {
