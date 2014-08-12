@@ -48,6 +48,7 @@ var types = []TypeInfo{
 	TypeInfo{Prefix: "UUID", Literal: "gocql.UUID"},
 	TypeInfo{Prefix: "Boolean", Literal: "bool"},
 	TypeInfo{Prefix: "Decimal", Literal: "*inf.Dec"},
+	TypeInfo{Prefix: "Varint", Literal: "*big.Int"},
 	TypeInfo{Prefix: "Bytes", Literal: "[]byte"},
 }
 

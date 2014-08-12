@@ -28,7 +28,7 @@ input: test/.fixtures/collections/input.go test/collections.cql
 generator/binding_tmpl.go: generator/tmpl/binding.tmpl
 	go-bindata -pkg=generator -o=generator/binding_tmpl.go generator/tmpl
 
-test: columns bindata schema test/.fixtures/collections/input.go
+test: columns bindata schema validator test/.fixtures/collections/input.go
 	go test -v ./...
 
 format:

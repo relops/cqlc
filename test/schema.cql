@@ -11,6 +11,7 @@ CREATE TABLE basic
     float_column float,
     double_column double,
     decimal_column decimal,
+    varint_column varint,
     timeuuid_column timeuuid,
     uuid_column uuid,
     map_column map<text, text>,

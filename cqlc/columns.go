@@ -6,6 +6,7 @@ import (
 	"github.com/gocql/gocql"
 	"speter.net/go/exp/math/dec/inf"
 	"time"
+	"math/big"
 )
 
 
@@ -370,6 +371,42 @@ type LastClusteredDecimalColumn interface {
 
 
 
+type VarintColumn interface {
+	Column
+	To(value **big.Int) ColumnBinding
+}
+
+type EqualityVarintColumn interface {
+	VarintColumn
+	Eq(value *big.Int) Condition
+}
+
+type PartitionedVarintColumn interface {
+	PartitionedColumn
+	EqualityVarintColumn
+}
+
+type LastPartitionedVarintColumn interface {
+	PartitionedVarintColumn
+	In(value ...*big.Int) Condition
+}
+
+type ClusteredVarintColumn interface {
+	ClusteredColumn
+	EqualityVarintColumn
+	Gt(value *big.Int) Condition
+	Lt(value *big.Int) Condition
+	Ge(value *big.Int) Condition
+	Le(value *big.Int) Condition
+}
+
+type LastClusteredVarintColumn interface {
+	ClusteredVarintColumn
+	In(value ...*big.Int) Condition
+}
+
+
+
 type BytesColumn interface {
 	Column
 	To(value *[]byte) ColumnBinding
@@ -457,6 +494,11 @@ type DecimalSliceColumn interface {
 	To(value *[]*inf.Dec) ColumnBinding
 }
 
+type VarintSliceColumn interface {
+	ListColumn
+	To(value *[]*big.Int) ColumnBinding
+}
+
 type BytesSliceColumn interface {
 	ListColumn
 	To(value *[][]byte) ColumnBinding
@@ -519,6 +561,11 @@ type StringDecimalMapColumn interface {
 }
 
 
+type StringVarintMapColumn interface {
+	Column
+}
+
+
 type StringBytesMapColumn interface {
 	Column
 }
@@ -571,6 +618,11 @@ type Int32BooleanMapColumn interface {
 
 
 type Int32DecimalMapColumn interface {
+	Column
+}
+
+
+type Int32VarintMapColumn interface {
 	Column
 }
 
@@ -631,6 +683,11 @@ type Int64DecimalMapColumn interface {
 }
 
 
+type Int64VarintMapColumn interface {
+	Column
+}
+
+
 type Int64BytesMapColumn interface {
 	Column
 }
@@ -683,6 +740,11 @@ type Float32BooleanMapColumn interface {
 
 
 type Float32DecimalMapColumn interface {
+	Column
+}
+
+
+type Float32VarintMapColumn interface {
 	Column
 }
 
@@ -743,6 +805,11 @@ type Float64DecimalMapColumn interface {
 }
 
 
+type Float64VarintMapColumn interface {
+	Column
+}
+
+
 type Float64BytesMapColumn interface {
 	Column
 }
@@ -795,6 +862,11 @@ type TimestampBooleanMapColumn interface {
 
 
 type TimestampDecimalMapColumn interface {
+	Column
+}
+
+
+type TimestampVarintMapColumn interface {
 	Column
 }
 
@@ -855,6 +927,11 @@ type TimeUUIDDecimalMapColumn interface {
 }
 
 
+type TimeUUIDVarintMapColumn interface {
+	Column
+}
+
+
 type TimeUUIDBytesMapColumn interface {
 	Column
 }
@@ -907,6 +984,11 @@ type UUIDBooleanMapColumn interface {
 
 
 type UUIDDecimalMapColumn interface {
+	Column
+}
+
+
+type UUIDVarintMapColumn interface {
 	Column
 }
 
@@ -967,6 +1049,11 @@ type BooleanDecimalMapColumn interface {
 }
 
 
+type BooleanVarintMapColumn interface {
+	Column
+}
+
+
 type BooleanBytesMapColumn interface {
 	Column
 }
@@ -1023,9 +1110,76 @@ type DecimalDecimalMapColumn interface {
 }
 
 
+type DecimalVarintMapColumn interface {
+	Column
+}
+
+
 type DecimalBytesMapColumn interface {
 	Column
 }
+
+
+
+type VarintStringMapColumn interface {
+	Column
+}
+
+
+type VarintInt32MapColumn interface {
+	Column
+}
+
+
+type VarintInt64MapColumn interface {
+	Column
+}
+
+
+type VarintFloat32MapColumn interface {
+	Column
+}
+
+
+type VarintFloat64MapColumn interface {
+	Column
+}
+
+
+type VarintTimestampMapColumn interface {
+	Column
+}
+
+
+type VarintTimeUUIDMapColumn interface {
+	Column
+}
+
+
+type VarintUUIDMapColumn interface {
+	Column
+}
+
+
+type VarintBooleanMapColumn interface {
+	Column
+}
+
+
+type VarintDecimalMapColumn interface {
+	Column
+}
+
+
+type VarintVarintMapColumn interface {
+	Column
+}
+
+
+type VarintBytesMapColumn interface {
+	Column
+}
+
 
 
 
@@ -1067,6 +1221,8 @@ type SetValueStep interface {
 	
 	SetDecimal(col DecimalColumn, value *inf.Dec) SetValueStep
 	
+	SetVarint(col VarintColumn, value *big.Int) SetValueStep
+	
 	SetBytes(col BytesColumn, value []byte) SetValueStep
 	
 
@@ -1103,6 +1259,9 @@ type SetValueStep interface {
 	SetStringDecimalMap(col StringDecimalMapColumn, value map[string]*inf.Dec) SetValueStep
 	
 	
+	SetStringVarintMap(col StringVarintMapColumn, value map[string]*big.Int) SetValueStep
+	
+	
 	SetStringBytesMap(col StringBytesMapColumn, value map[string][]byte) SetValueStep
 	
 	
@@ -1135,6 +1294,9 @@ type SetValueStep interface {
 	
 	
 	SetInt32DecimalMap(col Int32DecimalMapColumn, value map[int32]*inf.Dec) SetValueStep
+	
+	
+	SetInt32VarintMap(col Int32VarintMapColumn, value map[int32]*big.Int) SetValueStep
 	
 	
 	SetInt32BytesMap(col Int32BytesMapColumn, value map[int32][]byte) SetValueStep
@@ -1171,6 +1333,9 @@ type SetValueStep interface {
 	SetInt64DecimalMap(col Int64DecimalMapColumn, value map[int64]*inf.Dec) SetValueStep
 	
 	
+	SetInt64VarintMap(col Int64VarintMapColumn, value map[int64]*big.Int) SetValueStep
+	
+	
 	SetInt64BytesMap(col Int64BytesMapColumn, value map[int64][]byte) SetValueStep
 	
 	
@@ -1203,6 +1368,9 @@ type SetValueStep interface {
 	
 	
 	SetFloat32DecimalMap(col Float32DecimalMapColumn, value map[float32]*inf.Dec) SetValueStep
+	
+	
+	SetFloat32VarintMap(col Float32VarintMapColumn, value map[float32]*big.Int) SetValueStep
 	
 	
 	SetFloat32BytesMap(col Float32BytesMapColumn, value map[float32][]byte) SetValueStep
@@ -1239,6 +1407,9 @@ type SetValueStep interface {
 	SetFloat64DecimalMap(col Float64DecimalMapColumn, value map[float64]*inf.Dec) SetValueStep
 	
 	
+	SetFloat64VarintMap(col Float64VarintMapColumn, value map[float64]*big.Int) SetValueStep
+	
+	
 	SetFloat64BytesMap(col Float64BytesMapColumn, value map[float64][]byte) SetValueStep
 	
 	
@@ -1271,6 +1442,9 @@ type SetValueStep interface {
 	
 	
 	SetTimestampDecimalMap(col TimestampDecimalMapColumn, value map[time.Time]*inf.Dec) SetValueStep
+	
+	
+	SetTimestampVarintMap(col TimestampVarintMapColumn, value map[time.Time]*big.Int) SetValueStep
 	
 	
 	SetTimestampBytesMap(col TimestampBytesMapColumn, value map[time.Time][]byte) SetValueStep
@@ -1307,6 +1481,9 @@ type SetValueStep interface {
 	SetTimeUUIDDecimalMap(col TimeUUIDDecimalMapColumn, value map[gocql.UUID]*inf.Dec) SetValueStep
 	
 	
+	SetTimeUUIDVarintMap(col TimeUUIDVarintMapColumn, value map[gocql.UUID]*big.Int) SetValueStep
+	
+	
 	SetTimeUUIDBytesMap(col TimeUUIDBytesMapColumn, value map[gocql.UUID][]byte) SetValueStep
 	
 	
@@ -1339,6 +1516,9 @@ type SetValueStep interface {
 	
 	
 	SetUUIDDecimalMap(col UUIDDecimalMapColumn, value map[gocql.UUID]*inf.Dec) SetValueStep
+	
+	
+	SetUUIDVarintMap(col UUIDVarintMapColumn, value map[gocql.UUID]*big.Int) SetValueStep
 	
 	
 	SetUUIDBytesMap(col UUIDBytesMapColumn, value map[gocql.UUID][]byte) SetValueStep
@@ -1375,6 +1555,9 @@ type SetValueStep interface {
 	SetBooleanDecimalMap(col BooleanDecimalMapColumn, value map[bool]*inf.Dec) SetValueStep
 	
 	
+	SetBooleanVarintMap(col BooleanVarintMapColumn, value map[bool]*big.Int) SetValueStep
+	
+	
 	SetBooleanBytesMap(col BooleanBytesMapColumn, value map[bool][]byte) SetValueStep
 	
 	
@@ -1409,7 +1592,48 @@ type SetValueStep interface {
 	SetDecimalDecimalMap(col DecimalDecimalMapColumn, value map[*inf.Dec]*inf.Dec) SetValueStep
 	
 	
+	SetDecimalVarintMap(col DecimalVarintMapColumn, value map[*inf.Dec]*big.Int) SetValueStep
+	
+	
 	SetDecimalBytesMap(col DecimalBytesMapColumn, value map[*inf.Dec][]byte) SetValueStep
+	
+	
+	
+	SetVarintStringMap(col VarintStringMapColumn, value map[*big.Int]string) SetValueStep
+	
+	
+	SetVarintInt32Map(col VarintInt32MapColumn, value map[*big.Int]int32) SetValueStep
+	
+	
+	SetVarintInt64Map(col VarintInt64MapColumn, value map[*big.Int]int64) SetValueStep
+	
+	
+	SetVarintFloat32Map(col VarintFloat32MapColumn, value map[*big.Int]float32) SetValueStep
+	
+	
+	SetVarintFloat64Map(col VarintFloat64MapColumn, value map[*big.Int]float64) SetValueStep
+	
+	
+	SetVarintTimestampMap(col VarintTimestampMapColumn, value map[*big.Int]time.Time) SetValueStep
+	
+	
+	SetVarintTimeUUIDMap(col VarintTimeUUIDMapColumn, value map[*big.Int]gocql.UUID) SetValueStep
+	
+	
+	SetVarintUUIDMap(col VarintUUIDMapColumn, value map[*big.Int]gocql.UUID) SetValueStep
+	
+	
+	SetVarintBooleanMap(col VarintBooleanMapColumn, value map[*big.Int]bool) SetValueStep
+	
+	
+	SetVarintDecimalMap(col VarintDecimalMapColumn, value map[*big.Int]*inf.Dec) SetValueStep
+	
+	
+	SetVarintVarintMap(col VarintVarintMapColumn, value map[*big.Int]*big.Int) SetValueStep
+	
+	
+	SetVarintBytesMap(col VarintBytesMapColumn, value map[*big.Int][]byte) SetValueStep
+	
 	
 	
 	
@@ -1474,6 +1698,11 @@ type SetValueStep interface {
 	AppendDecimalSlice(col DecimalSliceColumn, values ...*inf.Dec) SetValueStep
 	PrependDecimalSlice(col DecimalSliceColumn, values ...*inf.Dec) SetValueStep
 	RemoveDecimalSlice(col DecimalSliceColumn, values ...*inf.Dec) SetValueStep
+	
+	SetVarintSlice(col VarintSliceColumn, value []*big.Int) SetValueStep
+	AppendVarintSlice(col VarintSliceColumn, values ...*big.Int) SetValueStep
+	PrependVarintSlice(col VarintSliceColumn, values ...*big.Int) SetValueStep
+	RemoveVarintSlice(col VarintSliceColumn, values ...*big.Int) SetValueStep
 	
 	SetBytesSlice(col BytesSliceColumn, value [][]byte) SetValueStep
 	AppendBytesSlice(col BytesSliceColumn, values ...[]byte) SetValueStep
@@ -1540,6 +1769,12 @@ func (c *Context) SetStringBooleanMap(col StringBooleanMapColumn, value map[stri
 
 
 func (c *Context) SetStringDecimalMap(col StringDecimalMapColumn, value map[string]*inf.Dec) SetValueStep {
+	set(c, col, value)
+	return c
+}
+
+
+func (c *Context) SetStringVarintMap(col StringVarintMapColumn, value map[string]*big.Int) SetValueStep {
 	set(c, col, value)
 	return c
 }
@@ -1612,6 +1847,12 @@ func (c *Context) SetInt32DecimalMap(col Int32DecimalMapColumn, value map[int32]
 }
 
 
+func (c *Context) SetInt32VarintMap(col Int32VarintMapColumn, value map[int32]*big.Int) SetValueStep {
+	set(c, col, value)
+	return c
+}
+
+
 func (c *Context) SetInt32BytesMap(col Int32BytesMapColumn, value map[int32][]byte) SetValueStep {
 	set(c, col, value)
 	return c
@@ -1674,6 +1915,12 @@ func (c *Context) SetInt64BooleanMap(col Int64BooleanMapColumn, value map[int64]
 
 
 func (c *Context) SetInt64DecimalMap(col Int64DecimalMapColumn, value map[int64]*inf.Dec) SetValueStep {
+	set(c, col, value)
+	return c
+}
+
+
+func (c *Context) SetInt64VarintMap(col Int64VarintMapColumn, value map[int64]*big.Int) SetValueStep {
 	set(c, col, value)
 	return c
 }
@@ -1746,6 +1993,12 @@ func (c *Context) SetFloat32DecimalMap(col Float32DecimalMapColumn, value map[fl
 }
 
 
+func (c *Context) SetFloat32VarintMap(col Float32VarintMapColumn, value map[float32]*big.Int) SetValueStep {
+	set(c, col, value)
+	return c
+}
+
+
 func (c *Context) SetFloat32BytesMap(col Float32BytesMapColumn, value map[float32][]byte) SetValueStep {
 	set(c, col, value)
 	return c
@@ -1808,6 +2061,12 @@ func (c *Context) SetFloat64BooleanMap(col Float64BooleanMapColumn, value map[fl
 
 
 func (c *Context) SetFloat64DecimalMap(col Float64DecimalMapColumn, value map[float64]*inf.Dec) SetValueStep {
+	set(c, col, value)
+	return c
+}
+
+
+func (c *Context) SetFloat64VarintMap(col Float64VarintMapColumn, value map[float64]*big.Int) SetValueStep {
 	set(c, col, value)
 	return c
 }
@@ -1880,6 +2139,12 @@ func (c *Context) SetTimestampDecimalMap(col TimestampDecimalMapColumn, value ma
 }
 
 
+func (c *Context) SetTimestampVarintMap(col TimestampVarintMapColumn, value map[time.Time]*big.Int) SetValueStep {
+	set(c, col, value)
+	return c
+}
+
+
 func (c *Context) SetTimestampBytesMap(col TimestampBytesMapColumn, value map[time.Time][]byte) SetValueStep {
 	set(c, col, value)
 	return c
@@ -1942,6 +2207,12 @@ func (c *Context) SetTimeUUIDBooleanMap(col TimeUUIDBooleanMapColumn, value map[
 
 
 func (c *Context) SetTimeUUIDDecimalMap(col TimeUUIDDecimalMapColumn, value map[gocql.UUID]*inf.Dec) SetValueStep {
+	set(c, col, value)
+	return c
+}
+
+
+func (c *Context) SetTimeUUIDVarintMap(col TimeUUIDVarintMapColumn, value map[gocql.UUID]*big.Int) SetValueStep {
 	set(c, col, value)
 	return c
 }
@@ -2014,6 +2285,12 @@ func (c *Context) SetUUIDDecimalMap(col UUIDDecimalMapColumn, value map[gocql.UU
 }
 
 
+func (c *Context) SetUUIDVarintMap(col UUIDVarintMapColumn, value map[gocql.UUID]*big.Int) SetValueStep {
+	set(c, col, value)
+	return c
+}
+
+
 func (c *Context) SetUUIDBytesMap(col UUIDBytesMapColumn, value map[gocql.UUID][]byte) SetValueStep {
 	set(c, col, value)
 	return c
@@ -2076,6 +2353,12 @@ func (c *Context) SetBooleanBooleanMap(col BooleanBooleanMapColumn, value map[bo
 
 
 func (c *Context) SetBooleanDecimalMap(col BooleanDecimalMapColumn, value map[bool]*inf.Dec) SetValueStep {
+	set(c, col, value)
+	return c
+}
+
+
+func (c *Context) SetBooleanVarintMap(col BooleanVarintMapColumn, value map[bool]*big.Int) SetValueStep {
 	set(c, col, value)
 	return c
 }
@@ -2148,10 +2431,90 @@ func (c *Context) SetDecimalDecimalMap(col DecimalDecimalMapColumn, value map[*i
 }
 
 
+func (c *Context) SetDecimalVarintMap(col DecimalVarintMapColumn, value map[*inf.Dec]*big.Int) SetValueStep {
+	set(c, col, value)
+	return c
+}
+
+
 func (c *Context) SetDecimalBytesMap(col DecimalBytesMapColumn, value map[*inf.Dec][]byte) SetValueStep {
 	set(c, col, value)
 	return c
 }
+
+
+
+func (c *Context) SetVarintStringMap(col VarintStringMapColumn, value map[*big.Int]string) SetValueStep {
+	set(c, col, value)
+	return c
+}
+
+
+func (c *Context) SetVarintInt32Map(col VarintInt32MapColumn, value map[*big.Int]int32) SetValueStep {
+	set(c, col, value)
+	return c
+}
+
+
+func (c *Context) SetVarintInt64Map(col VarintInt64MapColumn, value map[*big.Int]int64) SetValueStep {
+	set(c, col, value)
+	return c
+}
+
+
+func (c *Context) SetVarintFloat32Map(col VarintFloat32MapColumn, value map[*big.Int]float32) SetValueStep {
+	set(c, col, value)
+	return c
+}
+
+
+func (c *Context) SetVarintFloat64Map(col VarintFloat64MapColumn, value map[*big.Int]float64) SetValueStep {
+	set(c, col, value)
+	return c
+}
+
+
+func (c *Context) SetVarintTimestampMap(col VarintTimestampMapColumn, value map[*big.Int]time.Time) SetValueStep {
+	set(c, col, value)
+	return c
+}
+
+
+func (c *Context) SetVarintTimeUUIDMap(col VarintTimeUUIDMapColumn, value map[*big.Int]gocql.UUID) SetValueStep {
+	set(c, col, value)
+	return c
+}
+
+
+func (c *Context) SetVarintUUIDMap(col VarintUUIDMapColumn, value map[*big.Int]gocql.UUID) SetValueStep {
+	set(c, col, value)
+	return c
+}
+
+
+func (c *Context) SetVarintBooleanMap(col VarintBooleanMapColumn, value map[*big.Int]bool) SetValueStep {
+	set(c, col, value)
+	return c
+}
+
+
+func (c *Context) SetVarintDecimalMap(col VarintDecimalMapColumn, value map[*big.Int]*inf.Dec) SetValueStep {
+	set(c, col, value)
+	return c
+}
+
+
+func (c *Context) SetVarintVarintMap(col VarintVarintMapColumn, value map[*big.Int]*big.Int) SetValueStep {
+	set(c, col, value)
+	return c
+}
+
+
+func (c *Context) SetVarintBytesMap(col VarintBytesMapColumn, value map[*big.Int][]byte) SetValueStep {
+	set(c, col, value)
+	return c
+}
+
 
 
 
@@ -2213,6 +2576,11 @@ func (c *Context) SetBoolean(col BooleanColumn, value bool) SetValueStep {
 }
 
 func (c *Context) SetDecimal(col DecimalColumn, value *inf.Dec) SetValueStep {
+	set(c, col, value)
+	return c
+}
+
+func (c *Context) SetVarint(col VarintColumn, value *big.Int) SetValueStep {
 	set(c, col, value)
 	return c
 }
@@ -2390,6 +2758,23 @@ func (c *Context) PrependDecimalSlice(col DecimalSliceColumn, values ...*inf.Dec
 	return c
 }
 func (c *Context) RemoveDecimalSlice(col DecimalSliceColumn, values ...*inf.Dec) SetValueStep {
+	removeList(c, col, values)
+	return c
+}
+
+func (c *Context) SetVarintSlice(col VarintSliceColumn, value []*big.Int) SetValueStep {
+	set(c, col, value)
+	return c
+}
+func (c *Context) AppendVarintSlice(col VarintSliceColumn, values ...*big.Int) SetValueStep {
+	appendList(c, col, values)
+	return c
+}
+func (c *Context) PrependVarintSlice(col VarintSliceColumn, values ...*big.Int) SetValueStep {
+	prependList(c, col, values)
+	return c
+}
+func (c *Context) RemoveVarintSlice(col VarintSliceColumn, values ...*big.Int) SetValueStep {
 	removeList(c, col, values)
 	return c
 }

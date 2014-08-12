@@ -7,6 +7,7 @@ import (
 	"github.com/relops/cqlc/integration"
 	"log"
 	"math"
+	"math/big"
 	"os"
 	"reflect"
 	"speter.net/go/exp/math/dec/inf"
@@ -22,6 +23,9 @@ func main() {
 
 	ctx := cqlc.NewContext()
 
+	biggie := new(big.Int)
+	biggie.SetString("830169365738487321165427203929228", 10)
+
 	basic := Basic{
 		Id:              "x",
 		Int32Column:     999,
@@ -34,6 +38,7 @@ func main() {
 		FloatColumn:     math.MaxFloat32,
 		DoubleColumn:    math.MaxFloat64,
 		DecimalColumn:   inf.NewDec(1, 9),
+		VarintColumn:    biggie,
 		TimeuuidColumn:  gocql.TimeUUID(),
 		MapColumn:       map[string]string{"baz": "quux"},
 		ArrayColumn:     []string{"baz", "quux"},

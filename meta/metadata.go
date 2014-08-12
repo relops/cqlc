@@ -17,6 +17,7 @@ const (
 	SliceType
 	BytesType
 	DecimalType
+	VarintType
 	ReversedType
 	BasicType
 	NoType
@@ -36,4 +37,5 @@ var DataTypes = map[string]ColumnDataType{
 	"org.apache.cassandra.db.marshal.CounterColumnType": CounterType,
 	"org.apache.cassandra.db.marshal.BytesType":         BytesType,
 	"org.apache.cassandra.db.marshal.DecimalType":       DecimalType,
+	"org.apache.cassandra.db.marshal.IntegerType":       VarintType,
 }

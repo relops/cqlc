@@ -46,11 +46,13 @@ var literalTypes = map[meta.ColumnDataType]string{
 	meta.MapType:       "map[string]string",
 	meta.BytesType:     "[]byte",
 	meta.DecimalType:   "*inf.Dec",
+	meta.VarintType:    "*big.Int",
 }
 
 var customImportPaths = map[string]string{
 	"gocql.UUID": "github.com/gocql/gocql",
 	"*inf.Dec":   "speter.net/go/exp/math/dec/inf",
+	"*big.Int":   "math/big",
 }
 
 var columnTypes = map[meta.ColumnDataType]string{
@@ -67,6 +69,7 @@ var columnTypes = map[meta.ColumnDataType]string{
 	meta.MapType:       "cqlc.Map_Column",
 	meta.BytesType:     "cqlc.Bytes_Column",
 	meta.DecimalType:   "cqlc.Decimal_Column",
+	meta.VarintType:    "cqlc.Varint_Column",
 }
 
 type Binding struct {

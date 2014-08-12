@@ -61,6 +61,10 @@ func ParseValidator(validator string) (ColumnDataInfo, error) {
     		return ColumnDataInfo{DomainType: 0, RangeType: 1, GenericType: meta.MapType}, nil
     	}    		
     	
+		case "org.apache.cassandra.db.marshal.MapType(org.apache.cassandra.db.marshal.AsciiType,org.apache.cassandra.db.marshal.IntegerType)" : {
+    		return ColumnDataInfo{DomainType: 0, RangeType: 14, GenericType: meta.MapType}, nil
+    	}    		
+    	
 		case "org.apache.cassandra.db.marshal.MapType(org.apache.cassandra.db.marshal.AsciiType,org.apache.cassandra.db.marshal.LongType)" : {
     		return ColumnDataInfo{DomainType: 0, RangeType: 2, GenericType: meta.MapType}, nil
     	}    		
@@ -130,6 +134,10 @@ func ParseValidator(validator string) (ColumnDataInfo, error) {
     	
 		case "org.apache.cassandra.db.marshal.MapType(org.apache.cassandra.db.marshal.BooleanType,org.apache.cassandra.db.marshal.Int32Type)" : {
     		return ColumnDataInfo{DomainType: 6, RangeType: 1, GenericType: meta.MapType}, nil
+    	}    		
+    	
+		case "org.apache.cassandra.db.marshal.MapType(org.apache.cassandra.db.marshal.BooleanType,org.apache.cassandra.db.marshal.IntegerType)" : {
+    		return ColumnDataInfo{DomainType: 6, RangeType: 14, GenericType: meta.MapType}, nil
     	}    		
     	
 		case "org.apache.cassandra.db.marshal.MapType(org.apache.cassandra.db.marshal.BooleanType,org.apache.cassandra.db.marshal.LongType)" : {
@@ -203,6 +211,10 @@ func ParseValidator(validator string) (ColumnDataInfo, error) {
     		return ColumnDataInfo{DomainType: 12, RangeType: 1, GenericType: meta.MapType}, nil
     	}    		
     	
+		case "org.apache.cassandra.db.marshal.MapType(org.apache.cassandra.db.marshal.BytesType,org.apache.cassandra.db.marshal.IntegerType)" : {
+    		return ColumnDataInfo{DomainType: 12, RangeType: 14, GenericType: meta.MapType}, nil
+    	}    		
+    	
 		case "org.apache.cassandra.db.marshal.MapType(org.apache.cassandra.db.marshal.BytesType,org.apache.cassandra.db.marshal.LongType)" : {
     		return ColumnDataInfo{DomainType: 12, RangeType: 2, GenericType: meta.MapType}, nil
     	}    		
@@ -272,6 +284,10 @@ func ParseValidator(validator string) (ColumnDataInfo, error) {
     	
 		case "org.apache.cassandra.db.marshal.MapType(org.apache.cassandra.db.marshal.CounterColumnType,org.apache.cassandra.db.marshal.Int32Type)" : {
     		return ColumnDataInfo{DomainType: 9, RangeType: 1, GenericType: meta.MapType}, nil
+    	}    		
+    	
+		case "org.apache.cassandra.db.marshal.MapType(org.apache.cassandra.db.marshal.CounterColumnType,org.apache.cassandra.db.marshal.IntegerType)" : {
+    		return ColumnDataInfo{DomainType: 9, RangeType: 14, GenericType: meta.MapType}, nil
     	}    		
     	
 		case "org.apache.cassandra.db.marshal.MapType(org.apache.cassandra.db.marshal.CounterColumnType,org.apache.cassandra.db.marshal.LongType)" : {
@@ -345,6 +361,10 @@ func ParseValidator(validator string) (ColumnDataInfo, error) {
     		return ColumnDataInfo{DomainType: 13, RangeType: 1, GenericType: meta.MapType}, nil
     	}    		
     	
+		case "org.apache.cassandra.db.marshal.MapType(org.apache.cassandra.db.marshal.DecimalType,org.apache.cassandra.db.marshal.IntegerType)" : {
+    		return ColumnDataInfo{DomainType: 13, RangeType: 14, GenericType: meta.MapType}, nil
+    	}    		
+    	
 		case "org.apache.cassandra.db.marshal.MapType(org.apache.cassandra.db.marshal.DecimalType,org.apache.cassandra.db.marshal.LongType)" : {
     		return ColumnDataInfo{DomainType: 13, RangeType: 2, GenericType: meta.MapType}, nil
     	}    		
@@ -414,6 +434,10 @@ func ParseValidator(validator string) (ColumnDataInfo, error) {
     	
 		case "org.apache.cassandra.db.marshal.MapType(org.apache.cassandra.db.marshal.DoubleType,org.apache.cassandra.db.marshal.Int32Type)" : {
     		return ColumnDataInfo{DomainType: 4, RangeType: 1, GenericType: meta.MapType}, nil
+    	}    		
+    	
+		case "org.apache.cassandra.db.marshal.MapType(org.apache.cassandra.db.marshal.DoubleType,org.apache.cassandra.db.marshal.IntegerType)" : {
+    		return ColumnDataInfo{DomainType: 4, RangeType: 14, GenericType: meta.MapType}, nil
     	}    		
     	
 		case "org.apache.cassandra.db.marshal.MapType(org.apache.cassandra.db.marshal.DoubleType,org.apache.cassandra.db.marshal.LongType)" : {
@@ -487,6 +511,10 @@ func ParseValidator(validator string) (ColumnDataInfo, error) {
     		return ColumnDataInfo{DomainType: 3, RangeType: 1, GenericType: meta.MapType}, nil
     	}    		
     	
+		case "org.apache.cassandra.db.marshal.MapType(org.apache.cassandra.db.marshal.FloatType,org.apache.cassandra.db.marshal.IntegerType)" : {
+    		return ColumnDataInfo{DomainType: 3, RangeType: 14, GenericType: meta.MapType}, nil
+    	}    		
+    	
 		case "org.apache.cassandra.db.marshal.MapType(org.apache.cassandra.db.marshal.FloatType,org.apache.cassandra.db.marshal.LongType)" : {
     		return ColumnDataInfo{DomainType: 3, RangeType: 2, GenericType: meta.MapType}, nil
     	}    		
@@ -558,6 +586,10 @@ func ParseValidator(validator string) (ColumnDataInfo, error) {
     		return ColumnDataInfo{DomainType: 1, RangeType: 1, GenericType: meta.MapType}, nil
     	}    		
     	
+		case "org.apache.cassandra.db.marshal.MapType(org.apache.cassandra.db.marshal.Int32Type,org.apache.cassandra.db.marshal.IntegerType)" : {
+    		return ColumnDataInfo{DomainType: 1, RangeType: 14, GenericType: meta.MapType}, nil
+    	}    		
+    	
 		case "org.apache.cassandra.db.marshal.MapType(org.apache.cassandra.db.marshal.Int32Type,org.apache.cassandra.db.marshal.LongType)" : {
     		return ColumnDataInfo{DomainType: 1, RangeType: 2, GenericType: meta.MapType}, nil
     	}    		
@@ -576,6 +608,81 @@ func ParseValidator(validator string) (ColumnDataInfo, error) {
     	
 		case "org.apache.cassandra.db.marshal.MapType(org.apache.cassandra.db.marshal.Int32Type,org.apache.cassandra.db.marshal.UUIDType)" : {
     		return ColumnDataInfo{DomainType: 1, RangeType: 8, GenericType: meta.MapType}, nil
+    	}    		
+    	
+
+    	
+		case "org.apache.cassandra.db.marshal.IntegerType": {
+    		return ColumnDataInfo{DomainType: 14, RangeType: meta.NoType, GenericType: meta.BasicType}, nil
+    	}
+
+    	case "org.apache.cassandra.db.marshal.ListType(org.apache.cassandra.db.marshal.IntegerType)" : {
+    		return ColumnDataInfo{DomainType: 14, RangeType: meta.NoType, GenericType: meta.SliceType}, nil
+    	}
+
+    	case "org.apache.cassandra.db.marshal.SetType(org.apache.cassandra.db.marshal.IntegerType)" : {
+    		return ColumnDataInfo{DomainType: 14, RangeType: meta.NoType, GenericType: meta.SliceType}, nil
+    	}
+
+    	case "org.apache.cassandra.db.marshal.ReversedType(org.apache.cassandra.db.marshal.IntegerType)" : {
+    		return ColumnDataInfo{DomainType: 14, RangeType: meta.NoType, GenericType: meta.ReversedType}, nil
+    	}
+
+    	
+		case "org.apache.cassandra.db.marshal.MapType(org.apache.cassandra.db.marshal.IntegerType,org.apache.cassandra.db.marshal.AsciiType)" : {
+    		return ColumnDataInfo{DomainType: 14, RangeType: 0, GenericType: meta.MapType}, nil
+    	}    		
+    	
+		case "org.apache.cassandra.db.marshal.MapType(org.apache.cassandra.db.marshal.IntegerType,org.apache.cassandra.db.marshal.BooleanType)" : {
+    		return ColumnDataInfo{DomainType: 14, RangeType: 6, GenericType: meta.MapType}, nil
+    	}    		
+    	
+		case "org.apache.cassandra.db.marshal.MapType(org.apache.cassandra.db.marshal.IntegerType,org.apache.cassandra.db.marshal.BytesType)" : {
+    		return ColumnDataInfo{DomainType: 14, RangeType: 12, GenericType: meta.MapType}, nil
+    	}    		
+    	
+		case "org.apache.cassandra.db.marshal.MapType(org.apache.cassandra.db.marshal.IntegerType,org.apache.cassandra.db.marshal.CounterColumnType)" : {
+    		return ColumnDataInfo{DomainType: 14, RangeType: 9, GenericType: meta.MapType}, nil
+    	}    		
+    	
+		case "org.apache.cassandra.db.marshal.MapType(org.apache.cassandra.db.marshal.IntegerType,org.apache.cassandra.db.marshal.DecimalType)" : {
+    		return ColumnDataInfo{DomainType: 14, RangeType: 13, GenericType: meta.MapType}, nil
+    	}    		
+    	
+		case "org.apache.cassandra.db.marshal.MapType(org.apache.cassandra.db.marshal.IntegerType,org.apache.cassandra.db.marshal.DoubleType)" : {
+    		return ColumnDataInfo{DomainType: 14, RangeType: 4, GenericType: meta.MapType}, nil
+    	}    		
+    	
+		case "org.apache.cassandra.db.marshal.MapType(org.apache.cassandra.db.marshal.IntegerType,org.apache.cassandra.db.marshal.FloatType)" : {
+    		return ColumnDataInfo{DomainType: 14, RangeType: 3, GenericType: meta.MapType}, nil
+    	}    		
+    	
+		case "org.apache.cassandra.db.marshal.MapType(org.apache.cassandra.db.marshal.IntegerType,org.apache.cassandra.db.marshal.Int32Type)" : {
+    		return ColumnDataInfo{DomainType: 14, RangeType: 1, GenericType: meta.MapType}, nil
+    	}    		
+    	
+		case "org.apache.cassandra.db.marshal.MapType(org.apache.cassandra.db.marshal.IntegerType,org.apache.cassandra.db.marshal.IntegerType)" : {
+    		return ColumnDataInfo{DomainType: 14, RangeType: 14, GenericType: meta.MapType}, nil
+    	}    		
+    	
+		case "org.apache.cassandra.db.marshal.MapType(org.apache.cassandra.db.marshal.IntegerType,org.apache.cassandra.db.marshal.LongType)" : {
+    		return ColumnDataInfo{DomainType: 14, RangeType: 2, GenericType: meta.MapType}, nil
+    	}    		
+    	
+		case "org.apache.cassandra.db.marshal.MapType(org.apache.cassandra.db.marshal.IntegerType,org.apache.cassandra.db.marshal.TimeUUIDType)" : {
+    		return ColumnDataInfo{DomainType: 14, RangeType: 7, GenericType: meta.MapType}, nil
+    	}    		
+    	
+		case "org.apache.cassandra.db.marshal.MapType(org.apache.cassandra.db.marshal.IntegerType,org.apache.cassandra.db.marshal.TimestampType)" : {
+    		return ColumnDataInfo{DomainType: 14, RangeType: 5, GenericType: meta.MapType}, nil
+    	}    		
+    	
+		case "org.apache.cassandra.db.marshal.MapType(org.apache.cassandra.db.marshal.IntegerType,org.apache.cassandra.db.marshal.UTF8Type)" : {
+    		return ColumnDataInfo{DomainType: 14, RangeType: 0, GenericType: meta.MapType}, nil
+    	}    		
+    	
+		case "org.apache.cassandra.db.marshal.MapType(org.apache.cassandra.db.marshal.IntegerType,org.apache.cassandra.db.marshal.UUIDType)" : {
+    		return ColumnDataInfo{DomainType: 14, RangeType: 8, GenericType: meta.MapType}, nil
     	}    		
     	
 
@@ -627,6 +734,10 @@ func ParseValidator(validator string) (ColumnDataInfo, error) {
     	
 		case "org.apache.cassandra.db.marshal.MapType(org.apache.cassandra.db.marshal.LongType,org.apache.cassandra.db.marshal.Int32Type)" : {
     		return ColumnDataInfo{DomainType: 2, RangeType: 1, GenericType: meta.MapType}, nil
+    	}    		
+    	
+		case "org.apache.cassandra.db.marshal.MapType(org.apache.cassandra.db.marshal.LongType,org.apache.cassandra.db.marshal.IntegerType)" : {
+    		return ColumnDataInfo{DomainType: 2, RangeType: 14, GenericType: meta.MapType}, nil
     	}    		
     	
 		case "org.apache.cassandra.db.marshal.MapType(org.apache.cassandra.db.marshal.LongType,org.apache.cassandra.db.marshal.LongType)" : {
@@ -700,6 +811,10 @@ func ParseValidator(validator string) (ColumnDataInfo, error) {
     		return ColumnDataInfo{DomainType: 7, RangeType: 1, GenericType: meta.MapType}, nil
     	}    		
     	
+		case "org.apache.cassandra.db.marshal.MapType(org.apache.cassandra.db.marshal.TimeUUIDType,org.apache.cassandra.db.marshal.IntegerType)" : {
+    		return ColumnDataInfo{DomainType: 7, RangeType: 14, GenericType: meta.MapType}, nil
+    	}    		
+    	
 		case "org.apache.cassandra.db.marshal.MapType(org.apache.cassandra.db.marshal.TimeUUIDType,org.apache.cassandra.db.marshal.LongType)" : {
     		return ColumnDataInfo{DomainType: 7, RangeType: 2, GenericType: meta.MapType}, nil
     	}    		
@@ -769,6 +884,10 @@ func ParseValidator(validator string) (ColumnDataInfo, error) {
     	
 		case "org.apache.cassandra.db.marshal.MapType(org.apache.cassandra.db.marshal.TimestampType,org.apache.cassandra.db.marshal.Int32Type)" : {
     		return ColumnDataInfo{DomainType: 5, RangeType: 1, GenericType: meta.MapType}, nil
+    	}    		
+    	
+		case "org.apache.cassandra.db.marshal.MapType(org.apache.cassandra.db.marshal.TimestampType,org.apache.cassandra.db.marshal.IntegerType)" : {
+    		return ColumnDataInfo{DomainType: 5, RangeType: 14, GenericType: meta.MapType}, nil
     	}    		
     	
 		case "org.apache.cassandra.db.marshal.MapType(org.apache.cassandra.db.marshal.TimestampType,org.apache.cassandra.db.marshal.LongType)" : {
@@ -842,6 +961,10 @@ func ParseValidator(validator string) (ColumnDataInfo, error) {
     		return ColumnDataInfo{DomainType: 0, RangeType: 1, GenericType: meta.MapType}, nil
     	}    		
     	
+		case "org.apache.cassandra.db.marshal.MapType(org.apache.cassandra.db.marshal.UTF8Type,org.apache.cassandra.db.marshal.IntegerType)" : {
+    		return ColumnDataInfo{DomainType: 0, RangeType: 14, GenericType: meta.MapType}, nil
+    	}    		
+    	
 		case "org.apache.cassandra.db.marshal.MapType(org.apache.cassandra.db.marshal.UTF8Type,org.apache.cassandra.db.marshal.LongType)" : {
     		return ColumnDataInfo{DomainType: 0, RangeType: 2, GenericType: meta.MapType}, nil
     	}    		
@@ -911,6 +1034,10 @@ func ParseValidator(validator string) (ColumnDataInfo, error) {
     	
 		case "org.apache.cassandra.db.marshal.MapType(org.apache.cassandra.db.marshal.UUIDType,org.apache.cassandra.db.marshal.Int32Type)" : {
     		return ColumnDataInfo{DomainType: 8, RangeType: 1, GenericType: meta.MapType}, nil
+    	}    		
+    	
+		case "org.apache.cassandra.db.marshal.MapType(org.apache.cassandra.db.marshal.UUIDType,org.apache.cassandra.db.marshal.IntegerType)" : {
+    		return ColumnDataInfo{DomainType: 8, RangeType: 14, GenericType: meta.MapType}, nil
     	}    		
     	
 		case "org.apache.cassandra.db.marshal.MapType(org.apache.cassandra.db.marshal.UUIDType,org.apache.cassandra.db.marshal.LongType)" : {

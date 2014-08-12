@@ -7,6 +7,7 @@ import (
 	"github.com/relops/cqlc/integration"
 	"log"
 	"math"
+	"math/big"
 	"os"
 	"reflect"
 	"speter.net/go/exp/math/dec/inf"
@@ -24,6 +25,9 @@ func main() {
 
 	uuid, _ := gocql.RandomUUID()
 
+	biggie := new(big.Int)
+	biggie.SetString("830169365738487321165427203929228", 10)
+
 	basic := Basic{
 		Id:              "x",
 		Int32Column:     111,
@@ -36,6 +40,7 @@ func main() {
 		FloatColumn:     math.MaxFloat32,
 		DoubleColumn:    math.MaxFloat64,
 		DecimalColumn:   inf.NewDec(1, 3),
+		VarintColumn:    biggie,
 		TimeuuidColumn:  gocql.TimeUUID(),
 		UuidColumn:      uuid,
 		MapColumn:       map[string]string{"baz": "quux"},
@@ -53,6 +58,7 @@ func main() {
 		BASIC.FLOAT_COLUMN,
 		BASIC.DOUBLE_COLUMN,
 		BASIC.DECIMAL_COLUMN,
+		BASIC.VARINT_COLUMN,
 		BASIC.TIMESTAMP_COLUMN,
 		BASIC.TIMEUUID_COLUMN,
 		BASIC.UUID_COLUMN,
@@ -81,6 +87,7 @@ func main() {
 		BASIC.FLOAT_COLUMN,
 		BASIC.DOUBLE_COLUMN,
 		BASIC.DECIMAL_COLUMN,
+		BASIC.VARINT_COLUMN,
 		BASIC.TIMESTAMP_COLUMN,
 		BASIC.TIMEUUID_COLUMN,
 		BASIC.UUID_COLUMN,
@@ -148,6 +155,7 @@ func create(ctx *cqlc.Context, s *gocql.Session, basic Basic) {
 		SetStringSlice(BASIC.ARRAY_COLUMN, basic.ArrayColumn).
 		SetStringSlice(BASIC.SET_COLUMN, basic.SetColumn).
 		SetDecimal(BASIC.DECIMAL_COLUMN, basic.DecimalColumn).
+		SetVarint(BASIC.VARINT_COLUMN, basic.VarintColumn).
 		Exec(s)
 
 	if err != nil {
