@@ -5,7 +5,7 @@ test/.fixtures/collections/input.go: test/tmpl/input.tmpl test/schema_generator.
 	cd test; go run schema_generator.go
 
 schema: test/collections.cql
-	cqlsh -f test/keyspace.cql
+	-cqlsh -f test/keyspace.cql
 	cqlsh -k cqlc -f test/schema.cql
 	cqlsh -k cqlc -f test/collections.cql
 	cqlsh -k cqlc -f test/shared.cql
