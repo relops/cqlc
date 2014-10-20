@@ -13,7 +13,7 @@ import (
 func main() {
 
 	session := integration.TestSession("127.0.0.1", "cqlc")
-	integration.Truncate(session, EVENTS)
+	integration.Truncate(session, SIGNIFICANT_EVENTS)
 
 	result := "FAILED"
 
@@ -26,11 +26,12 @@ func main() {
 
 	for i := 0; i < events; i++ {
 		ts := gocql.TimeUUID()
-		ctx.Upsert(EVENTS).
-			SetInt64(EVENTS.SENSOR, 100).
-			SetTimeUUID(EVENTS.TIMESTAMP, ts).
-			SetFloat32(EVENTS.TEMPERATURE, 19.8).
-			SetInt32(EVENTS.PRESSURE, 357).
+		ctx.Upsert(SIGNIFICANT_EVENTS).
+			SetInt64(SIGNIFICANT_EVENTS.SENSOR, 100).
+			SetTimeUUID(SIGNIFICANT_EVENTS.TIMESTAMP, ts).
+			SetInt32(SIGNIFICANT_EVENTS.SIGNIFICANCE, int32(i/10)).
+			SetFloat32(SIGNIFICANT_EVENTS.TEMPERATURE, 19.8).
+			SetInt32(SIGNIFICANT_EVENTS.PRESSURE, 357).
 			Batch(batch)
 		switch i {
 		case 0:
@@ -45,7 +46,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	count, err := checkOrdering(session, EVENTS.TIMESTAMP)
+	count, err := checkOrdering(session, SIGNIFICANT_EVENTS.TIMESTAMP)
 
 	if err != nil {
 		log.Fatal(err)
@@ -54,7 +55,7 @@ func main() {
 
 	if count == events {
 
-		count, err = checkOrdering(session, EVENTS.TIMESTAMP.Desc())
+		count, err = checkOrdering(session, SIGNIFICANT_EVENTS.TIMESTAMP.Desc())
 
 		if err != nil {
 			log.Fatal(err)
@@ -63,13 +64,13 @@ func main() {
 
 		if count == events {
 
-			firstRead, err := checkOrderedLimit(session, EVENTS.TIMESTAMP)
+			firstRead, err := checkOrderedLimit(session, SIGNIFICANT_EVENTS.TIMESTAMP, SIGNIFICANT_EVENTS.SIGNIFICANCE)
 			if err != nil {
 				log.Fatal(err)
 				os.Exit(1)
 			}
 
-			lastRead, err := checkOrderedLimit(session, EVENTS.TIMESTAMP.Desc())
+			lastRead, err := checkOrderedLimit(session, SIGNIFICANT_EVENTS.TIMESTAMP.Desc())
 			if err != nil {
 				log.Fatal(err)
 				os.Exit(1)
@@ -94,27 +95,27 @@ func main() {
 	os.Stdout.WriteString(result)
 }
 
-func checkOrderedLimit(session *gocql.Session, col cqlc.ClusteredColumn) (gocql.UUID, error) {
+func checkOrderedLimit(session *gocql.Session, col ...cqlc.ClusteredColumn) (gocql.UUID, error) {
 	var u gocql.UUID
 	ctx := cqlc.NewContext()
 	_, err := ctx.Select().
-		From(EVENTS).
-		Where(EVENTS.SENSOR.Eq(100)).
-		OrderBy(col).
+		From(SIGNIFICANT_EVENTS).
+		Where(SIGNIFICANT_EVENTS.SENSOR.Eq(100)).
+		OrderBy(col...).
 		Limit(1).
-		Bind(EVENTS.TIMESTAMP.To(&u)).
+		Bind(SIGNIFICANT_EVENTS.TIMESTAMP.To(&u)).
 		FetchOne(session)
 
 	return u, err
 }
 
-func checkOrdering(session *gocql.Session, col cqlc.ClusteredColumn) (int, error) {
+func checkOrdering(session *gocql.Session, col ...cqlc.ClusteredColumn) (int, error) {
 
 	ctx := cqlc.NewContext()
 	iter, err := ctx.Select().
-		From(EVENTS).
-		Where(EVENTS.SENSOR.Eq(100)).
-		OrderBy(col).
+		From(SIGNIFICANT_EVENTS).
+		Where(SIGNIFICANT_EVENTS.SENSOR.Eq(100)).
+		OrderBy(col...).
 		Fetch(session)
 
 	if err != nil {
@@ -125,12 +126,12 @@ func checkOrdering(session *gocql.Session, col cqlc.ClusteredColumn) (int, error
 	count := 0
 	var previous time.Time
 
-	err = MapEvents(iter, func(e Events) (bool, error) {
+	err = MapSignificantEvents(iter, func(e SignificantEvents) (bool, error) {
 
 		current := e.Timestamp.Time()
 
 		if !previous.IsZero() {
-			if col.IsDescending() {
+			if col[0].IsDescending() {
 				if current.After(previous) {
 					return false, fmt.Errorf("Wrong ordering (DESC): previous was %v but current is %v", previous, current)
 				}

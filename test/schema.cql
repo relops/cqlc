@@ -111,6 +111,16 @@ CREATE TABLE events
     PRIMARY KEY (sensor, timestamp)
 );
 
+CREATE TABLE significant_events
+(
+    sensor bigint,
+    timestamp timeuuid,
+    significance int,
+    temperature float,
+    pressure int,
+    PRIMARY KEY (sensor, timestamp, significance)
+);
+
 -- Examples
 
 CREATE TABLE user_accounts (

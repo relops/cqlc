@@ -46,11 +46,20 @@ func renderSelect(ctx *Context, buf *bytes.Buffer) {
 		renderWhereClause(ctx, buf)
 	}
 
-	if len(ctx.ReadOptions.OrderBy) > 0 {
-		fmt.Fprintf(buf, " ORDER BY %s", ctx.ReadOptions.OrderBy)
-		if ctx.ReadOptions.Desc {
-			fmt.Fprintf(buf, " DESC")
+	if len(ctx.ReadOptions.Ordering) > 0 {
+
+		orderByFragments := make([]string, len(ctx.ReadOptions.Ordering))
+
+		for i, order := range ctx.ReadOptions.Ordering {
+			if order.Desc {
+				orderByFragments[i] = fmt.Sprintf("%s DESC", order.Col)
+			} else {
+				orderByFragments[i] = order.Col
+			}
 		}
+
+		orderBy := strings.Join(orderByFragments, ", ")
+		fmt.Fprintf(buf, " ORDER BY %s", orderBy)
 	}
 
 	if ctx.ReadOptions.Limit > 0 {

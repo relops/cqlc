@@ -63,11 +63,15 @@ var (
 	ErrCASBindings = errors.New("Invalid CAS bindings")
 )
 
+type OrderSpec struct {
+	Col  string
+	Desc bool
+}
+
 type ReadOptions struct {
 	Distinct bool
 	Limit    int
-	OrderBy  string
-	Desc     bool
+	Ordering []OrderSpec
 }
 
 // Context represents the state of the CQL statement that is being built by the application.
@@ -124,7 +128,7 @@ type Query interface {
 	Executable
 	Fetchable
 	// OrderBy sets the ordering of the returned query
-	OrderBy(col ClusteredColumn) Fetchable
+	OrderBy(col ...ClusteredColumn) Fetchable
 }
 
 type SelectWhereStep interface {
@@ -244,9 +248,15 @@ func (c *Context) Limit(lim int) Fetchable {
 	return c
 }
 
-func (c *Context) OrderBy(col ClusteredColumn) Fetchable {
-	c.ReadOptions.OrderBy = col.ClusterWith()
-	c.ReadOptions.Desc = col.IsDescending()
+func (c *Context) OrderBy(cols ...ClusteredColumn) Fetchable {
+
+	spec := make([]OrderSpec, len(cols))
+	for i, c := range cols {
+		spec[i] = OrderSpec{Col: c.ClusterWith(), Desc: c.IsDescending()}
+	}
+
+	c.ReadOptions.Ordering = spec
+
 	return c
 }
 
