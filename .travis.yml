@@ -8,6 +8,7 @@ before_install:
   - git clone https://github.com/retailnext/gocql
   - cd gocql
   - git checkout keyspace_metadata
+  - go get .
   - go install
   - go get github.com/stretchr/testify/assert
   - go get github.com/jteeuwen/go-bindata/...
@@ -16,7 +17,7 @@ before_install:
   - export PATH=$PATH:/home/travis/gopath/bin:/usr/local/cassandra/bin
 
 install:
-  - go get -v ./...
+  - go get github.com/jessevdk/go-flags
 
 script:
   - bash integration.sh
