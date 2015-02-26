@@ -5,9 +5,9 @@ go:
   - 1.4
 
 before_install:
-  - mkdir -p $GOPATH/src/github.com/retailnext
-  - git clone https://github.com/retailnext/gocql $GOPATH/src/github.com/retailnext/gocql
-  - pushd $GOPATH/src/github.com/retailnext/gocql
+  - mkdir -p $HOME/gopath/src/github.com/retailnext
+  - git clone https://github.com/retailnext/gocql $HOME/gopath/src/github.com/retailnext/gocql
+  - pushd $HOME/gopath/src/github.com/retailnext/gocql
   - git checkout keyspace_metadata
   - go get .
   - go install
