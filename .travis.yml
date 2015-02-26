@@ -5,6 +5,10 @@ go:
   - 1.4
 
 before_install:
+  - git clone https://github.com/retailnext/gocql
+  - cd gocql
+  - git checkout keyspace_metadata
+  - go install
   - go get github.com/stretchr/testify/assert
   - go get github.com/jteeuwen/go-bindata/...
   - go get github.com/relops/csvb
