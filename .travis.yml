@@ -6,10 +6,11 @@ go:
 
 before_install:
   - git clone https://github.com/retailnext/gocql
-  - cd gocql
+  - pushd gocql
   - git checkout keyspace_metadata
   - go get .
   - go install
+  - popd
   - go get github.com/stretchr/testify/assert
   - go get github.com/jteeuwen/go-bindata/...
   - go get github.com/relops/csvb
@@ -18,6 +19,7 @@ before_install:
 
 install:
   - go get github.com/jessevdk/go-flags
+  - go get speter.net/go/exp/math/dec/inf
 
 script:
   - bash integration.sh
