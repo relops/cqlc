@@ -114,6 +114,13 @@ func ColumnFamilies(session *gocql.Session, opts *Options) ([]ColumnFamily, erro
 
 	fmt.Printf("Reading schema from keyspace: %s\n", opts.Keyspace)
 
+	md, err := session.KeyspaceMetadata()
+	if err != nil {
+		return nil, err
+	}
+
+	fmt.Printf("Gocql MetaData: %+v\n", md)
+
 	iter := session.Query(`SELECT columnfamily_name
                            FROM system.schema_columnfamilies
                            WHERE keyspace_name = ?`, opts.Keyspace).Iter()
@@ -124,7 +131,7 @@ func ColumnFamilies(session *gocql.Session, opts *Options) ([]ColumnFamily, erro
 		columnFamilies = append(columnFamilies, cf)
 	}
 
-	err := iter.Close()
+	err = iter.Close()
 	if err != nil {
 		fmt.Errorf("Read error: %s", err)
 	}
