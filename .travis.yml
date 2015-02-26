@@ -1,8 +1,8 @@
 language: go
 
 go:
-  - 1.2
   - 1.3
+  - 1.4
 
 before_install:
   - go get github.com/stretchr/testify/assert
@@ -11,7 +11,7 @@ before_install:
   - go get github.com/cihub/seelog
   - export PATH=$PATH:/home/travis/gopath/bin:/usr/local/cassandra/bin
 
-install: 
+install:
   - go get -v ./...
 
 script:
