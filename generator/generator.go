@@ -102,6 +102,11 @@ func generateBinding(opts *Options, version string, w io.Writer) error {
 		}
 	}
 
+	// #############################
+	// TODO Temporary hack until upstream API is fixed
+	cluster.Keyspace = opts.Keyspace
+	// #############################
+
 	s, err := cluster.CreateSession()
 	defer s.Close()
 
