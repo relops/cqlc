@@ -32,21 +32,21 @@ type ColumnDataInfo struct {
 	GenericType meta.ColumnDataType
 }
 
-var literalTypes = map[meta.ColumnDataType]string{
-	meta.StringType:    "string",
-	meta.Int32Type:     "int32",
-	meta.LongType:      "int64",
-	meta.FloatType:     "float32",
-	meta.DoubleType:    "float64",
-	meta.TimestampType: "time.Time",
-	meta.TimeUUIDType:  "gocql.UUID",
-	meta.UUIDType:      "gocql.UUID",
-	meta.BooleanType:   "bool",
-	meta.CounterType:   "int64",
-	meta.MapType:       "map[string]string",
-	meta.BytesType:     "[]byte",
-	meta.DecimalType:   "*inf.Dec",
-	meta.VarintType:    "*big.Int",
+var literalTypes = map[gocql.Type]string{
+	gocql.TypeAscii:     "string",
+	gocql.TypeVarchar:   "string",
+	gocql.TypeInt:       "int32",
+	gocql.TypeBigInt:    "int64",
+	gocql.TypeFloat:     "float32",
+	gocql.TypeDouble:    "float64",
+	gocql.TypeTimestamp: "time.Time",
+	gocql.TypeTimeUUID:  "gocql.UUID",
+	gocql.TypeUUID:      "gocql.UUID",
+	gocql.TypeBoolean:   "bool",
+	gocql.TypeCounter:   "int64",
+	gocql.TypeBlob:      "[]byte",
+	gocql.TypeDecimal:   "*inf.Dec",
+	gocql.TypeVarint:    "*big.Int",
 }
 
 var customImportPaths = map[string]string{
@@ -55,21 +55,21 @@ var customImportPaths = map[string]string{
 	"*big.Int":   "math/big",
 }
 
-var columnTypes = map[meta.ColumnDataType]string{
-	meta.StringType:    "cqlc.String_Column",
-	meta.Int32Type:     "cqlc.Int32_Column",
-	meta.LongType:      "cqlc.Int64_Column",
-	meta.FloatType:     "cqlc.Float32_Column",
-	meta.DoubleType:    "cqlc.Float64_Column",
-	meta.TimestampType: "cqlc.Timestamp_Column",
-	meta.TimeUUIDType:  "cqlc.TimeUUID_Column",
-	meta.UUIDType:      "cqlc.UUID_Column",
-	meta.BooleanType:   "cqlc.Boolean_Column",
-	meta.CounterType:   "cqlc.Counter_Column",
-	meta.MapType:       "cqlc.Map_Column",
-	meta.BytesType:     "cqlc.Bytes_Column",
-	meta.DecimalType:   "cqlc.Decimal_Column",
-	meta.VarintType:    "cqlc.Varint_Column",
+var columnTypes = map[gocql.Type]string{
+	gocql.TypeAscii:     "cqlc.String_Column",
+	gocql.TypeVarchar:   "cqlc.String_Column",
+	gocql.TypeInt:       "cqlc.Int32_Column",
+	gocql.TypeBigInt:    "cqlc.Int64_Column",
+	gocql.TypeFloat:     "cqlc.Float32_Column",
+	gocql.TypeDouble:    "cqlc.Float64_Column",
+	gocql.TypeTimestamp: "cqlc.Timestamp_Column",
+	gocql.TypeTimeUUID:  "cqlc.TimeUUID_Column",
+	gocql.TypeUUID:      "cqlc.UUID_Column",
+	gocql.TypeBoolean:   "cqlc.Boolean_Column",
+	gocql.TypeCounter:   "cqlc.Counter_Column",
+	gocql.TypeBlob:      "cqlc.Bytes_Column",
+	gocql.TypeDecimal:   "cqlc.Decimal_Column",
+	gocql.TypeVarint:    "cqlc.Varint_Column",
 }
 
 type Binding struct {

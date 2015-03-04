@@ -72,10 +72,10 @@ func validateOptions(opts *Options) error {
 	return nil
 }
 
-func coalesceImports(cf []ColumnFamily) []string {
+func coalesceImports(md *gocql.KeyspaceMetadata) []string {
 
 	set := make(map[string]bool)
-	for _, path := range importPaths(cf) {
+	for _, path := range importPaths(md) {
 		set[path] = true
 	}
 
@@ -116,13 +116,13 @@ func generateBinding(opts *Options, version string, w io.Writer) error {
 
 	var release, cqlVersion string
 	var hostId gocql.UUID
-	err = s.Query(`SELECT release_version, cql_version, host_id 
+	err = s.Query(`SELECT release_version, cql_version, host_id
 		           FROM system.local`).Scan(&release, &cqlVersion, &hostId)
 	if err != nil {
 		return fmt.Errorf("System metadata error", err)
 	}
 
-	cf, err := ColumnFamilies(s, opts)
+	md, err := s.KeyspaceMetadata()
 
 	if err != nil {
 		return err
@@ -141,8 +141,8 @@ func generateBinding(opts *Options, version string, w io.Writer) error {
 	meta := make(map[string]interface{})
 	meta["Provenance"] = provenance
 	meta["Options"] = opts
-	meta["Imports"] = coalesceImports(cf)
-	meta["ColumnFamilies"] = cf
+	meta["Imports"] = coalesceImports(md)
+	meta["Tables"] = md.Tables
 
 	var b bytes.Buffer
 	if err := bindingTemplate.Execute(&b, meta); err != nil {
@@ -160,22 +160,34 @@ func generateBinding(opts *Options, version string, w io.Writer) error {
 
 	return nil
 }
-func importPaths(families []ColumnFamily) (imports []string) {
+
+func importPaths(md *gocql.KeyspaceMetadata) (imports []string) {
 	// Ideally need to use a set
 	paths := make(map[string]bool)
 
-	f := func(literal string) {
+	f := func(t *gocql.TypeInfo) {
+		literal := literalTypes[t.Type]
+		if t.Type == gocql.TypeCustom && strings.Contains(t.Custom, "TimestampType") {
+			fmt.Println("Cannot resolve timestamp until #314 has landed on #309")
+		}
 		if strings.Contains(literal, ".") {
 			paths[literal] = true
 		}
 	}
 
-	for _, cf := range families {
-		for _, col := range cf.Columns {
-			literal := literalTypes[col.DataInfo.DomainType]
-			f(literal)
-			literal = literalTypes[col.DataInfo.RangeType]
-			f(literal)
+	for _, t := range md.Tables {
+		for _, col := range t.Columns {
+			t := col.Type
+			//fmt.Printf("Resolved col type: %s\n", t.Type)
+			switch t.Type {
+			case gocql.TypeList, gocql.TypeSet:
+				f(t.Elem)
+			case gocql.TypeMap:
+				f(t.Key)
+				f(t.Elem)
+			default:
+				f(&t)
+			}
 		}
 	}
 
