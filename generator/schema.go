@@ -3,32 +3,11 @@ package generator
 import (
 	"errors"
 	"github.com/gocql/gocql"
-	"github.com/relops/cqlc/meta"
 )
 
 var (
 	ErrTypeUnknown = errors.New("unknown data type")
 )
-
-type ColumnKeyType uint
-
-const (
-	PartitionKey ColumnKeyType = iota
-	ClusteringKey
-	RegularColumn
-)
-
-var keyTypes = map[string]ColumnKeyType{
-	"partition_key":  PartitionKey,
-	"clustering_key": ClusteringKey,
-	"regular":        RegularColumn,
-}
-
-type ColumnDataInfo struct {
-	DomainType  meta.ColumnDataType
-	RangeType   meta.ColumnDataType
-	GenericType meta.ColumnDataType
-}
 
 var literalTypes = map[gocql.Type]string{
 	gocql.TypeAscii:     "string",
