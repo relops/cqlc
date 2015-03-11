@@ -43,6 +43,8 @@ func (a ByComponentIndexHack) Less(i, j int) bool { return a[i].ComponentIndex <
 
 // ###########################################################
 
+// TODO This is metadata specific to the column family that should be cachec at compilation
+// rather than being post-processed like this
 func isCounterColumnFamily(t gocql.TableMetadata) bool {
 	for _, col := range t.Columns {
 		if isCounterColumn(*col) {
@@ -64,6 +66,8 @@ func supportsPartitioning(c gocql.ColumnMetadata) bool {
 	return c.Kind == gocql.PARTITION_KEY
 }
 
+// TODO The upstream API should compute this information once at compile time,
+// rather than many times during its usage
 func isLastComponent(c gocql.ColumnMetadata, allCols map[string]*gocql.ColumnMetadata) bool {
 	cols := make([]*gocql.ColumnMetadata, 0, len(allCols))
 
