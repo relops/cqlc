@@ -27,7 +27,7 @@ const (
         {{ $ColStructType := snakeToCamel $col.Name }}
         {{ $QualifiedColStructType := sprint $StructType $ColStructType }}
         type {{$QualifiedColStructType}}Column struct{
-            {{ if $col.SupportsClustering }}
+            {{ if supportsClustering $col }}
             desc bool
             {{ end }}
         }
@@ -36,7 +36,7 @@ const (
             return "{{$col.Name}}"
         }
 
-        {{ if $col.IsListType }}
+        {{ if isListType $col }}
 
             func (b * {{$QualifiedColStructType}}Column ) ListType() cqlc.Column {
                 return &{{ $QualifiedColStructType }}Column{}
@@ -48,7 +48,7 @@ const (
             return cqlc.ColumnBinding{Column: b, Value: value}
         }
 
-        {{ if $col.SecondaryIndex }}
+        {{ if hasSecondaryIndex $col }}
             func (b * {{$QualifiedColStructType}}Column ) Eq(value {{valueType $col}}) cqlc.Condition {
                 column := &{{$QualifiedColStructType}}Column{}
                 binding := cqlc.ColumnBinding{Column: column, Value: value}
@@ -61,7 +61,7 @@ const (
                 return true
             }
         {{ else }}
-            {{ if $col.SupportsPartitioning }}
+            {{ if supportsPartitioning $col }}
                 func (b * {{$QualifiedColStructType}}Column ) Eq(value {{valueType $col}}) cqlc.Condition {
                     column := &{{$QualifiedColStructType}}Column{}
                     binding := cqlc.ColumnBinding{Column: column, Value: value}
@@ -70,7 +70,7 @@ const (
                 func (b * {{$QualifiedColStructType}}Column ) PartitionBy() cqlc.Column {
                     return b
                 }
-                {{ if $col.IsLastComponent }}
+                {{ if isLastComponent $col $cf.Columns }}
                     func (b * {{$QualifiedColStructType}}Column ) In(value ...{{valueType $col}}) cqlc.Condition {
                         column := &{{$QualifiedColStructType}}Column{}
                         binding := cqlc.ColumnBinding{Column: column, Value: value}
@@ -78,7 +78,7 @@ const (
                     }
                 {{ end }}
             {{ end }}
-            {{ if $col.SupportsClustering }}
+            {{ if supportsClustering $col }}
 
                 func (b * {{$QualifiedColStructType}}Column ) ClusterWith() string {
                     return b.ColumnName()
@@ -92,7 +92,7 @@ const (
                     return b.desc
                 }
 
-                {{ if not $col.SecondaryIndex }}
+                {{ if not (hasSecondaryIndex $col) }}
                     func (b * {{$QualifiedColStructType}}Column ) Eq(value {{valueType $col}}) cqlc.Condition {
                         column := &{{$QualifiedColStructType}}Column{}
                         binding := cqlc.ColumnBinding{Column: column, Value: value}
@@ -100,7 +100,7 @@ const (
                     }
                 {{ end }}
 
-                {{ if $col.IsLastComponent }}
+                {{ if isLastComponent $col $cf.Columns }}
                     func (b * {{$QualifiedColStructType}}Column ) In(value ...{{valueType $col}}) cqlc.Condition {
                         column := &{{$QualifiedColStructType}}Column{}
                         binding := cqlc.ColumnBinding{Column: column, Value: value}
@@ -146,7 +146,7 @@ const (
 
     type {{$StructType}}Def struct {
         {{range $_, $col := $cf.Columns}}
-            {{toUpper $col.Name}} {{columnType $col $cf.Columns}}
+            {{toUpper $col.Name}} {{columnType $col $cf.Columns }}
         {{end}}
     }
 
@@ -191,7 +191,7 @@ const (
         return nil
     }
 
-    {{ if .IsCounter }}
+    {{ if isCounterColumnFamily $cf }}
         func (s * {{$StructType}}Def ) IsCounterTable() bool {
             return true
         }
@@ -258,7 +258,7 @@ const (
     {{range $_, $col := $cf.Columns}}
         {{ $ColStructType := snakeToCamel $col.Name }}
         {{ $QualifiedColStructType := sprint $StructType $ColStructType }}
-        func (s *{{$StructType}}Def) {{ $ColStructType }}Column() {{columnType $col $cf.Columns}} {
+        func (s *{{$StructType}}Def) {{ $ColStructType }}Column() {{columnType $col $cf.Columns }} {
             return &{{ $QualifiedColStructType }}Column{}
         }
     {{end}}

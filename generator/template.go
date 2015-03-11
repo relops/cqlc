@@ -15,12 +15,18 @@ var camelRegex = regexp.MustCompile("[0-9A-Za-z]+")
 
 func init() {
 	m := template.FuncMap{
-		"toUpper":         strings.ToUpper,
-		"sprint":          fmt.Sprint,
-		"snakeToCamel":    snakeToCamel,
-		"columnType":      columnType,
-		"valueType":       valueType,
-		"isCounterColumn": isCounterColumn,
+		"toUpper":               strings.ToUpper,
+		"sprint":                fmt.Sprint,
+		"snakeToCamel":          snakeToCamel,
+		"columnType":            columnType,
+		"valueType":             valueType,
+		"isCounterColumn":       isCounterColumn,
+		"supportsClustering":    supportsClustering,
+		"supportsPartitioning":  supportsPartitioning,
+		"isListType":            isListType,
+		"hasSecondaryIndex":     hasSecondaryIndex,
+		"isLastComponent":       isLastComponent,
+		"isCounterColumnFamily": isCounterColumnFamily,
 	}
 	temp, _ := generator_tmpl_binding_tmpl()
 	bindingTemplate = template.Must(template.New("binding.tmpl").Funcs(m).Parse(string(temp)))
@@ -37,13 +43,28 @@ func (a ByComponentIndexHack) Less(i, j int) bool { return a[i].ComponentIndex <
 
 // ###########################################################
 
+func isCounterColumnFamily(t gocql.TableMetadata) bool {
+	for _, col := range t.Columns {
+		if isCounterColumn(*col) {
+			return true
+		}
+	}
+	return false
+}
+
 func isCounterColumn(c gocql.ColumnMetadata) bool {
 	return c.Type.Type == gocql.TypeCounter
 }
 
-func columnType(c gocql.ColumnMetadata, allCols map[string]*gocql.ColumnMetadata) string {
+func supportsClustering(c gocql.ColumnMetadata) bool {
+	return c.Kind == gocql.CLUSTERING_KEY
+}
 
-	// ###########################################################
+func supportsPartitioning(c gocql.ColumnMetadata) bool {
+	return c.Kind == gocql.PARTITION_KEY
+}
+
+func isLastComponent(c gocql.ColumnMetadata, allCols map[string]*gocql.ColumnMetadata) bool {
 	cols := make([]*gocql.ColumnMetadata, 0, len(allCols))
 
 	for _, meta := range allCols {
@@ -52,7 +73,7 @@ func columnType(c gocql.ColumnMetadata, allCols map[string]*gocql.ColumnMetadata
 
 	sort.Sort(sort.Reverse(ByComponentIndexHack(cols)))
 
-	isLastComponent := false
+	lastComponent := false
 	foundParitioned := false
 	foundClustered := false
 
@@ -64,20 +85,31 @@ func columnType(c gocql.ColumnMetadata, allCols map[string]*gocql.ColumnMetadata
 
 		if !foundClustered {
 			if cols[i].Kind == gocql.CLUSTERING_KEY {
-				isLastComponent = true
+				lastComponent = true
 				foundClustered = true
 			}
 		}
 
 		if !foundParitioned {
 			if cols[i].Kind == gocql.PARTITION_KEY {
-				isLastComponent = true
+				lastComponent = true
 				foundParitioned = true
 			}
 		}
 	}
 
-	// ###########################################################
+	return lastComponent
+}
+
+func isListType(c gocql.ColumnMetadata) bool {
+	return c.Type.Type == gocql.TypeList || c.Type.Type == gocql.TypeSet
+}
+
+func hasSecondaryIndex(c gocql.ColumnMetadata) bool {
+	return c.Index.Name != ""
+}
+
+func columnType(c gocql.ColumnMetadata, allCols map[string]*gocql.ColumnMetadata) string {
 
 	t := c.Type
 
@@ -86,13 +118,13 @@ func columnType(c gocql.ColumnMetadata, allCols map[string]*gocql.ColumnMetadata
 	// TODO The Kind field should be an enum, not a string
 	if c.Kind == gocql.CLUSTERING_KEY {
 		replacement := ".Clustered"
-		if isLastComponent {
+		if isLastComponent(c, allCols) {
 			replacement = ".LastClustered"
 		}
 		baseType = strings.Replace(baseType, ".", replacement, 1)
 	} else if c.Kind == gocql.PARTITION_KEY {
 		replacement := ".Partitioned"
-		if isLastComponent {
+		if isLastComponent(c, allCols) {
 			replacement = ".LastPartitioned"
 		}
 		baseType = strings.Replace(baseType, ".", replacement, 1)
