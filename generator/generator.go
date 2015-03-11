@@ -102,17 +102,13 @@ func generateBinding(opts *Options, version string, w io.Writer) error {
 		}
 	}
 
-	// #############################
-	// TODO Temporary hack until upstream API is fixed
-	cluster.Keyspace = opts.Keyspace
-	// #############################
-
 	s, err := cluster.CreateSession()
-	defer s.Close()
 
 	if err != nil {
 		return fmt.Errorf("Connect error", err)
 	}
+
+	defer s.Close()
 
 	var release, cqlVersion string
 	var hostId gocql.UUID
@@ -122,7 +118,7 @@ func generateBinding(opts *Options, version string, w io.Writer) error {
 		return fmt.Errorf("System metadata error", err)
 	}
 
-	md, err := s.KeyspaceMetadata()
+	md, err := s.KeyspaceMetadata(opts.Keyspace)
 
 	if err != nil {
 		return err

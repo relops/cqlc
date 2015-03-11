@@ -2,10 +2,8 @@ package generator
 
 import (
 	"errors"
-	"fmt"
 	"github.com/gocql/gocql"
 	"github.com/relops/cqlc/meta"
-	"sort"
 )
 
 var (
@@ -109,6 +107,7 @@ func (c *Column) IsListType() bool {
 	return c.DataInfo.GenericType == meta.SliceType
 }
 
+/*
 func ColumnFamilies(session *gocql.Session, opts *Options) ([]ColumnFamily, error) {
 	verbose := len(opts.Verbose) > 0
 
@@ -217,3 +216,4 @@ func ColumnFamilies(session *gocql.Session, opts *Options) ([]ColumnFamily, erro
 
 	return columnFamilies, err
 }
+*/
