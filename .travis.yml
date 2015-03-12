@@ -5,13 +5,6 @@ go:
   - 1.4
 
 before_install:
-  - mkdir -p $HOME/gopath/src/github.com/gocql
-  - git clone https://github.com/retailnext/gocql $HOME/gopath/src/github.com/gocql/gocql
-  - pushd $HOME/gopath/src/github.com/gocql/gocql
-  - git checkout keyspace_metadata
-  - go get .
-  - go install
-  - popd
   - go get github.com/stretchr/testify/assert
   - go get github.com/jteeuwen/go-bindata/...
   - go get github.com/relops/csvb
@@ -19,8 +12,7 @@ before_install:
   - export PATH=$PATH:/home/travis/gopath/bin:/usr/local/cassandra/bin
 
 install:
-  - go get github.com/jessevdk/go-flags
-  - go get speter.net/go/exp/math/dec/inf
+  - go get -v ./...
 
 script:
   - bash integration.sh
