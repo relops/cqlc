@@ -163,16 +163,13 @@ func importPaths(md *gocql.KeyspaceMetadata) (imports []string) {
 
 	f := func(t *gocql.TypeInfo) {
 		literal := literalTypes[t.Type]
-		if t.Type == gocql.TypeCustom && strings.Contains(t.Custom, "TimestampType") {
-			fmt.Println("Cannot resolve timestamp until #314 has landed on #309")
-		}
 		if strings.Contains(literal, ".") {
 			paths[literal] = true
 		}
 	}
 
-	for _, t := range md.Tables {
-		for _, col := range t.Columns {
+	for _, table := range md.Tables {
+		for _, col := range table.Columns {
 			t := col.Type
 			switch t.Type {
 			case gocql.TypeList, gocql.TypeSet:
