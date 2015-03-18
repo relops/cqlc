@@ -70,7 +70,7 @@ const (
                 func (b * {{$QualifiedColStructType}}Column ) PartitionBy() cqlc.Column {
                     return b
                 }
-                {{ if isLastComponent $col $cf.Columns }}
+                {{ if isLastComponent $col $cf }}
                     func (b * {{$QualifiedColStructType}}Column ) In(value ...{{valueType $col}}) cqlc.Condition {
                         column := &{{$QualifiedColStructType}}Column{}
                         binding := cqlc.ColumnBinding{Column: column, Value: value}
@@ -100,7 +100,7 @@ const (
                     }
                 {{ end }}
 
-                {{ if isLastComponent $col $cf.Columns }}
+                {{ if isLastComponent $col $cf }}
                     func (b * {{$QualifiedColStructType}}Column ) In(value ...{{valueType $col}}) cqlc.Condition {
                         column := &{{$QualifiedColStructType}}Column{}
                         binding := cqlc.ColumnBinding{Column: column, Value: value}
@@ -146,7 +146,7 @@ const (
 
     type {{$StructType}}Def struct {
         {{range $_, $col := $cf.Columns}}
-            {{toUpper $col.Name}} {{columnType $col $cf.Columns }}
+            {{toUpper $col.Name}} {{columnType $col $cf }}
         {{end}}
     }
 
@@ -258,7 +258,7 @@ const (
     {{range $_, $col := $cf.Columns}}
         {{ $ColStructType := snakeToCamel $col.Name }}
         {{ $QualifiedColStructType := sprint $StructType $ColStructType }}
-        func (s *{{$StructType}}Def) {{ $ColStructType }}Column() {{columnType $col $cf.Columns }} {
+        func (s *{{$StructType}}Def) {{ $ColStructType }}Column() {{columnType $col $cf }} {
             return &{{ $QualifiedColStructType }}Column{}
         }
     {{end}}

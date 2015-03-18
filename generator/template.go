@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/gocql/gocql"
 	"regexp"
-	"sort"
 	"strings"
 	"text/template"
 )
@@ -35,11 +34,11 @@ func init() {
 // ###########################################################
 // TODO Delete this expensive hack
 
-type ByComponentIndexHack []*gocql.ColumnMetadata
+// type ByComponentIndexHack []*gocql.ColumnMetadata
 
-func (a ByComponentIndexHack) Len() int           { return len(a) }
-func (a ByComponentIndexHack) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
-func (a ByComponentIndexHack) Less(i, j int) bool { return a[i].ComponentIndex < a[j].ComponentIndex }
+// func (a ByComponentIndexHack) Len() int           { return len(a) }
+// func (a ByComponentIndexHack) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
+// func (a ByComponentIndexHack) Less(i, j int) bool { return a[i].ComponentIndex < a[j].ComponentIndex }
 
 // ###########################################################
 
@@ -68,41 +67,9 @@ func supportsPartitioning(c gocql.ColumnMetadata) bool {
 
 // TODO The upstream API should compute this information once at compile time,
 // rather than many times during its usage
-func isLastComponent(c gocql.ColumnMetadata, allCols map[string]*gocql.ColumnMetadata) bool {
-	cols := make([]*gocql.ColumnMetadata, 0, len(allCols))
-
-	for _, meta := range allCols {
-		cols = append(cols, meta)
-	}
-
-	sort.Sort(sort.Reverse(ByComponentIndexHack(cols)))
-
-	lastComponent := false
-	foundParitioned := false
-	foundClustered := false
-
-	for i, _ := range cols {
-
-		if foundClustered && foundParitioned {
-			break
-		}
-
-		if !foundClustered {
-			if cols[i].Kind == gocql.CLUSTERING_KEY {
-				lastComponent = true
-				foundClustered = true
-			}
-		}
-
-		if !foundParitioned {
-			if cols[i].Kind == gocql.PARTITION_KEY {
-				lastComponent = true
-				foundParitioned = true
-			}
-		}
-	}
-
-	return lastComponent
+func isLastComponent(c gocql.ColumnMetadata, t *gocql.TableMetadata) bool {
+	//fmt.Printf("Last Component: %s, this: %s\n", t.LastComponent.Name, c.Name)
+	return c.LastComponent
 }
 
 func isListType(c gocql.ColumnMetadata) bool {
@@ -113,7 +80,7 @@ func hasSecondaryIndex(c gocql.ColumnMetadata) bool {
 	return c.Index.Name != ""
 }
 
-func columnType(c gocql.ColumnMetadata, allCols map[string]*gocql.ColumnMetadata) string {
+func columnType(c gocql.ColumnMetadata, table *gocql.TableMetadata) string {
 
 	t := c.Type
 
@@ -122,13 +89,13 @@ func columnType(c gocql.ColumnMetadata, allCols map[string]*gocql.ColumnMetadata
 	// TODO The Kind field should be an enum, not a string
 	if c.Kind == gocql.CLUSTERING_KEY {
 		replacement := ".Clustered"
-		if isLastComponent(c, allCols) {
+		if c.LastComponent {
 			replacement = ".LastClustered"
 		}
 		baseType = strings.Replace(baseType, ".", replacement, 1)
 	} else if c.Kind == gocql.PARTITION_KEY {
 		replacement := ".Partitioned"
-		if isLastComponent(c, allCols) {
+		if c.LastComponent {
 			replacement = ".LastPartitioned"
 		}
 		baseType = strings.Replace(baseType, ".", replacement, 1)
