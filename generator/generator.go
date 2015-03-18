@@ -174,7 +174,6 @@ func importPaths(md *gocql.KeyspaceMetadata) (imports []string) {
 	for _, t := range md.Tables {
 		for _, col := range t.Columns {
 			t := col.Type
-			//fmt.Printf("Resolved col type: %s\n", t.Type)
 			switch t.Type {
 			case gocql.TypeList, gocql.TypeSet:
 				f(t.Elem)
