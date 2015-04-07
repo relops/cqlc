@@ -96,6 +96,10 @@ func (c *Context) Set{{ $ot.Prefix }}{{ $it.Prefix }}Map(col {{ $ot.Prefix }}{{ 
 	set(c, col, value)
 	return c
 }
+type Equality{{ $ot.Prefix }}{{ $it.Prefix }}MapColumn interface {
+	{{ $ot.Prefix }}{{ $it.Prefix }}MapColumn
+	Eq(value {{ $it.Literal }}) Condition
+}
 {{ end }}{{ end }}{{ end }}
 
 {{ range $_, $t := .types }}
