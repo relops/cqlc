@@ -69,7 +69,16 @@ func supportsPartitioning(c gocql.ColumnMetadata) bool {
 // rather than many times during its usage
 func isLastComponent(c gocql.ColumnMetadata, t *gocql.TableMetadata) bool {
 	//fmt.Printf("Last Component: %s, this: %s\n", t.LastComponent.Name, c.Name)
-	return c.LastComponent
+	switch c.Kind {
+	case gocql.PARTITION_KEY:
+		lastPartitionKeyColumn := t.PartitionKey[len(t.PartitionKey)-1]
+		return c.Name == lastPartitionKeyColumn.Name
+	case gocql.CLUSTERING_KEY:
+		lastClusteringColumn := t.ClusteringColumns[len(t.ClusteringColumns)-1]
+		return c.Name == lastClusteringColumn.Name
+	default:
+		return false
+	}
 }
 
 func isListType(c gocql.ColumnMetadata) bool {
@@ -89,13 +98,13 @@ func columnType(c gocql.ColumnMetadata, table *gocql.TableMetadata) string {
 	// TODO The Kind field should be an enum, not a string
 	if c.Kind == gocql.CLUSTERING_KEY {
 		replacement := ".Clustered"
-		if c.LastComponent {
+		if isLastComponent(c, table) {
 			replacement = ".LastClustered"
 		}
 		baseType = strings.Replace(baseType, ".", replacement, 1)
 	} else if c.Kind == gocql.PARTITION_KEY {
 		replacement := ".Partitioned"
-		if c.LastComponent {
+		if isLastComponent(c, table) {
 			replacement = ".LastPartitioned"
 		}
 		baseType = strings.Replace(baseType, ".", replacement, 1)
