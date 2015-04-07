@@ -31,18 +31,7 @@ func init() {
 	bindingTemplate = template.Must(template.New("binding.tmpl").Funcs(m).Parse(string(temp)))
 }
 
-// ###########################################################
-// TODO Delete this expensive hack
-
-// type ByComponentIndexHack []*gocql.ColumnMetadata
-
-// func (a ByComponentIndexHack) Len() int           { return len(a) }
-// func (a ByComponentIndexHack) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
-// func (a ByComponentIndexHack) Less(i, j int) bool { return a[i].ComponentIndex < a[j].ComponentIndex }
-
-// ###########################################################
-
-// TODO This is metadata specific to the column family that should be cachec at compilation
+// TODO This is metadata specific to the column family that should be cached at compilation
 // rather than being post-processed like this
 func isCounterColumnFamily(t gocql.TableMetadata) bool {
 	for _, col := range t.Columns {
@@ -65,10 +54,7 @@ func supportsPartitioning(c gocql.ColumnMetadata) bool {
 	return c.Kind == gocql.PARTITION_KEY
 }
 
-// TODO The upstream API should compute this information once at compile time,
-// rather than many times during its usage
 func isLastComponent(c gocql.ColumnMetadata, t *gocql.TableMetadata) bool {
-	//fmt.Printf("Last Component: %s, this: %s\n", t.LastComponent.Name, c.Name)
 	switch c.Kind {
 	case gocql.PARTITION_KEY:
 		lastPartitionKeyColumn := t.PartitionKey[len(t.PartitionKey)-1]
