@@ -182,3 +182,11 @@ func TestKeyspace(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, out, "PASSED")
 }
+
+func TestCompositeIndex(t *testing.T) {
+
+	out, err := runFixture("composite_index", opts)
+
+	assert.NoError(t, err)
+	assert.Equal(t, out, "PASSED")
+}

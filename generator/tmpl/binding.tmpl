@@ -62,11 +62,13 @@ const (
             }
         {{ else }}
             {{ if supportsPartitioning $col }}
-                func (b * {{$QualifiedColStructType}}Column ) Eq(value {{valueType $col}}) cqlc.Condition {
-                    column := &{{$QualifiedColStructType}}Column{}
-                    binding := cqlc.ColumnBinding{Column: column, Value: value}
-                    return cqlc.Condition{Binding: binding, Predicate: cqlc.EqPredicate}
-                }
+                {{ if not (hasSecondaryIndex $col) }}
+                    func (b * {{$QualifiedColStructType}}Column ) Eq(value {{valueType $col}}) cqlc.Condition {
+                        column := &{{$QualifiedColStructType}}Column{}
+                        binding := cqlc.ColumnBinding{Column: column, Value: value}
+                        return cqlc.Condition{Binding: binding, Predicate: cqlc.EqPredicate}
+                    }
+                {{ end }}
                 func (b * {{$QualifiedColStructType}}Column ) PartitionBy() cqlc.Column {
                     return b
                 }

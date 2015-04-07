@@ -84,6 +84,18 @@ create table reverse_timeseries (
 )
 WITH CLUSTERING ORDER BY (insertion_time DESC);
 
+-- https://github.com/relops/cqlc/issues/7
+
+CREATE TABLE simple_indexed_composite (
+   x int,
+   y int,
+   z int,
+   PRIMARY KEY ((x,y),z)
+);
+
+CREATE INDEX simple_indexed_composite_by_y
+ON simple_indexed_composite(y);
+
 -- Pair of orginal and a clone
 
 CREATE TABLE original
