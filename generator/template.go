@@ -43,7 +43,7 @@ func isCounterColumnFamily(t gocql.TableMetadata) bool {
 }
 
 func isCounterColumn(c gocql.ColumnMetadata) bool {
-	return c.Type.Type == gocql.TypeCounter
+	return c.Type.Type() == gocql.TypeCounter
 }
 
 func supportsClustering(c gocql.ColumnMetadata) bool {
@@ -68,7 +68,7 @@ func isLastComponent(c gocql.ColumnMetadata, t *gocql.TableMetadata) bool {
 }
 
 func isListType(c gocql.ColumnMetadata) bool {
-	return c.Type.Type == gocql.TypeList || c.Type.Type == gocql.TypeSet
+	return c.Type.Type() == gocql.TypeList || c.Type.Type() == gocql.TypeSet
 }
 
 func hasSecondaryIndex(c gocql.ColumnMetadata) bool {
@@ -79,7 +79,7 @@ func columnType(c gocql.ColumnMetadata, table *gocql.TableMetadata) string {
 
 	t := c.Type
 
-	baseType := columnTypes[t.Type]
+	baseType := columnTypes[t.Type()]
 
 	// TODO The Kind field should be an enum, not a string
 	if c.Kind == gocql.CLUSTERING_KEY {
@@ -99,7 +99,7 @@ func columnType(c gocql.ColumnMetadata, table *gocql.TableMetadata) string {
 		baseType = strings.Replace(baseType, ".", replacement, 1)
 	}
 
-	switch t.Type {
+	switch t.Type() {
 	case gocql.TypeMap:
 		// TODO This is very hacky - basically the types need to to be strings
 		// in order to template out properly
@@ -108,8 +108,11 @@ func columnType(c gocql.ColumnMetadata, table *gocql.TableMetadata) string {
 		// HACK UPDATE (04/03/2015): The domain and range types have been
 		// superseded by gocql.TypeInfo.{Key,Elem}, but this still needs to get pulled through
 
-		key := columnTypes[t.Key.Type]
-		elem := columnTypes[t.Elem.Type]
+		// TODO should probably not swallow this
+		ct, _ := t.(gocql.CollectionType)
+
+		key := columnTypes[ct.Key.Type()]
+		elem := columnTypes[ct.Elem.Type()]
 
 		key = strings.Replace(key, "_Column", "", 1)
 
@@ -118,7 +121,9 @@ func columnType(c gocql.ColumnMetadata, table *gocql.TableMetadata) string {
 
 		return fmt.Sprintf("%s%s", key, elem)
 	case gocql.TypeList, gocql.TypeSet:
-		elem := columnTypes[t.Elem.Type]
+		// TODO should probably not swallow this
+		ct, _ := t.(gocql.CollectionType)
+		elem := columnTypes[ct.Elem.Type()]
 		return strings.Replace(elem, "_", "Slice", 1)
 	default:
 		return strings.Replace(baseType, "_", "", 1)
@@ -131,16 +136,20 @@ func valueType(c gocql.ColumnMetadata) string {
 
 	t := c.Type
 
-	switch t.Type {
+	switch t.Type() {
 	case gocql.TypeList, gocql.TypeSet:
-		literal := literalTypes[t.Elem.Type]
+		// TODO should probably not swallow this
+		ct, _ := t.(gocql.CollectionType)
+		literal := literalTypes[ct.Elem.Type()]
 		return fmt.Sprintf("[]%s", literal)
 	case gocql.TypeMap:
-		key := literalTypes[t.Key.Type]
-		elem := literalTypes[t.Elem.Type]
+		// TODO should probably not swallow this
+		ct, _ := t.(gocql.CollectionType)
+		key := literalTypes[ct.Key.Type()]
+		elem := literalTypes[ct.Elem.Type()]
 		return fmt.Sprintf("map[%s]%s", key, elem)
 	default:
-		return literalTypes[t.Type]
+		return literalTypes[t.Type()]
 	}
 
 }
