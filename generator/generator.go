@@ -161,8 +161,8 @@ func importPaths(md *gocql.KeyspaceMetadata) (imports []string) {
 	// Ideally need to use a set
 	paths := make(map[string]bool)
 
-	f := func(t *gocql.TypeInfo) {
-		literal := literalTypes[t.Type]
+	f := func(t gocql.TypeInfo) {
+		literal := literalTypes[t.Type()]
 		if strings.Contains(literal, ".") {
 			paths[literal] = true
 		}
@@ -171,14 +171,19 @@ func importPaths(md *gocql.KeyspaceMetadata) (imports []string) {
 	for _, table := range md.Tables {
 		for _, col := range table.Columns {
 			t := col.Type
-			switch t.Type {
+			switch t.Type() {
 			case gocql.TypeList, gocql.TypeSet:
-				f(t.Elem)
+				// TODO should probably not swallow this
+				ct, _ := t.(gocql.CollectionType)
+				f(ct.Elem)
 			case gocql.TypeMap:
-				f(t.Key)
-				f(t.Elem)
+				// TODO should probably not swallow this
+				ct, _ := t.(gocql.CollectionType)
+				f(ct.Key)
+				f(ct.Elem)
 			default:
-				f(&t)
+				nt, _ := t.(gocql.NativeType)
+				f(nt)
 			}
 		}
 	}
