@@ -52,10 +52,10 @@ func Generate(opts *Options, version string) error {
 		return err
 	}
 	if b.Len() > 0 {
-		if err := os.MkdirAll(filepath.Dir(opts.Output), os.ModePerm); err != nil {
+		if err := os.MkdirAll(filepath.Dir(opts.Output), 0755); err != nil {
 			return err
 		}
-		if err := ioutil.WriteFile(opts.Output, b.Bytes(), os.ModePerm); err != nil {
+		if err := ioutil.WriteFile(opts.Output, b.Bytes(), 0644); err != nil {
 			return err
 		}
 	}
