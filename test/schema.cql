@@ -96,6 +96,17 @@ CREATE TABLE simple_indexed_composite (
 CREATE INDEX simple_indexed_composite_by_y
 ON simple_indexed_composite(y);
 
+-- https://github.com/relops/cqlc/issues/17
+
+CREATE TABLE indexed_map (
+   x int,
+   y map<varchar,varchar>,
+   PRIMARY KEY (x)
+);
+
+CREATE INDEX indexed_map_by_y
+ON indexed_map(KEYS(y));
+
 -- Pair of orginal and a clone
 
 CREATE TABLE original
