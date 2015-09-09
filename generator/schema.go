@@ -28,7 +28,7 @@ var literalTypes = map[gocql.Type]string{
 
 var customImportPaths = map[string]string{
 	"gocql.UUID": "github.com/gocql/gocql",
-	"*inf.Dec":   "speter.net/go/exp/math/dec/inf",
+	"*inf.Dec":   "gopkg.in/inf.v0",
 	"*big.Int":   "math/big",
 }
 
