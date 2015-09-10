@@ -24,7 +24,6 @@ before_install:
   - go get github.com/jteeuwen/go-bindata/...
   - go get github.com/relops/csvb
   - go get github.com/cihub/seelog
-  #- export PATH=$PATH:/home/travis/gopath/bin:/usr/local/cassandra/bin
   - export PATH=$PATH:/home/travis/gopath/bin
 
 install:
