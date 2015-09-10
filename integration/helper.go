@@ -6,10 +6,12 @@ import (
 	"github.com/relops/cqlc/cqlc"
 	"log"
 	"os"
+	"time"
 )
 
 func TestSession(host string, keyspace string) *gocql.Session {
 	cluster := gocql.NewCluster(host)
+	cluster.Timeout = 2000 * time.Millisecond
 	cluster.Keyspace = keyspace
 	session, err := cluster.CreateSession()
 	if err != nil {
@@ -21,6 +23,7 @@ func TestSession(host string, keyspace string) *gocql.Session {
 
 func ClusterTestSession(host string) *gocql.Session {
 	cluster := gocql.NewCluster(host)
+	cluster.Timeout = 2000 * time.Millisecond
 	session, err := cluster.CreateSession()
 	if err != nil {
 		log.Fatalf("Could not connect to cassandra: %v", err)
