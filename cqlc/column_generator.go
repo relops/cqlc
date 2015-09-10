@@ -7,7 +7,6 @@ import (
 	"fmt"
 	log "github.com/cihub/seelog"
 	"io/ioutil"
-	"os"
 	"text/template"
 )
 
@@ -65,7 +64,7 @@ func main() {
 	var b bytes.Buffer
 	t.Execute(&b, params)
 
-	if err := ioutil.WriteFile("columns.go", b.Bytes(), os.ModePerm); err != nil {
+	if err := ioutil.WriteFile("columns.go", b.Bytes(), 0644); err != nil {
 		log.Errorf("Could not write templated file: %s", err)
 		return
 	}
