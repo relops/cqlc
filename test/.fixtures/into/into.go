@@ -5,12 +5,12 @@ import (
 	"github.com/gocql/gocql"
 	"github.com/relops/cqlc/cqlc"
 	"github.com/relops/cqlc/integration"
+	"gopkg.in/inf.v0"
 	"log"
 	"math"
 	"math/big"
 	"os"
 	"reflect"
-	"speter.net/go/exp/math/dec/inf"
 	"time"
 )
 

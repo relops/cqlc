@@ -20,7 +20,7 @@ func main() {
 	ctx := cqlc.NewContext()
 	batch := gocql.NewBatch(gocql.LoggedBatch)
 
-	events := 1000
+	events := 100
 
 	var first, last gocql.UUID
 

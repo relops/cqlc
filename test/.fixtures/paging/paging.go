@@ -18,8 +18,8 @@ func main() {
 	ctx := cqlc.NewContext()
 	batch := gocql.NewBatch(gocql.LoggedBatch)
 
-	events := 50 * 1000
-	batchSize := 1000
+	events := 1000
+	batchSize := 100
 
 	for i := 0; i < events; i++ {
 		ctx.Upsert(EVENTS).
@@ -31,7 +31,7 @@ func main() {
 
 		if i%batchSize == 0 {
 			if err := session.ExecuteBatch(batch); err != nil {
-				log.Fatalf("Could not execute batch: %v", err)
+				log.Fatalf("Could not execute batch (limit %d): %v", batchSize, err)
 				os.Exit(1)
 			}
 			batch = gocql.NewBatch(gocql.LoggedBatch)
@@ -41,7 +41,7 @@ func main() {
 	err := session.ExecuteBatch(batch)
 
 	if err != nil {
-		log.Fatalf("Could not execute batch: %v", err)
+		log.Fatalf("Could not execute batch (limit %d):: %v", batchSize, err)
 		os.Exit(1)
 	}
 
