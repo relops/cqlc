@@ -13,7 +13,6 @@ env:
   global:
     - GOMAXPROCS=2
   matrix:
-    - CASS=2.0.16
     - CASS=2.1.9
 
 go:
