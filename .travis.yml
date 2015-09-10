@@ -28,7 +28,7 @@ before_install:
   - export PATH=$PATH:/home/travis/gopath/bin
 
 install:
-  - pip install --user cql PyYAML six
+  - pip install --upgrade pip --user cql PyYAML six
   - git clone https://github.com/pcmanus/ccm.git
   - pushd ccm
   - ./setup.py install --user
