@@ -14,6 +14,7 @@ env:
     - GOMAXPROCS=2
   matrix:
     - CASS=2.1.9
+    - CASS=2.2.1
 
 go:
   - 1.4
@@ -27,7 +28,7 @@ before_install:
   - export PATH=$PATH:/home/travis/gopath/bin
 
 install:
-  - pip install --user cql PyYAML six
+  - pip install --user PyYAML six
   - git clone https://github.com/pcmanus/ccm.git
   - pushd ccm
   - ./setup.py install --user
