@@ -18,8 +18,8 @@ func main() {
 	ctx := cqlc.NewContext()
 	batch := gocql.NewBatch(gocql.LoggedBatch)
 
-	events := 50 * 1000
-	batchSize := 500
+	events := 1000
+	batchSize := 100
 
 	for i := 0; i < events; i++ {
 		ctx.Upsert(EVENTS).
