@@ -1,8 +1,7 @@
 package: github.com/relops/cqlc
 import:
-- package: github.com/cihub/seelog
-  version: ^2.6.0
 - package: github.com/gocql/gocql
+- package: github.com/pkg/errors
 - package: github.com/jessevdk/go-flags
   version: ^1.4.0
 - package: gopkg.in/inf.v0

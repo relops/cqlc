@@ -30,8 +30,9 @@ columns: cqlc/columns.go
 input: test/.fixtures/collections/input.go test/collections.cql
 
 # FIXME: generator won't work due to go vendor ... inspect type does not equal
-test: columns schema test/.fixtures/collections/input.go
-	go test -v ./cqlc
+#test: columns schema test/.fixtures/collections/input.go
+#	go test -v ./cqlc
+test: test-unit
 
 test-unit:
 	go test -v ./cqlc

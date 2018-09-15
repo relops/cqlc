@@ -1,8 +1,6 @@
-hash: 7068a4d17fe81a559838fd967b24bbe472d33bce86ca270c19176cd5ef2ade0f
-updated: 2018-09-14T19:15:26.835783-07:00
+hash: d4bb692c7281da9ad8d3c490e1125de6946522c7d0243f0f0b603b1e1e3e7b6d
+updated: 2018-09-15T03:35:20.97843-07:00
 imports:
-- name: github.com/cihub/seelog
-  version: d2c6e5aa9fbfdd1c624e140287063c7730654115
 - name: github.com/gocql/gocql
   version: 045d8d6abc70b5bd02bb18b8fdb05ee54d8c87aa
   subpackages:
@@ -15,6 +13,8 @@ imports:
   version: e80d13ce29ede4452c43dea11e79b9bc8a15b478
 - name: github.com/jessevdk/go-flags
   version: c6ca198ec95c841fdb89fc0de7496fed11ab854e
+- name: github.com/pkg/errors
+  version: c059e472caf75dbe73903f6521a20abac245b17f
 - name: gopkg.in/inf.v0
   version: d2d2541c53f18d2a059457998ce2876cc8e67cbf
 testImports:

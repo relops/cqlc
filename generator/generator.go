@@ -2,7 +2,6 @@ package generator
 
 import (
 	"bytes"
-	"errors"
 	"fmt"
 	"go/format"
 	"io"
@@ -15,6 +14,7 @@ import (
 	"time"
 
 	"github.com/gocql/gocql"
+	"github.com/pkg/errors"
 )
 
 var (
@@ -109,7 +109,7 @@ func generateBinding(opts *Options, version string, w io.Writer) error {
 	s, err := cluster.CreateSession()
 
 	if err != nil {
-		return fmt.Errorf("Connect error %s", err)
+		return errors.Errorf("Connect error %s", err)
 	}
 
 	log.Println("connected")
@@ -121,12 +121,12 @@ func generateBinding(opts *Options, version string, w io.Writer) error {
 	err = s.Query(`SELECT native_protocol_version, release_version, cql_version, host_id
 		           FROM system.local`).Scan(&protoString, &release, &cqlVersion, &hostId)
 	if err != nil {
-		return fmt.Errorf("System metadata error %s", err)
+		return errors.Errorf("System metadata error %s", err)
 	}
 
 	proto, err := strconv.Atoi(protoString)
 	if err != nil {
-		return fmt.Errorf("Could not parse protocol version %s", err)
+		return errors.Errorf("Could not parse protocol version %s", err)
 	}
 
 	if proto > 3 {
@@ -135,7 +135,7 @@ func generateBinding(opts *Options, version string, w io.Writer) error {
 		s, err = cluster.CreateSession()
 
 		if err != nil {
-			return fmt.Errorf("Re-connect error %s", err)
+			return errors.Errorf("Re-connect error %s", err)
 		}
 	}
 
@@ -175,6 +175,8 @@ func generateBinding(opts *Options, version string, w io.Writer) error {
 	if err != nil {
 		return err
 	}
+
+	log.Println("formatted rendered code")
 
 	if _, err := w.Write(bfmt); err != nil {
 		return err
