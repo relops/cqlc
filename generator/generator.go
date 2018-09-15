@@ -106,7 +106,7 @@ func generateBinding(opts *Options, version string, w io.Writer) error {
 	s, err := cluster.CreateSession()
 
 	if err != nil {
-		return fmt.Errorf("Connect error", err)
+		return fmt.Errorf("Connect error %s", err)
 	}
 
 	defer s.Close()
@@ -116,12 +116,12 @@ func generateBinding(opts *Options, version string, w io.Writer) error {
 	err = s.Query(`SELECT native_protocol_version, release_version, cql_version, host_id
 		           FROM system.local`).Scan(&protoString, &release, &cqlVersion, &hostId)
 	if err != nil {
-		return fmt.Errorf("System metadata error", err)
+		return fmt.Errorf("System metadata error %s", err)
 	}
 
 	proto, err := strconv.Atoi(protoString)
 	if err != nil {
-		return fmt.Errorf("Could not parse protocol version", err)
+		return fmt.Errorf("Could not parse protocol version %s", err)
 	}
 
 	if proto > 3 {
@@ -130,7 +130,7 @@ func generateBinding(opts *Options, version string, w io.Writer) error {
 		s, err = cluster.CreateSession()
 
 		if err != nil {
-			return fmt.Errorf("Re-connect error", err)
+			return fmt.Errorf("Re-connect error %s", err)
 		}
 	}
 

@@ -382,7 +382,7 @@ func (c *Context) FetchOne(s *gocql.Session) (bool, error) {
 		if !ok {
 			row[i] = cols[i].TypeInfo.New()
 			if c.Debug && row[i] == nil {
-				log.Printf("Could not map type info: %+v", cols[i].TypeInfo.Type)
+				log.Printf("Could not map type info: %+v", cols[i].TypeInfo.Type())
 			}
 		} else {
 			row[i] = binding.Value
@@ -581,7 +581,7 @@ func (c *Context) RenderCQL() (string, error) {
 			renderDelete(c, &buf)
 		}
 	default:
-		return "", fmt.Errorf("Unknown operation type: %s", c.Operation)
+		return "", fmt.Errorf("Unknown operation type: %v", c.Operation)
 	}
 
 	return buf.String(), nil
