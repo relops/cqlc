@@ -23,6 +23,8 @@ go:
 #  - "tip"
 
 before_install:
+  # NOTE: needed for generator test, it generate file like /tmp/092804891/binding.go https://travis-ci.org/pingginp/cqlc/builds/428906675
+  - go get github.com/gocql/gocql
   - curl -sSL https://github.com/Masterminds/glide/releases/download/v0.13.1/glide-v0.13.1-linux-amd64.tar.gz | tar -vxz -C ${GOPATH}/bin --strip=1
 # FIXME: workaround for gopath
   - mkdir -p ${GOPATH}/src/github.com/relops/cqlc
