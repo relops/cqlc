@@ -19,8 +19,19 @@ make cqlc/columns.go
 ````
 
 ````go
+// NOTE: in order to support set map by value, we must flatten binding,
+// previously it is only did in Prepare and ignored in BuildStatement
+
+// Prepare is used in Select, it only has where condition binding
+// Prepare is only called by Fetch
 func (c *Context) Prepare(s *gocql.Session) (*gocql.Query, error) {
 	stmt, err := c.RenderCQL()
+}
+
+// BuildStatement is used in update, thus it has binding and where condition binding
+// BuildStatement is called by Exec, Batch, Swap
+func BuildStatement(c *Context) (stmt string, placeHolders []interface{}, err error) {
+	
 }
 
 // cqlc.go

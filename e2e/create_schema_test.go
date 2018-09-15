@@ -1,7 +1,6 @@
 package e2e
 
 import (
-	"errors"
 	"log"
 	"testing"
 
@@ -63,21 +62,27 @@ CREATE TABLE cqlc.t1abc (
 		err = c.Upsert(t1gen.T1abcTableDef()).
 			SetString(t1gen.T1ABC.ID, "2").
 			//SetStringStringMapValue(t1gen.T1ABC.STRING_MAP, "1", "2").Exec(sess)
-			SetStringStringMap(t1gen.T1ABC.STRING_MAP, map[string]string{"1": "2"}).Exec(sess)
+			SetStringStringMap(t1gen.T1ABC.STRING_MAP, map[string]string{"1": "2"}).
+			Exec(sess)
 		require.Nil(err, "insert map")
 
-
-	//	cqlc.go:522: CQL: INSERT INTO t1abc (id, string_map) VALUES ( 2, map[1:2])
-	//	cqlc.go:522: CQL: UPDATE t1abc SET string_map[ [1 3]] =  2 WHERE id =  %!v(MISSING)
-	//	--- FAIL: TestCreateSchema/insert (0.03s)
-	//	require.go:765:
-	//	Error Trace:	create_schema_test.go:72
-	//Error:      	Expected nil, but got: &errors.errorString{s:"gocql: expected 3 values send got 2"}
 		err = c.Upsert(t1gen.T1abcTableDef()).
-			SetStringStringMapValue(t1gen.T1ABC.STRING_MAP, "1", "3").
+			SetStringStringMapValue(t1gen.T1ABC.STRING_MAP, "1", "4").
 			Where(t1gen.T1ABC.ID.Eq("2")).
 			Exec(sess)
+		//stmt, holders, err := cqlc.BuildStatement(c)
+		//t.Log(stmt)
+		//t.Log(holders)
 		require.Nil(err, "update map")
+
+		var row t1gen.T1abc
+
+		found, err := c.Select(t1gen.T1ABC.STRING_MAP).From(t1gen.T1ABC).
+			Where(t1gen.T1ABC.ID.Eq("2")).
+			Into(t1gen.T1ABC.To(&row)).FetchOne(sess)
+		require.Nil(err)
+		require.True(found, "found the row")
+		require.Equal("4", row.StringMap["1"])
 
 		//err = c.Upsert(t1gen.T1abcTableDef()).
 		//	SetString(t1gen.T1ABC.ID, "1").

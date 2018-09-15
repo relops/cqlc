@@ -15,12 +15,13 @@ package cqlc
 
 import (
 	"bytes"
-	"errors"
 	"fmt"
-	"github.com/gocql/gocql"
 	"log"
 	"reflect"
 	"strings"
+
+	"github.com/gocql/gocql"
+	"github.com/pkg/errors"
 )
 
 type OperationType int
@@ -448,7 +449,9 @@ func (c *Context) Prepare(s *gocql.Session) (*gocql.Query, error) {
 			}
 		default:
 			{
-				placeHolders = append(placeHolders, &v)
+				// TODO: (pingginp) why it took address of interface and it worked ...
+				//placeHolders = append(placeHolders, &v)
+				placeHolders = append(placeHolders, v)
 			}
 		}
 	}
@@ -523,7 +526,73 @@ func debugStmt(stmt string, placeHolders []interface{}) {
 	//panic("debugStmt")
 }
 
+// BuildStatement is the new BuildStatement based on Prepare to support set map value by key
 func BuildStatement(c *Context) (stmt string, placeHolders []interface{}, err error) {
+	stmt, err = c.RenderCQL()
+	if err != nil {
+		return "", nil, errors.Wrap(err, "error render CQL")
+	}
+
+	placeHolders = make([]interface{}, 0)
+
+	// NOTE: for all the binding we need to expand slice due to multiple place holders in one binding
+	// in bindings we have foo[?] = ?
+	// in where bindings we have where foo in (?, ?, ?)
+
+	for _, bind := range c.Bindings {
+		v := bind.Value
+		switch reflect.TypeOf(v).Kind() {
+		case reflect.Slice:
+			s := reflect.ValueOf(v)
+			for i := 0; i < s.Len(); i++ {
+				placeHolders = append(placeHolders, s.Index(i).Interface())
+			}
+		case reflect.Array:
+
+			// Not really happy about having to special case UUIDs
+			// but this works for now
+
+			if val, ok := v.(gocql.UUID); ok {
+				placeHolders = append(placeHolders, val.Bytes())
+			} else {
+				return "", nil, bindingErrorf("Cannot bind component: %+v (type: %s)", v, reflect.TypeOf(v))
+			}
+		default:
+			placeHolders = append(placeHolders, v)
+		}
+	}
+
+	for _, cond := range c.Conditions {
+		v := cond.Binding.Value
+		switch reflect.TypeOf(v).Kind() {
+		case reflect.Slice:
+			s := reflect.ValueOf(v)
+			for i := 0; i < s.Len(); i++ {
+				placeHolders = append(placeHolders, s.Index(i).Interface())
+			}
+		case reflect.Array:
+
+			// Not really happy about having to special case UUIDs
+			// but this works for now
+
+			if val, ok := v.(gocql.UUID); ok {
+				placeHolders = append(placeHolders, val.Bytes())
+			} else {
+				return "", nil, bindingErrorf("Cannot bind component: %+v (type: %s)", v, reflect.TypeOf(v))
+			}
+		default:
+			placeHolders = append(placeHolders, v)
+		}
+	}
+
+	c.Dispose()
+
+	return stmt, placeHolders, nil
+}
+
+// Deprecated
+// NOTE: (pingginp) this is used by Exec and unlike Prepare, it didn't handle expand binding
+func BuildStatementOld(c *Context) (stmt string, placeHolders []interface{}, err error) {
 	// TODO Does this function need to get exported?
 	stmt, err = c.RenderCQL()
 	if err != nil {
