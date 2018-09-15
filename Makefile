@@ -27,14 +27,9 @@ cqlc/columns.go: cqlc/tmpl/columns.tmpl cqlc/column_generator.go
 
 columns: cqlc/columns.go
 
-bindata: generator/binding_tmpl.go
-
 input: test/.fixtures/collections/input.go test/collections.cql
 
-generator/binding_tmpl.go: generator/tmpl/binding.tmpl
-	go-bindata -pkg=generator -o=generator/binding_tmpl.go generator/tmpl
-
-test: columns bindata schema test/.fixtures/collections/input.go
+test: columns schema test/.fixtures/collections/input.go
 	go test -v ./...
 
 format:
