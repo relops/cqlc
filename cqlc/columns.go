@@ -1037,268 +1037,400 @@ type SetValueStep interface {
 	SetBytes(col BytesColumn, value []byte) SetValueStep
 
 	SetStringStringMap(col StringStringMapColumn, value map[string]string) SetValueStep
+	SetStringStringMapValue(col StringStringMapColumn, key string, value string) SetValueStep
 
 	SetStringInt32Map(col StringInt32MapColumn, value map[string]int32) SetValueStep
+	SetStringInt32MapValue(col StringInt32MapColumn, key string, value int32) SetValueStep
 
 	SetStringInt64Map(col StringInt64MapColumn, value map[string]int64) SetValueStep
+	SetStringInt64MapValue(col StringInt64MapColumn, key string, value int64) SetValueStep
 
 	SetStringFloat32Map(col StringFloat32MapColumn, value map[string]float32) SetValueStep
+	SetStringFloat32MapValue(col StringFloat32MapColumn, key string, value float32) SetValueStep
 
 	SetStringFloat64Map(col StringFloat64MapColumn, value map[string]float64) SetValueStep
+	SetStringFloat64MapValue(col StringFloat64MapColumn, key string, value float64) SetValueStep
 
 	SetStringTimestampMap(col StringTimestampMapColumn, value map[string]time.Time) SetValueStep
+	SetStringTimestampMapValue(col StringTimestampMapColumn, key string, value time.Time) SetValueStep
 
 	SetStringTimeUUIDMap(col StringTimeUUIDMapColumn, value map[string]gocql.UUID) SetValueStep
+	SetStringTimeUUIDMapValue(col StringTimeUUIDMapColumn, key string, value gocql.UUID) SetValueStep
 
 	SetStringUUIDMap(col StringUUIDMapColumn, value map[string]gocql.UUID) SetValueStep
+	SetStringUUIDMapValue(col StringUUIDMapColumn, key string, value gocql.UUID) SetValueStep
 
 	SetStringBooleanMap(col StringBooleanMapColumn, value map[string]bool) SetValueStep
+	SetStringBooleanMapValue(col StringBooleanMapColumn, key string, value bool) SetValueStep
 
 	SetStringDecimalMap(col StringDecimalMapColumn, value map[string]*inf.Dec) SetValueStep
+	SetStringDecimalMapValue(col StringDecimalMapColumn, key string, value *inf.Dec) SetValueStep
 
 	SetStringVarintMap(col StringVarintMapColumn, value map[string]*big.Int) SetValueStep
+	SetStringVarintMapValue(col StringVarintMapColumn, key string, value *big.Int) SetValueStep
 
 	SetStringBytesMap(col StringBytesMapColumn, value map[string][]byte) SetValueStep
+	SetStringBytesMapValue(col StringBytesMapColumn, key string, value []byte) SetValueStep
 
 	SetInt32StringMap(col Int32StringMapColumn, value map[int32]string) SetValueStep
+	SetInt32StringMapValue(col Int32StringMapColumn, key int32, value string) SetValueStep
 
 	SetInt32Int32Map(col Int32Int32MapColumn, value map[int32]int32) SetValueStep
+	SetInt32Int32MapValue(col Int32Int32MapColumn, key int32, value int32) SetValueStep
 
 	SetInt32Int64Map(col Int32Int64MapColumn, value map[int32]int64) SetValueStep
+	SetInt32Int64MapValue(col Int32Int64MapColumn, key int32, value int64) SetValueStep
 
 	SetInt32Float32Map(col Int32Float32MapColumn, value map[int32]float32) SetValueStep
+	SetInt32Float32MapValue(col Int32Float32MapColumn, key int32, value float32) SetValueStep
 
 	SetInt32Float64Map(col Int32Float64MapColumn, value map[int32]float64) SetValueStep
+	SetInt32Float64MapValue(col Int32Float64MapColumn, key int32, value float64) SetValueStep
 
 	SetInt32TimestampMap(col Int32TimestampMapColumn, value map[int32]time.Time) SetValueStep
+	SetInt32TimestampMapValue(col Int32TimestampMapColumn, key int32, value time.Time) SetValueStep
 
 	SetInt32TimeUUIDMap(col Int32TimeUUIDMapColumn, value map[int32]gocql.UUID) SetValueStep
+	SetInt32TimeUUIDMapValue(col Int32TimeUUIDMapColumn, key int32, value gocql.UUID) SetValueStep
 
 	SetInt32UUIDMap(col Int32UUIDMapColumn, value map[int32]gocql.UUID) SetValueStep
+	SetInt32UUIDMapValue(col Int32UUIDMapColumn, key int32, value gocql.UUID) SetValueStep
 
 	SetInt32BooleanMap(col Int32BooleanMapColumn, value map[int32]bool) SetValueStep
+	SetInt32BooleanMapValue(col Int32BooleanMapColumn, key int32, value bool) SetValueStep
 
 	SetInt32DecimalMap(col Int32DecimalMapColumn, value map[int32]*inf.Dec) SetValueStep
+	SetInt32DecimalMapValue(col Int32DecimalMapColumn, key int32, value *inf.Dec) SetValueStep
 
 	SetInt32VarintMap(col Int32VarintMapColumn, value map[int32]*big.Int) SetValueStep
+	SetInt32VarintMapValue(col Int32VarintMapColumn, key int32, value *big.Int) SetValueStep
 
 	SetInt32BytesMap(col Int32BytesMapColumn, value map[int32][]byte) SetValueStep
+	SetInt32BytesMapValue(col Int32BytesMapColumn, key int32, value []byte) SetValueStep
 
 	SetInt64StringMap(col Int64StringMapColumn, value map[int64]string) SetValueStep
+	SetInt64StringMapValue(col Int64StringMapColumn, key int64, value string) SetValueStep
 
 	SetInt64Int32Map(col Int64Int32MapColumn, value map[int64]int32) SetValueStep
+	SetInt64Int32MapValue(col Int64Int32MapColumn, key int64, value int32) SetValueStep
 
 	SetInt64Int64Map(col Int64Int64MapColumn, value map[int64]int64) SetValueStep
+	SetInt64Int64MapValue(col Int64Int64MapColumn, key int64, value int64) SetValueStep
 
 	SetInt64Float32Map(col Int64Float32MapColumn, value map[int64]float32) SetValueStep
+	SetInt64Float32MapValue(col Int64Float32MapColumn, key int64, value float32) SetValueStep
 
 	SetInt64Float64Map(col Int64Float64MapColumn, value map[int64]float64) SetValueStep
+	SetInt64Float64MapValue(col Int64Float64MapColumn, key int64, value float64) SetValueStep
 
 	SetInt64TimestampMap(col Int64TimestampMapColumn, value map[int64]time.Time) SetValueStep
+	SetInt64TimestampMapValue(col Int64TimestampMapColumn, key int64, value time.Time) SetValueStep
 
 	SetInt64TimeUUIDMap(col Int64TimeUUIDMapColumn, value map[int64]gocql.UUID) SetValueStep
+	SetInt64TimeUUIDMapValue(col Int64TimeUUIDMapColumn, key int64, value gocql.UUID) SetValueStep
 
 	SetInt64UUIDMap(col Int64UUIDMapColumn, value map[int64]gocql.UUID) SetValueStep
+	SetInt64UUIDMapValue(col Int64UUIDMapColumn, key int64, value gocql.UUID) SetValueStep
 
 	SetInt64BooleanMap(col Int64BooleanMapColumn, value map[int64]bool) SetValueStep
+	SetInt64BooleanMapValue(col Int64BooleanMapColumn, key int64, value bool) SetValueStep
 
 	SetInt64DecimalMap(col Int64DecimalMapColumn, value map[int64]*inf.Dec) SetValueStep
+	SetInt64DecimalMapValue(col Int64DecimalMapColumn, key int64, value *inf.Dec) SetValueStep
 
 	SetInt64VarintMap(col Int64VarintMapColumn, value map[int64]*big.Int) SetValueStep
+	SetInt64VarintMapValue(col Int64VarintMapColumn, key int64, value *big.Int) SetValueStep
 
 	SetInt64BytesMap(col Int64BytesMapColumn, value map[int64][]byte) SetValueStep
+	SetInt64BytesMapValue(col Int64BytesMapColumn, key int64, value []byte) SetValueStep
 
 	SetFloat32StringMap(col Float32StringMapColumn, value map[float32]string) SetValueStep
+	SetFloat32StringMapValue(col Float32StringMapColumn, key float32, value string) SetValueStep
 
 	SetFloat32Int32Map(col Float32Int32MapColumn, value map[float32]int32) SetValueStep
+	SetFloat32Int32MapValue(col Float32Int32MapColumn, key float32, value int32) SetValueStep
 
 	SetFloat32Int64Map(col Float32Int64MapColumn, value map[float32]int64) SetValueStep
+	SetFloat32Int64MapValue(col Float32Int64MapColumn, key float32, value int64) SetValueStep
 
 	SetFloat32Float32Map(col Float32Float32MapColumn, value map[float32]float32) SetValueStep
+	SetFloat32Float32MapValue(col Float32Float32MapColumn, key float32, value float32) SetValueStep
 
 	SetFloat32Float64Map(col Float32Float64MapColumn, value map[float32]float64) SetValueStep
+	SetFloat32Float64MapValue(col Float32Float64MapColumn, key float32, value float64) SetValueStep
 
 	SetFloat32TimestampMap(col Float32TimestampMapColumn, value map[float32]time.Time) SetValueStep
+	SetFloat32TimestampMapValue(col Float32TimestampMapColumn, key float32, value time.Time) SetValueStep
 
 	SetFloat32TimeUUIDMap(col Float32TimeUUIDMapColumn, value map[float32]gocql.UUID) SetValueStep
+	SetFloat32TimeUUIDMapValue(col Float32TimeUUIDMapColumn, key float32, value gocql.UUID) SetValueStep
 
 	SetFloat32UUIDMap(col Float32UUIDMapColumn, value map[float32]gocql.UUID) SetValueStep
+	SetFloat32UUIDMapValue(col Float32UUIDMapColumn, key float32, value gocql.UUID) SetValueStep
 
 	SetFloat32BooleanMap(col Float32BooleanMapColumn, value map[float32]bool) SetValueStep
+	SetFloat32BooleanMapValue(col Float32BooleanMapColumn, key float32, value bool) SetValueStep
 
 	SetFloat32DecimalMap(col Float32DecimalMapColumn, value map[float32]*inf.Dec) SetValueStep
+	SetFloat32DecimalMapValue(col Float32DecimalMapColumn, key float32, value *inf.Dec) SetValueStep
 
 	SetFloat32VarintMap(col Float32VarintMapColumn, value map[float32]*big.Int) SetValueStep
+	SetFloat32VarintMapValue(col Float32VarintMapColumn, key float32, value *big.Int) SetValueStep
 
 	SetFloat32BytesMap(col Float32BytesMapColumn, value map[float32][]byte) SetValueStep
+	SetFloat32BytesMapValue(col Float32BytesMapColumn, key float32, value []byte) SetValueStep
 
 	SetFloat64StringMap(col Float64StringMapColumn, value map[float64]string) SetValueStep
+	SetFloat64StringMapValue(col Float64StringMapColumn, key float64, value string) SetValueStep
 
 	SetFloat64Int32Map(col Float64Int32MapColumn, value map[float64]int32) SetValueStep
+	SetFloat64Int32MapValue(col Float64Int32MapColumn, key float64, value int32) SetValueStep
 
 	SetFloat64Int64Map(col Float64Int64MapColumn, value map[float64]int64) SetValueStep
+	SetFloat64Int64MapValue(col Float64Int64MapColumn, key float64, value int64) SetValueStep
 
 	SetFloat64Float32Map(col Float64Float32MapColumn, value map[float64]float32) SetValueStep
+	SetFloat64Float32MapValue(col Float64Float32MapColumn, key float64, value float32) SetValueStep
 
 	SetFloat64Float64Map(col Float64Float64MapColumn, value map[float64]float64) SetValueStep
+	SetFloat64Float64MapValue(col Float64Float64MapColumn, key float64, value float64) SetValueStep
 
 	SetFloat64TimestampMap(col Float64TimestampMapColumn, value map[float64]time.Time) SetValueStep
+	SetFloat64TimestampMapValue(col Float64TimestampMapColumn, key float64, value time.Time) SetValueStep
 
 	SetFloat64TimeUUIDMap(col Float64TimeUUIDMapColumn, value map[float64]gocql.UUID) SetValueStep
+	SetFloat64TimeUUIDMapValue(col Float64TimeUUIDMapColumn, key float64, value gocql.UUID) SetValueStep
 
 	SetFloat64UUIDMap(col Float64UUIDMapColumn, value map[float64]gocql.UUID) SetValueStep
+	SetFloat64UUIDMapValue(col Float64UUIDMapColumn, key float64, value gocql.UUID) SetValueStep
 
 	SetFloat64BooleanMap(col Float64BooleanMapColumn, value map[float64]bool) SetValueStep
+	SetFloat64BooleanMapValue(col Float64BooleanMapColumn, key float64, value bool) SetValueStep
 
 	SetFloat64DecimalMap(col Float64DecimalMapColumn, value map[float64]*inf.Dec) SetValueStep
+	SetFloat64DecimalMapValue(col Float64DecimalMapColumn, key float64, value *inf.Dec) SetValueStep
 
 	SetFloat64VarintMap(col Float64VarintMapColumn, value map[float64]*big.Int) SetValueStep
+	SetFloat64VarintMapValue(col Float64VarintMapColumn, key float64, value *big.Int) SetValueStep
 
 	SetFloat64BytesMap(col Float64BytesMapColumn, value map[float64][]byte) SetValueStep
+	SetFloat64BytesMapValue(col Float64BytesMapColumn, key float64, value []byte) SetValueStep
 
 	SetTimestampStringMap(col TimestampStringMapColumn, value map[time.Time]string) SetValueStep
+	SetTimestampStringMapValue(col TimestampStringMapColumn, key time.Time, value string) SetValueStep
 
 	SetTimestampInt32Map(col TimestampInt32MapColumn, value map[time.Time]int32) SetValueStep
+	SetTimestampInt32MapValue(col TimestampInt32MapColumn, key time.Time, value int32) SetValueStep
 
 	SetTimestampInt64Map(col TimestampInt64MapColumn, value map[time.Time]int64) SetValueStep
+	SetTimestampInt64MapValue(col TimestampInt64MapColumn, key time.Time, value int64) SetValueStep
 
 	SetTimestampFloat32Map(col TimestampFloat32MapColumn, value map[time.Time]float32) SetValueStep
+	SetTimestampFloat32MapValue(col TimestampFloat32MapColumn, key time.Time, value float32) SetValueStep
 
 	SetTimestampFloat64Map(col TimestampFloat64MapColumn, value map[time.Time]float64) SetValueStep
+	SetTimestampFloat64MapValue(col TimestampFloat64MapColumn, key time.Time, value float64) SetValueStep
 
 	SetTimestampTimestampMap(col TimestampTimestampMapColumn, value map[time.Time]time.Time) SetValueStep
+	SetTimestampTimestampMapValue(col TimestampTimestampMapColumn, key time.Time, value time.Time) SetValueStep
 
 	SetTimestampTimeUUIDMap(col TimestampTimeUUIDMapColumn, value map[time.Time]gocql.UUID) SetValueStep
+	SetTimestampTimeUUIDMapValue(col TimestampTimeUUIDMapColumn, key time.Time, value gocql.UUID) SetValueStep
 
 	SetTimestampUUIDMap(col TimestampUUIDMapColumn, value map[time.Time]gocql.UUID) SetValueStep
+	SetTimestampUUIDMapValue(col TimestampUUIDMapColumn, key time.Time, value gocql.UUID) SetValueStep
 
 	SetTimestampBooleanMap(col TimestampBooleanMapColumn, value map[time.Time]bool) SetValueStep
+	SetTimestampBooleanMapValue(col TimestampBooleanMapColumn, key time.Time, value bool) SetValueStep
 
 	SetTimestampDecimalMap(col TimestampDecimalMapColumn, value map[time.Time]*inf.Dec) SetValueStep
+	SetTimestampDecimalMapValue(col TimestampDecimalMapColumn, key time.Time, value *inf.Dec) SetValueStep
 
 	SetTimestampVarintMap(col TimestampVarintMapColumn, value map[time.Time]*big.Int) SetValueStep
+	SetTimestampVarintMapValue(col TimestampVarintMapColumn, key time.Time, value *big.Int) SetValueStep
 
 	SetTimestampBytesMap(col TimestampBytesMapColumn, value map[time.Time][]byte) SetValueStep
+	SetTimestampBytesMapValue(col TimestampBytesMapColumn, key time.Time, value []byte) SetValueStep
 
 	SetTimeUUIDStringMap(col TimeUUIDStringMapColumn, value map[gocql.UUID]string) SetValueStep
+	SetTimeUUIDStringMapValue(col TimeUUIDStringMapColumn, key gocql.UUID, value string) SetValueStep
 
 	SetTimeUUIDInt32Map(col TimeUUIDInt32MapColumn, value map[gocql.UUID]int32) SetValueStep
+	SetTimeUUIDInt32MapValue(col TimeUUIDInt32MapColumn, key gocql.UUID, value int32) SetValueStep
 
 	SetTimeUUIDInt64Map(col TimeUUIDInt64MapColumn, value map[gocql.UUID]int64) SetValueStep
+	SetTimeUUIDInt64MapValue(col TimeUUIDInt64MapColumn, key gocql.UUID, value int64) SetValueStep
 
 	SetTimeUUIDFloat32Map(col TimeUUIDFloat32MapColumn, value map[gocql.UUID]float32) SetValueStep
+	SetTimeUUIDFloat32MapValue(col TimeUUIDFloat32MapColumn, key gocql.UUID, value float32) SetValueStep
 
 	SetTimeUUIDFloat64Map(col TimeUUIDFloat64MapColumn, value map[gocql.UUID]float64) SetValueStep
+	SetTimeUUIDFloat64MapValue(col TimeUUIDFloat64MapColumn, key gocql.UUID, value float64) SetValueStep
 
 	SetTimeUUIDTimestampMap(col TimeUUIDTimestampMapColumn, value map[gocql.UUID]time.Time) SetValueStep
+	SetTimeUUIDTimestampMapValue(col TimeUUIDTimestampMapColumn, key gocql.UUID, value time.Time) SetValueStep
 
 	SetTimeUUIDTimeUUIDMap(col TimeUUIDTimeUUIDMapColumn, value map[gocql.UUID]gocql.UUID) SetValueStep
+	SetTimeUUIDTimeUUIDMapValue(col TimeUUIDTimeUUIDMapColumn, key gocql.UUID, value gocql.UUID) SetValueStep
 
 	SetTimeUUIDUUIDMap(col TimeUUIDUUIDMapColumn, value map[gocql.UUID]gocql.UUID) SetValueStep
+	SetTimeUUIDUUIDMapValue(col TimeUUIDUUIDMapColumn, key gocql.UUID, value gocql.UUID) SetValueStep
 
 	SetTimeUUIDBooleanMap(col TimeUUIDBooleanMapColumn, value map[gocql.UUID]bool) SetValueStep
+	SetTimeUUIDBooleanMapValue(col TimeUUIDBooleanMapColumn, key gocql.UUID, value bool) SetValueStep
 
 	SetTimeUUIDDecimalMap(col TimeUUIDDecimalMapColumn, value map[gocql.UUID]*inf.Dec) SetValueStep
+	SetTimeUUIDDecimalMapValue(col TimeUUIDDecimalMapColumn, key gocql.UUID, value *inf.Dec) SetValueStep
 
 	SetTimeUUIDVarintMap(col TimeUUIDVarintMapColumn, value map[gocql.UUID]*big.Int) SetValueStep
+	SetTimeUUIDVarintMapValue(col TimeUUIDVarintMapColumn, key gocql.UUID, value *big.Int) SetValueStep
 
 	SetTimeUUIDBytesMap(col TimeUUIDBytesMapColumn, value map[gocql.UUID][]byte) SetValueStep
+	SetTimeUUIDBytesMapValue(col TimeUUIDBytesMapColumn, key gocql.UUID, value []byte) SetValueStep
 
 	SetUUIDStringMap(col UUIDStringMapColumn, value map[gocql.UUID]string) SetValueStep
+	SetUUIDStringMapValue(col UUIDStringMapColumn, key gocql.UUID, value string) SetValueStep
 
 	SetUUIDInt32Map(col UUIDInt32MapColumn, value map[gocql.UUID]int32) SetValueStep
+	SetUUIDInt32MapValue(col UUIDInt32MapColumn, key gocql.UUID, value int32) SetValueStep
 
 	SetUUIDInt64Map(col UUIDInt64MapColumn, value map[gocql.UUID]int64) SetValueStep
+	SetUUIDInt64MapValue(col UUIDInt64MapColumn, key gocql.UUID, value int64) SetValueStep
 
 	SetUUIDFloat32Map(col UUIDFloat32MapColumn, value map[gocql.UUID]float32) SetValueStep
+	SetUUIDFloat32MapValue(col UUIDFloat32MapColumn, key gocql.UUID, value float32) SetValueStep
 
 	SetUUIDFloat64Map(col UUIDFloat64MapColumn, value map[gocql.UUID]float64) SetValueStep
+	SetUUIDFloat64MapValue(col UUIDFloat64MapColumn, key gocql.UUID, value float64) SetValueStep
 
 	SetUUIDTimestampMap(col UUIDTimestampMapColumn, value map[gocql.UUID]time.Time) SetValueStep
+	SetUUIDTimestampMapValue(col UUIDTimestampMapColumn, key gocql.UUID, value time.Time) SetValueStep
 
 	SetUUIDTimeUUIDMap(col UUIDTimeUUIDMapColumn, value map[gocql.UUID]gocql.UUID) SetValueStep
+	SetUUIDTimeUUIDMapValue(col UUIDTimeUUIDMapColumn, key gocql.UUID, value gocql.UUID) SetValueStep
 
 	SetUUIDUUIDMap(col UUIDUUIDMapColumn, value map[gocql.UUID]gocql.UUID) SetValueStep
+	SetUUIDUUIDMapValue(col UUIDUUIDMapColumn, key gocql.UUID, value gocql.UUID) SetValueStep
 
 	SetUUIDBooleanMap(col UUIDBooleanMapColumn, value map[gocql.UUID]bool) SetValueStep
+	SetUUIDBooleanMapValue(col UUIDBooleanMapColumn, key gocql.UUID, value bool) SetValueStep
 
 	SetUUIDDecimalMap(col UUIDDecimalMapColumn, value map[gocql.UUID]*inf.Dec) SetValueStep
+	SetUUIDDecimalMapValue(col UUIDDecimalMapColumn, key gocql.UUID, value *inf.Dec) SetValueStep
 
 	SetUUIDVarintMap(col UUIDVarintMapColumn, value map[gocql.UUID]*big.Int) SetValueStep
+	SetUUIDVarintMapValue(col UUIDVarintMapColumn, key gocql.UUID, value *big.Int) SetValueStep
 
 	SetUUIDBytesMap(col UUIDBytesMapColumn, value map[gocql.UUID][]byte) SetValueStep
+	SetUUIDBytesMapValue(col UUIDBytesMapColumn, key gocql.UUID, value []byte) SetValueStep
 
 	SetBooleanStringMap(col BooleanStringMapColumn, value map[bool]string) SetValueStep
+	SetBooleanStringMapValue(col BooleanStringMapColumn, key bool, value string) SetValueStep
 
 	SetBooleanInt32Map(col BooleanInt32MapColumn, value map[bool]int32) SetValueStep
+	SetBooleanInt32MapValue(col BooleanInt32MapColumn, key bool, value int32) SetValueStep
 
 	SetBooleanInt64Map(col BooleanInt64MapColumn, value map[bool]int64) SetValueStep
+	SetBooleanInt64MapValue(col BooleanInt64MapColumn, key bool, value int64) SetValueStep
 
 	SetBooleanFloat32Map(col BooleanFloat32MapColumn, value map[bool]float32) SetValueStep
+	SetBooleanFloat32MapValue(col BooleanFloat32MapColumn, key bool, value float32) SetValueStep
 
 	SetBooleanFloat64Map(col BooleanFloat64MapColumn, value map[bool]float64) SetValueStep
+	SetBooleanFloat64MapValue(col BooleanFloat64MapColumn, key bool, value float64) SetValueStep
 
 	SetBooleanTimestampMap(col BooleanTimestampMapColumn, value map[bool]time.Time) SetValueStep
+	SetBooleanTimestampMapValue(col BooleanTimestampMapColumn, key bool, value time.Time) SetValueStep
 
 	SetBooleanTimeUUIDMap(col BooleanTimeUUIDMapColumn, value map[bool]gocql.UUID) SetValueStep
+	SetBooleanTimeUUIDMapValue(col BooleanTimeUUIDMapColumn, key bool, value gocql.UUID) SetValueStep
 
 	SetBooleanUUIDMap(col BooleanUUIDMapColumn, value map[bool]gocql.UUID) SetValueStep
+	SetBooleanUUIDMapValue(col BooleanUUIDMapColumn, key bool, value gocql.UUID) SetValueStep
 
 	SetBooleanBooleanMap(col BooleanBooleanMapColumn, value map[bool]bool) SetValueStep
+	SetBooleanBooleanMapValue(col BooleanBooleanMapColumn, key bool, value bool) SetValueStep
 
 	SetBooleanDecimalMap(col BooleanDecimalMapColumn, value map[bool]*inf.Dec) SetValueStep
+	SetBooleanDecimalMapValue(col BooleanDecimalMapColumn, key bool, value *inf.Dec) SetValueStep
 
 	SetBooleanVarintMap(col BooleanVarintMapColumn, value map[bool]*big.Int) SetValueStep
+	SetBooleanVarintMapValue(col BooleanVarintMapColumn, key bool, value *big.Int) SetValueStep
 
 	SetBooleanBytesMap(col BooleanBytesMapColumn, value map[bool][]byte) SetValueStep
+	SetBooleanBytesMapValue(col BooleanBytesMapColumn, key bool, value []byte) SetValueStep
 
 	SetDecimalStringMap(col DecimalStringMapColumn, value map[*inf.Dec]string) SetValueStep
+	SetDecimalStringMapValue(col DecimalStringMapColumn, key *inf.Dec, value string) SetValueStep
 
 	SetDecimalInt32Map(col DecimalInt32MapColumn, value map[*inf.Dec]int32) SetValueStep
+	SetDecimalInt32MapValue(col DecimalInt32MapColumn, key *inf.Dec, value int32) SetValueStep
 
 	SetDecimalInt64Map(col DecimalInt64MapColumn, value map[*inf.Dec]int64) SetValueStep
+	SetDecimalInt64MapValue(col DecimalInt64MapColumn, key *inf.Dec, value int64) SetValueStep
 
 	SetDecimalFloat32Map(col DecimalFloat32MapColumn, value map[*inf.Dec]float32) SetValueStep
+	SetDecimalFloat32MapValue(col DecimalFloat32MapColumn, key *inf.Dec, value float32) SetValueStep
 
 	SetDecimalFloat64Map(col DecimalFloat64MapColumn, value map[*inf.Dec]float64) SetValueStep
+	SetDecimalFloat64MapValue(col DecimalFloat64MapColumn, key *inf.Dec, value float64) SetValueStep
 
 	SetDecimalTimestampMap(col DecimalTimestampMapColumn, value map[*inf.Dec]time.Time) SetValueStep
+	SetDecimalTimestampMapValue(col DecimalTimestampMapColumn, key *inf.Dec, value time.Time) SetValueStep
 
 	SetDecimalTimeUUIDMap(col DecimalTimeUUIDMapColumn, value map[*inf.Dec]gocql.UUID) SetValueStep
+	SetDecimalTimeUUIDMapValue(col DecimalTimeUUIDMapColumn, key *inf.Dec, value gocql.UUID) SetValueStep
 
 	SetDecimalUUIDMap(col DecimalUUIDMapColumn, value map[*inf.Dec]gocql.UUID) SetValueStep
+	SetDecimalUUIDMapValue(col DecimalUUIDMapColumn, key *inf.Dec, value gocql.UUID) SetValueStep
 
 	SetDecimalBooleanMap(col DecimalBooleanMapColumn, value map[*inf.Dec]bool) SetValueStep
+	SetDecimalBooleanMapValue(col DecimalBooleanMapColumn, key *inf.Dec, value bool) SetValueStep
 
 	SetDecimalDecimalMap(col DecimalDecimalMapColumn, value map[*inf.Dec]*inf.Dec) SetValueStep
+	SetDecimalDecimalMapValue(col DecimalDecimalMapColumn, key *inf.Dec, value *inf.Dec) SetValueStep
 
 	SetDecimalVarintMap(col DecimalVarintMapColumn, value map[*inf.Dec]*big.Int) SetValueStep
+	SetDecimalVarintMapValue(col DecimalVarintMapColumn, key *inf.Dec, value *big.Int) SetValueStep
 
 	SetDecimalBytesMap(col DecimalBytesMapColumn, value map[*inf.Dec][]byte) SetValueStep
+	SetDecimalBytesMapValue(col DecimalBytesMapColumn, key *inf.Dec, value []byte) SetValueStep
 
 	SetVarintStringMap(col VarintStringMapColumn, value map[*big.Int]string) SetValueStep
+	SetVarintStringMapValue(col VarintStringMapColumn, key *big.Int, value string) SetValueStep
 
 	SetVarintInt32Map(col VarintInt32MapColumn, value map[*big.Int]int32) SetValueStep
+	SetVarintInt32MapValue(col VarintInt32MapColumn, key *big.Int, value int32) SetValueStep
 
 	SetVarintInt64Map(col VarintInt64MapColumn, value map[*big.Int]int64) SetValueStep
+	SetVarintInt64MapValue(col VarintInt64MapColumn, key *big.Int, value int64) SetValueStep
 
 	SetVarintFloat32Map(col VarintFloat32MapColumn, value map[*big.Int]float32) SetValueStep
+	SetVarintFloat32MapValue(col VarintFloat32MapColumn, key *big.Int, value float32) SetValueStep
 
 	SetVarintFloat64Map(col VarintFloat64MapColumn, value map[*big.Int]float64) SetValueStep
+	SetVarintFloat64MapValue(col VarintFloat64MapColumn, key *big.Int, value float64) SetValueStep
 
 	SetVarintTimestampMap(col VarintTimestampMapColumn, value map[*big.Int]time.Time) SetValueStep
+	SetVarintTimestampMapValue(col VarintTimestampMapColumn, key *big.Int, value time.Time) SetValueStep
 
 	SetVarintTimeUUIDMap(col VarintTimeUUIDMapColumn, value map[*big.Int]gocql.UUID) SetValueStep
+	SetVarintTimeUUIDMapValue(col VarintTimeUUIDMapColumn, key *big.Int, value gocql.UUID) SetValueStep
 
 	SetVarintUUIDMap(col VarintUUIDMapColumn, value map[*big.Int]gocql.UUID) SetValueStep
+	SetVarintUUIDMapValue(col VarintUUIDMapColumn, key *big.Int, value gocql.UUID) SetValueStep
 
 	SetVarintBooleanMap(col VarintBooleanMapColumn, value map[*big.Int]bool) SetValueStep
+	SetVarintBooleanMapValue(col VarintBooleanMapColumn, key *big.Int, value bool) SetValueStep
 
 	SetVarintDecimalMap(col VarintDecimalMapColumn, value map[*big.Int]*inf.Dec) SetValueStep
+	SetVarintDecimalMapValue(col VarintDecimalMapColumn, key *big.Int, value *inf.Dec) SetValueStep
 
 	SetVarintVarintMap(col VarintVarintMapColumn, value map[*big.Int]*big.Int) SetValueStep
+	SetVarintVarintMapValue(col VarintVarintMapColumn, key *big.Int, value *big.Int) SetValueStep
 
 	SetVarintBytesMap(col VarintBytesMapColumn, value map[*big.Int][]byte) SetValueStep
+	SetVarintBytesMapValue(col VarintBytesMapColumn, key *big.Int, value []byte) SetValueStep
 
 	SetStringSlice(col StringSliceColumn, value []string) SetValueStep
 	AppendStringSlice(col StringSliceColumn, values ...string) SetValueStep
@@ -2018,6 +2150,666 @@ func (c *Context) SetVarintVarintMap(col VarintVarintMapColumn, value map[*big.I
 
 func (c *Context) SetVarintBytesMap(col VarintBytesMapColumn, value map[*big.Int][]byte) SetValueStep {
 	set(c, col, value)
+	return c
+}
+
+func (c *Context) SetStringStringMapValue(col StringStringMapColumn, key string, value string) SetValueStep {
+	setMap(c, col, key, value)
+	return c
+}
+
+func (c *Context) SetStringInt32MapValue(col StringInt32MapColumn, key string, value int32) SetValueStep {
+	setMap(c, col, key, value)
+	return c
+}
+
+func (c *Context) SetStringInt64MapValue(col StringInt64MapColumn, key string, value int64) SetValueStep {
+	setMap(c, col, key, value)
+	return c
+}
+
+func (c *Context) SetStringFloat32MapValue(col StringFloat32MapColumn, key string, value float32) SetValueStep {
+	setMap(c, col, key, value)
+	return c
+}
+
+func (c *Context) SetStringFloat64MapValue(col StringFloat64MapColumn, key string, value float64) SetValueStep {
+	setMap(c, col, key, value)
+	return c
+}
+
+func (c *Context) SetStringTimestampMapValue(col StringTimestampMapColumn, key string, value time.Time) SetValueStep {
+	setMap(c, col, key, value)
+	return c
+}
+
+func (c *Context) SetStringTimeUUIDMapValue(col StringTimeUUIDMapColumn, key string, value gocql.UUID) SetValueStep {
+	setMap(c, col, key, value)
+	return c
+}
+
+func (c *Context) SetStringUUIDMapValue(col StringUUIDMapColumn, key string, value gocql.UUID) SetValueStep {
+	setMap(c, col, key, value)
+	return c
+}
+
+func (c *Context) SetStringBooleanMapValue(col StringBooleanMapColumn, key string, value bool) SetValueStep {
+	setMap(c, col, key, value)
+	return c
+}
+
+func (c *Context) SetStringDecimalMapValue(col StringDecimalMapColumn, key string, value *inf.Dec) SetValueStep {
+	setMap(c, col, key, value)
+	return c
+}
+
+func (c *Context) SetStringVarintMapValue(col StringVarintMapColumn, key string, value *big.Int) SetValueStep {
+	setMap(c, col, key, value)
+	return c
+}
+
+func (c *Context) SetStringBytesMapValue(col StringBytesMapColumn, key string, value []byte) SetValueStep {
+	setMap(c, col, key, value)
+	return c
+}
+
+func (c *Context) SetInt32StringMapValue(col Int32StringMapColumn, key int32, value string) SetValueStep {
+	setMap(c, col, key, value)
+	return c
+}
+
+func (c *Context) SetInt32Int32MapValue(col Int32Int32MapColumn, key int32, value int32) SetValueStep {
+	setMap(c, col, key, value)
+	return c
+}
+
+func (c *Context) SetInt32Int64MapValue(col Int32Int64MapColumn, key int32, value int64) SetValueStep {
+	setMap(c, col, key, value)
+	return c
+}
+
+func (c *Context) SetInt32Float32MapValue(col Int32Float32MapColumn, key int32, value float32) SetValueStep {
+	setMap(c, col, key, value)
+	return c
+}
+
+func (c *Context) SetInt32Float64MapValue(col Int32Float64MapColumn, key int32, value float64) SetValueStep {
+	setMap(c, col, key, value)
+	return c
+}
+
+func (c *Context) SetInt32TimestampMapValue(col Int32TimestampMapColumn, key int32, value time.Time) SetValueStep {
+	setMap(c, col, key, value)
+	return c
+}
+
+func (c *Context) SetInt32TimeUUIDMapValue(col Int32TimeUUIDMapColumn, key int32, value gocql.UUID) SetValueStep {
+	setMap(c, col, key, value)
+	return c
+}
+
+func (c *Context) SetInt32UUIDMapValue(col Int32UUIDMapColumn, key int32, value gocql.UUID) SetValueStep {
+	setMap(c, col, key, value)
+	return c
+}
+
+func (c *Context) SetInt32BooleanMapValue(col Int32BooleanMapColumn, key int32, value bool) SetValueStep {
+	setMap(c, col, key, value)
+	return c
+}
+
+func (c *Context) SetInt32DecimalMapValue(col Int32DecimalMapColumn, key int32, value *inf.Dec) SetValueStep {
+	setMap(c, col, key, value)
+	return c
+}
+
+func (c *Context) SetInt32VarintMapValue(col Int32VarintMapColumn, key int32, value *big.Int) SetValueStep {
+	setMap(c, col, key, value)
+	return c
+}
+
+func (c *Context) SetInt32BytesMapValue(col Int32BytesMapColumn, key int32, value []byte) SetValueStep {
+	setMap(c, col, key, value)
+	return c
+}
+
+func (c *Context) SetInt64StringMapValue(col Int64StringMapColumn, key int64, value string) SetValueStep {
+	setMap(c, col, key, value)
+	return c
+}
+
+func (c *Context) SetInt64Int32MapValue(col Int64Int32MapColumn, key int64, value int32) SetValueStep {
+	setMap(c, col, key, value)
+	return c
+}
+
+func (c *Context) SetInt64Int64MapValue(col Int64Int64MapColumn, key int64, value int64) SetValueStep {
+	setMap(c, col, key, value)
+	return c
+}
+
+func (c *Context) SetInt64Float32MapValue(col Int64Float32MapColumn, key int64, value float32) SetValueStep {
+	setMap(c, col, key, value)
+	return c
+}
+
+func (c *Context) SetInt64Float64MapValue(col Int64Float64MapColumn, key int64, value float64) SetValueStep {
+	setMap(c, col, key, value)
+	return c
+}
+
+func (c *Context) SetInt64TimestampMapValue(col Int64TimestampMapColumn, key int64, value time.Time) SetValueStep {
+	setMap(c, col, key, value)
+	return c
+}
+
+func (c *Context) SetInt64TimeUUIDMapValue(col Int64TimeUUIDMapColumn, key int64, value gocql.UUID) SetValueStep {
+	setMap(c, col, key, value)
+	return c
+}
+
+func (c *Context) SetInt64UUIDMapValue(col Int64UUIDMapColumn, key int64, value gocql.UUID) SetValueStep {
+	setMap(c, col, key, value)
+	return c
+}
+
+func (c *Context) SetInt64BooleanMapValue(col Int64BooleanMapColumn, key int64, value bool) SetValueStep {
+	setMap(c, col, key, value)
+	return c
+}
+
+func (c *Context) SetInt64DecimalMapValue(col Int64DecimalMapColumn, key int64, value *inf.Dec) SetValueStep {
+	setMap(c, col, key, value)
+	return c
+}
+
+func (c *Context) SetInt64VarintMapValue(col Int64VarintMapColumn, key int64, value *big.Int) SetValueStep {
+	setMap(c, col, key, value)
+	return c
+}
+
+func (c *Context) SetInt64BytesMapValue(col Int64BytesMapColumn, key int64, value []byte) SetValueStep {
+	setMap(c, col, key, value)
+	return c
+}
+
+func (c *Context) SetFloat32StringMapValue(col Float32StringMapColumn, key float32, value string) SetValueStep {
+	setMap(c, col, key, value)
+	return c
+}
+
+func (c *Context) SetFloat32Int32MapValue(col Float32Int32MapColumn, key float32, value int32) SetValueStep {
+	setMap(c, col, key, value)
+	return c
+}
+
+func (c *Context) SetFloat32Int64MapValue(col Float32Int64MapColumn, key float32, value int64) SetValueStep {
+	setMap(c, col, key, value)
+	return c
+}
+
+func (c *Context) SetFloat32Float32MapValue(col Float32Float32MapColumn, key float32, value float32) SetValueStep {
+	setMap(c, col, key, value)
+	return c
+}
+
+func (c *Context) SetFloat32Float64MapValue(col Float32Float64MapColumn, key float32, value float64) SetValueStep {
+	setMap(c, col, key, value)
+	return c
+}
+
+func (c *Context) SetFloat32TimestampMapValue(col Float32TimestampMapColumn, key float32, value time.Time) SetValueStep {
+	setMap(c, col, key, value)
+	return c
+}
+
+func (c *Context) SetFloat32TimeUUIDMapValue(col Float32TimeUUIDMapColumn, key float32, value gocql.UUID) SetValueStep {
+	setMap(c, col, key, value)
+	return c
+}
+
+func (c *Context) SetFloat32UUIDMapValue(col Float32UUIDMapColumn, key float32, value gocql.UUID) SetValueStep {
+	setMap(c, col, key, value)
+	return c
+}
+
+func (c *Context) SetFloat32BooleanMapValue(col Float32BooleanMapColumn, key float32, value bool) SetValueStep {
+	setMap(c, col, key, value)
+	return c
+}
+
+func (c *Context) SetFloat32DecimalMapValue(col Float32DecimalMapColumn, key float32, value *inf.Dec) SetValueStep {
+	setMap(c, col, key, value)
+	return c
+}
+
+func (c *Context) SetFloat32VarintMapValue(col Float32VarintMapColumn, key float32, value *big.Int) SetValueStep {
+	setMap(c, col, key, value)
+	return c
+}
+
+func (c *Context) SetFloat32BytesMapValue(col Float32BytesMapColumn, key float32, value []byte) SetValueStep {
+	setMap(c, col, key, value)
+	return c
+}
+
+func (c *Context) SetFloat64StringMapValue(col Float64StringMapColumn, key float64, value string) SetValueStep {
+	setMap(c, col, key, value)
+	return c
+}
+
+func (c *Context) SetFloat64Int32MapValue(col Float64Int32MapColumn, key float64, value int32) SetValueStep {
+	setMap(c, col, key, value)
+	return c
+}
+
+func (c *Context) SetFloat64Int64MapValue(col Float64Int64MapColumn, key float64, value int64) SetValueStep {
+	setMap(c, col, key, value)
+	return c
+}
+
+func (c *Context) SetFloat64Float32MapValue(col Float64Float32MapColumn, key float64, value float32) SetValueStep {
+	setMap(c, col, key, value)
+	return c
+}
+
+func (c *Context) SetFloat64Float64MapValue(col Float64Float64MapColumn, key float64, value float64) SetValueStep {
+	setMap(c, col, key, value)
+	return c
+}
+
+func (c *Context) SetFloat64TimestampMapValue(col Float64TimestampMapColumn, key float64, value time.Time) SetValueStep {
+	setMap(c, col, key, value)
+	return c
+}
+
+func (c *Context) SetFloat64TimeUUIDMapValue(col Float64TimeUUIDMapColumn, key float64, value gocql.UUID) SetValueStep {
+	setMap(c, col, key, value)
+	return c
+}
+
+func (c *Context) SetFloat64UUIDMapValue(col Float64UUIDMapColumn, key float64, value gocql.UUID) SetValueStep {
+	setMap(c, col, key, value)
+	return c
+}
+
+func (c *Context) SetFloat64BooleanMapValue(col Float64BooleanMapColumn, key float64, value bool) SetValueStep {
+	setMap(c, col, key, value)
+	return c
+}
+
+func (c *Context) SetFloat64DecimalMapValue(col Float64DecimalMapColumn, key float64, value *inf.Dec) SetValueStep {
+	setMap(c, col, key, value)
+	return c
+}
+
+func (c *Context) SetFloat64VarintMapValue(col Float64VarintMapColumn, key float64, value *big.Int) SetValueStep {
+	setMap(c, col, key, value)
+	return c
+}
+
+func (c *Context) SetFloat64BytesMapValue(col Float64BytesMapColumn, key float64, value []byte) SetValueStep {
+	setMap(c, col, key, value)
+	return c
+}
+
+func (c *Context) SetTimestampStringMapValue(col TimestampStringMapColumn, key time.Time, value string) SetValueStep {
+	setMap(c, col, key, value)
+	return c
+}
+
+func (c *Context) SetTimestampInt32MapValue(col TimestampInt32MapColumn, key time.Time, value int32) SetValueStep {
+	setMap(c, col, key, value)
+	return c
+}
+
+func (c *Context) SetTimestampInt64MapValue(col TimestampInt64MapColumn, key time.Time, value int64) SetValueStep {
+	setMap(c, col, key, value)
+	return c
+}
+
+func (c *Context) SetTimestampFloat32MapValue(col TimestampFloat32MapColumn, key time.Time, value float32) SetValueStep {
+	setMap(c, col, key, value)
+	return c
+}
+
+func (c *Context) SetTimestampFloat64MapValue(col TimestampFloat64MapColumn, key time.Time, value float64) SetValueStep {
+	setMap(c, col, key, value)
+	return c
+}
+
+func (c *Context) SetTimestampTimestampMapValue(col TimestampTimestampMapColumn, key time.Time, value time.Time) SetValueStep {
+	setMap(c, col, key, value)
+	return c
+}
+
+func (c *Context) SetTimestampTimeUUIDMapValue(col TimestampTimeUUIDMapColumn, key time.Time, value gocql.UUID) SetValueStep {
+	setMap(c, col, key, value)
+	return c
+}
+
+func (c *Context) SetTimestampUUIDMapValue(col TimestampUUIDMapColumn, key time.Time, value gocql.UUID) SetValueStep {
+	setMap(c, col, key, value)
+	return c
+}
+
+func (c *Context) SetTimestampBooleanMapValue(col TimestampBooleanMapColumn, key time.Time, value bool) SetValueStep {
+	setMap(c, col, key, value)
+	return c
+}
+
+func (c *Context) SetTimestampDecimalMapValue(col TimestampDecimalMapColumn, key time.Time, value *inf.Dec) SetValueStep {
+	setMap(c, col, key, value)
+	return c
+}
+
+func (c *Context) SetTimestampVarintMapValue(col TimestampVarintMapColumn, key time.Time, value *big.Int) SetValueStep {
+	setMap(c, col, key, value)
+	return c
+}
+
+func (c *Context) SetTimestampBytesMapValue(col TimestampBytesMapColumn, key time.Time, value []byte) SetValueStep {
+	setMap(c, col, key, value)
+	return c
+}
+
+func (c *Context) SetTimeUUIDStringMapValue(col TimeUUIDStringMapColumn, key gocql.UUID, value string) SetValueStep {
+	setMap(c, col, key, value)
+	return c
+}
+
+func (c *Context) SetTimeUUIDInt32MapValue(col TimeUUIDInt32MapColumn, key gocql.UUID, value int32) SetValueStep {
+	setMap(c, col, key, value)
+	return c
+}
+
+func (c *Context) SetTimeUUIDInt64MapValue(col TimeUUIDInt64MapColumn, key gocql.UUID, value int64) SetValueStep {
+	setMap(c, col, key, value)
+	return c
+}
+
+func (c *Context) SetTimeUUIDFloat32MapValue(col TimeUUIDFloat32MapColumn, key gocql.UUID, value float32) SetValueStep {
+	setMap(c, col, key, value)
+	return c
+}
+
+func (c *Context) SetTimeUUIDFloat64MapValue(col TimeUUIDFloat64MapColumn, key gocql.UUID, value float64) SetValueStep {
+	setMap(c, col, key, value)
+	return c
+}
+
+func (c *Context) SetTimeUUIDTimestampMapValue(col TimeUUIDTimestampMapColumn, key gocql.UUID, value time.Time) SetValueStep {
+	setMap(c, col, key, value)
+	return c
+}
+
+func (c *Context) SetTimeUUIDTimeUUIDMapValue(col TimeUUIDTimeUUIDMapColumn, key gocql.UUID, value gocql.UUID) SetValueStep {
+	setMap(c, col, key, value)
+	return c
+}
+
+func (c *Context) SetTimeUUIDUUIDMapValue(col TimeUUIDUUIDMapColumn, key gocql.UUID, value gocql.UUID) SetValueStep {
+	setMap(c, col, key, value)
+	return c
+}
+
+func (c *Context) SetTimeUUIDBooleanMapValue(col TimeUUIDBooleanMapColumn, key gocql.UUID, value bool) SetValueStep {
+	setMap(c, col, key, value)
+	return c
+}
+
+func (c *Context) SetTimeUUIDDecimalMapValue(col TimeUUIDDecimalMapColumn, key gocql.UUID, value *inf.Dec) SetValueStep {
+	setMap(c, col, key, value)
+	return c
+}
+
+func (c *Context) SetTimeUUIDVarintMapValue(col TimeUUIDVarintMapColumn, key gocql.UUID, value *big.Int) SetValueStep {
+	setMap(c, col, key, value)
+	return c
+}
+
+func (c *Context) SetTimeUUIDBytesMapValue(col TimeUUIDBytesMapColumn, key gocql.UUID, value []byte) SetValueStep {
+	setMap(c, col, key, value)
+	return c
+}
+
+func (c *Context) SetUUIDStringMapValue(col UUIDStringMapColumn, key gocql.UUID, value string) SetValueStep {
+	setMap(c, col, key, value)
+	return c
+}
+
+func (c *Context) SetUUIDInt32MapValue(col UUIDInt32MapColumn, key gocql.UUID, value int32) SetValueStep {
+	setMap(c, col, key, value)
+	return c
+}
+
+func (c *Context) SetUUIDInt64MapValue(col UUIDInt64MapColumn, key gocql.UUID, value int64) SetValueStep {
+	setMap(c, col, key, value)
+	return c
+}
+
+func (c *Context) SetUUIDFloat32MapValue(col UUIDFloat32MapColumn, key gocql.UUID, value float32) SetValueStep {
+	setMap(c, col, key, value)
+	return c
+}
+
+func (c *Context) SetUUIDFloat64MapValue(col UUIDFloat64MapColumn, key gocql.UUID, value float64) SetValueStep {
+	setMap(c, col, key, value)
+	return c
+}
+
+func (c *Context) SetUUIDTimestampMapValue(col UUIDTimestampMapColumn, key gocql.UUID, value time.Time) SetValueStep {
+	setMap(c, col, key, value)
+	return c
+}
+
+func (c *Context) SetUUIDTimeUUIDMapValue(col UUIDTimeUUIDMapColumn, key gocql.UUID, value gocql.UUID) SetValueStep {
+	setMap(c, col, key, value)
+	return c
+}
+
+func (c *Context) SetUUIDUUIDMapValue(col UUIDUUIDMapColumn, key gocql.UUID, value gocql.UUID) SetValueStep {
+	setMap(c, col, key, value)
+	return c
+}
+
+func (c *Context) SetUUIDBooleanMapValue(col UUIDBooleanMapColumn, key gocql.UUID, value bool) SetValueStep {
+	setMap(c, col, key, value)
+	return c
+}
+
+func (c *Context) SetUUIDDecimalMapValue(col UUIDDecimalMapColumn, key gocql.UUID, value *inf.Dec) SetValueStep {
+	setMap(c, col, key, value)
+	return c
+}
+
+func (c *Context) SetUUIDVarintMapValue(col UUIDVarintMapColumn, key gocql.UUID, value *big.Int) SetValueStep {
+	setMap(c, col, key, value)
+	return c
+}
+
+func (c *Context) SetUUIDBytesMapValue(col UUIDBytesMapColumn, key gocql.UUID, value []byte) SetValueStep {
+	setMap(c, col, key, value)
+	return c
+}
+
+func (c *Context) SetBooleanStringMapValue(col BooleanStringMapColumn, key bool, value string) SetValueStep {
+	setMap(c, col, key, value)
+	return c
+}
+
+func (c *Context) SetBooleanInt32MapValue(col BooleanInt32MapColumn, key bool, value int32) SetValueStep {
+	setMap(c, col, key, value)
+	return c
+}
+
+func (c *Context) SetBooleanInt64MapValue(col BooleanInt64MapColumn, key bool, value int64) SetValueStep {
+	setMap(c, col, key, value)
+	return c
+}
+
+func (c *Context) SetBooleanFloat32MapValue(col BooleanFloat32MapColumn, key bool, value float32) SetValueStep {
+	setMap(c, col, key, value)
+	return c
+}
+
+func (c *Context) SetBooleanFloat64MapValue(col BooleanFloat64MapColumn, key bool, value float64) SetValueStep {
+	setMap(c, col, key, value)
+	return c
+}
+
+func (c *Context) SetBooleanTimestampMapValue(col BooleanTimestampMapColumn, key bool, value time.Time) SetValueStep {
+	setMap(c, col, key, value)
+	return c
+}
+
+func (c *Context) SetBooleanTimeUUIDMapValue(col BooleanTimeUUIDMapColumn, key bool, value gocql.UUID) SetValueStep {
+	setMap(c, col, key, value)
+	return c
+}
+
+func (c *Context) SetBooleanUUIDMapValue(col BooleanUUIDMapColumn, key bool, value gocql.UUID) SetValueStep {
+	setMap(c, col, key, value)
+	return c
+}
+
+func (c *Context) SetBooleanBooleanMapValue(col BooleanBooleanMapColumn, key bool, value bool) SetValueStep {
+	setMap(c, col, key, value)
+	return c
+}
+
+func (c *Context) SetBooleanDecimalMapValue(col BooleanDecimalMapColumn, key bool, value *inf.Dec) SetValueStep {
+	setMap(c, col, key, value)
+	return c
+}
+
+func (c *Context) SetBooleanVarintMapValue(col BooleanVarintMapColumn, key bool, value *big.Int) SetValueStep {
+	setMap(c, col, key, value)
+	return c
+}
+
+func (c *Context) SetBooleanBytesMapValue(col BooleanBytesMapColumn, key bool, value []byte) SetValueStep {
+	setMap(c, col, key, value)
+	return c
+}
+
+func (c *Context) SetDecimalStringMapValue(col DecimalStringMapColumn, key *inf.Dec, value string) SetValueStep {
+	setMap(c, col, key, value)
+	return c
+}
+
+func (c *Context) SetDecimalInt32MapValue(col DecimalInt32MapColumn, key *inf.Dec, value int32) SetValueStep {
+	setMap(c, col, key, value)
+	return c
+}
+
+func (c *Context) SetDecimalInt64MapValue(col DecimalInt64MapColumn, key *inf.Dec, value int64) SetValueStep {
+	setMap(c, col, key, value)
+	return c
+}
+
+func (c *Context) SetDecimalFloat32MapValue(col DecimalFloat32MapColumn, key *inf.Dec, value float32) SetValueStep {
+	setMap(c, col, key, value)
+	return c
+}
+
+func (c *Context) SetDecimalFloat64MapValue(col DecimalFloat64MapColumn, key *inf.Dec, value float64) SetValueStep {
+	setMap(c, col, key, value)
+	return c
+}
+
+func (c *Context) SetDecimalTimestampMapValue(col DecimalTimestampMapColumn, key *inf.Dec, value time.Time) SetValueStep {
+	setMap(c, col, key, value)
+	return c
+}
+
+func (c *Context) SetDecimalTimeUUIDMapValue(col DecimalTimeUUIDMapColumn, key *inf.Dec, value gocql.UUID) SetValueStep {
+	setMap(c, col, key, value)
+	return c
+}
+
+func (c *Context) SetDecimalUUIDMapValue(col DecimalUUIDMapColumn, key *inf.Dec, value gocql.UUID) SetValueStep {
+	setMap(c, col, key, value)
+	return c
+}
+
+func (c *Context) SetDecimalBooleanMapValue(col DecimalBooleanMapColumn, key *inf.Dec, value bool) SetValueStep {
+	setMap(c, col, key, value)
+	return c
+}
+
+func (c *Context) SetDecimalDecimalMapValue(col DecimalDecimalMapColumn, key *inf.Dec, value *inf.Dec) SetValueStep {
+	setMap(c, col, key, value)
+	return c
+}
+
+func (c *Context) SetDecimalVarintMapValue(col DecimalVarintMapColumn, key *inf.Dec, value *big.Int) SetValueStep {
+	setMap(c, col, key, value)
+	return c
+}
+
+func (c *Context) SetDecimalBytesMapValue(col DecimalBytesMapColumn, key *inf.Dec, value []byte) SetValueStep {
+	setMap(c, col, key, value)
+	return c
+}
+
+func (c *Context) SetVarintStringMapValue(col VarintStringMapColumn, key *big.Int, value string) SetValueStep {
+	setMap(c, col, key, value)
+	return c
+}
+
+func (c *Context) SetVarintInt32MapValue(col VarintInt32MapColumn, key *big.Int, value int32) SetValueStep {
+	setMap(c, col, key, value)
+	return c
+}
+
+func (c *Context) SetVarintInt64MapValue(col VarintInt64MapColumn, key *big.Int, value int64) SetValueStep {
+	setMap(c, col, key, value)
+	return c
+}
+
+func (c *Context) SetVarintFloat32MapValue(col VarintFloat32MapColumn, key *big.Int, value float32) SetValueStep {
+	setMap(c, col, key, value)
+	return c
+}
+
+func (c *Context) SetVarintFloat64MapValue(col VarintFloat64MapColumn, key *big.Int, value float64) SetValueStep {
+	setMap(c, col, key, value)
+	return c
+}
+
+func (c *Context) SetVarintTimestampMapValue(col VarintTimestampMapColumn, key *big.Int, value time.Time) SetValueStep {
+	setMap(c, col, key, value)
+	return c
+}
+
+func (c *Context) SetVarintTimeUUIDMapValue(col VarintTimeUUIDMapColumn, key *big.Int, value gocql.UUID) SetValueStep {
+	setMap(c, col, key, value)
+	return c
+}
+
+func (c *Context) SetVarintUUIDMapValue(col VarintUUIDMapColumn, key *big.Int, value gocql.UUID) SetValueStep {
+	setMap(c, col, key, value)
+	return c
+}
+
+func (c *Context) SetVarintBooleanMapValue(col VarintBooleanMapColumn, key *big.Int, value bool) SetValueStep {
+	setMap(c, col, key, value)
+	return c
+}
+
+func (c *Context) SetVarintDecimalMapValue(col VarintDecimalMapColumn, key *big.Int, value *inf.Dec) SetValueStep {
+	setMap(c, col, key, value)
+	return c
+}
+
+func (c *Context) SetVarintVarintMapValue(col VarintVarintMapColumn, key *big.Int, value *big.Int) SetValueStep {
+	setMap(c, col, key, value)
+	return c
+}
+
+func (c *Context) SetVarintBytesMapValue(col VarintBytesMapColumn, key *big.Int, value []byte) SetValueStep {
+	setMap(c, col, key, value)
 	return c
 }
 

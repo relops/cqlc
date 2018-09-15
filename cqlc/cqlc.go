@@ -57,6 +57,8 @@ const (
 	Append
 	Prepend
 	RemoveByValue
+	RemoveByKey
+	SetByKey
 )
 
 var (
@@ -556,7 +558,6 @@ func (c *Context) RenderCQL() (string, error) {
 
 	var buf bytes.Buffer
 
-	// TODO This should be a switch
 	switch c.Operation {
 	case ReadOperation:
 		{
@@ -603,6 +604,11 @@ func Truncate(s *gocql.Session, t Table) error {
 
 func set(c *Context, col Column, value interface{}) {
 	c.Bindings = append(c.Bindings, ColumnBinding{Column: col, Value: value})
+}
+
+func setMap(c *Context, col Column, key interface{}, value interface{})  {
+	b := ColumnBinding{Column: col, Value: []interface{}{key, value}, CollectionType: MapType, CollectionOperationType: SetByKey}
+	c.Bindings = append(c.Bindings, b)
 }
 
 func appendList(c *Context, col ListColumn, values interface{}) {

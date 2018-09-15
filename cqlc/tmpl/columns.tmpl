@@ -78,6 +78,7 @@ type SetValueStep interface {
 	{{ range $_, $it := $inner }}
 	{{ if ne $ot.Prefix "Bytes" }}
 	Set{{ $ot.Prefix }}{{ $it.Prefix }}Map(col {{ $ot.Prefix }}{{ $it.Prefix }}MapColumn, value map[{{ $ot.Literal }}]{{ $it.Literal }}) SetValueStep
+	Set{{ $ot.Prefix }}{{ $it.Prefix }}MapValue(col {{ $ot.Prefix }}{{ $it.Prefix }}MapColumn, key {{ $ot.Literal }}, value {{ $it.Literal }}) SetValueStep
 	{{ end }}{{ end }}{{ end }}
 
 	{{ range $_, $t := .types }}
@@ -93,6 +94,15 @@ type SetValueStep interface {
 {{ if ne $ot.Prefix "Bytes" }}
 func (c *Context) Set{{ $ot.Prefix }}{{ $it.Prefix }}Map(col {{ $ot.Prefix }}{{ $it.Prefix }}MapColumn, value map[{{ $ot.Literal }}]{{ $it.Literal }}) SetValueStep {
 	set(c, col, value)
+	return c
+}
+{{ end }}{{ end }}{{ end }}
+
+{{ range $_, $ot := $outer }}
+{{ range $_, $it := $inner }}
+{{ if ne $ot.Prefix "Bytes" }}
+func (c *Context) Set{{ $ot.Prefix }}{{ $it.Prefix }}MapValue(col {{ $ot.Prefix }}{{ $it.Prefix }}MapColumn, key {{ $ot.Literal }}, value {{ $it.Literal }}) SetValueStep {
+	setMap(c, col, key, value)
 	return c
 }
 {{ end }}{{ end }}{{ end }}

@@ -33,6 +33,9 @@ input: test/.fixtures/collections/input.go test/collections.cql
 test: columns schema test/.fixtures/collections/input.go
 	go test -v ./cqlc
 
+test-unit:
+	go test -v ./cqlc
+
 format:
 	gofmt -w cqlc generator integration test
 
