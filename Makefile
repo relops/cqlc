@@ -1,6 +1,14 @@
 CCM_NODE ?= node1
 CQLSH_CMD ?= ccm $(CCM_NODE) cqlsh
 
+.PHONY: build
+build:
+	go build -o build/cqlc .
+
+.PHONY: install
+install:
+	go install .
+
 test/collections.cql: test/tmpl/schema.tmpl test/schema_generator.go
 	cd test; go run schema_generator.go
 

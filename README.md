@@ -1,5 +1,4 @@
-cqlc
-----
+# cqlc
 
 [![Join the chat at https://gitter.im/relops/cqlc](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/relops/cqlc?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
@@ -9,5 +8,11 @@ cqlc
 `cqlc` generates Go code from your Cassandra schema so that you can write type safe CQL statements in Go with a natural query syntax.
 
 For more details please visit [http://relops.com/cqlc][cqlc]
+
+## Usage
+
+````bash
+make build
+````
 
 [cqlc]: http://relops.com/cqlc
