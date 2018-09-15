@@ -1,12 +1,13 @@
 package e2e
 
 import (
-	"github.com/relops/cqlc/cqlc"
-	"github.com/relops/cqlc/e2e/t1gen"
+	"errors"
+	"log"
 	"testing"
-	"time"
 
 	"github.com/gocql/gocql"
+	"github.com/relops/cqlc/cqlc"
+	"github.com/relops/cqlc/e2e/t1gen"
 	requir "github.com/stretchr/testify/require"
 )
 
@@ -58,14 +59,33 @@ CREATE TABLE cqlc.t1abc (
 
 		c := cqlc.NewContext()
 		c.Debug = true
-		// FIXME: StringMapValue didn't work 
-		//err = c.Upsert(t1gen.T1abcTableDef()).
-		//	SetStringStringMapValue(t1gen.T1ABC.STRING_MAP, "1", "2").Exec(sess)
-		//require.Nil(err, "insert map")
-
+		// FIXME: StringMapValue didn't work "can not marshal []interface {} into map(varchar, varchar)"
 		err = c.Upsert(t1gen.T1abcTableDef()).
-			SetString(t1gen.T1ABC.ID, "1").
-			SetTimestamp(t1gen.T1ABC.TS, time.Now()).Exec(sess)
+			SetString(t1gen.T1ABC.ID, "2").
+			//SetStringStringMapValue(t1gen.T1ABC.STRING_MAP, "1", "2").Exec(sess)
+			SetStringStringMap(t1gen.T1ABC.STRING_MAP, map[string]string{"1": "2"}).Exec(sess)
 		require.Nil(err, "insert map")
+
+
+	//	cqlc.go:522: CQL: INSERT INTO t1abc (id, string_map) VALUES ( 2, map[1:2])
+	//	cqlc.go:522: CQL: UPDATE t1abc SET string_map[ [1 3]] =  2 WHERE id =  %!v(MISSING)
+	//	--- FAIL: TestCreateSchema/insert (0.03s)
+	//	require.go:765:
+	//	Error Trace:	create_schema_test.go:72
+	//Error:      	Expected nil, but got: &errors.errorString{s:"gocql: expected 3 values send got 2"}
+		err = c.Upsert(t1gen.T1abcTableDef()).
+			SetStringStringMapValue(t1gen.T1ABC.STRING_MAP, "1", "3").
+			Where(t1gen.T1ABC.ID.Eq("2")).
+			Exec(sess)
+		require.Nil(err, "update map")
+
+		//err = c.Upsert(t1gen.T1abcTableDef()).
+		//	SetString(t1gen.T1ABC.ID, "1").
+		//	SetTimestamp(t1gen.T1ABC.TS, time.Now()).Exec(sess)
+		//require.Nil(err, "insert map")
 	})
+}
+
+func init() {
+	log.SetFlags(log.Lshortfile)
 }

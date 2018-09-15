@@ -519,7 +519,8 @@ func debugStmt(stmt string, placeHolders []interface{}) {
 	buffer.WriteString("CQL: ")
 	buffer.WriteString(infused)
 	buffer.WriteString("\n")
-	fmt.Printf(buffer.String(), placeHolders...)
+	log.Printf(buffer.String(), placeHolders...)
+	//panic("debugStmt")
 }
 
 func BuildStatement(c *Context) (stmt string, placeHolders []interface{}, err error) {
@@ -606,7 +607,7 @@ func set(c *Context, col Column, value interface{}) {
 	c.Bindings = append(c.Bindings, ColumnBinding{Column: col, Value: value})
 }
 
-func setMap(c *Context, col Column, key interface{}, value interface{})  {
+func setMap(c *Context, col Column, key interface{}, value interface{}) {
 	b := ColumnBinding{Column: col, Value: []interface{}{key, value}, CollectionType: MapType, CollectionOperationType: SetByKey}
 	c.Bindings = append(c.Bindings, b)
 }
