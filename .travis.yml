@@ -13,18 +13,16 @@ env:
   global:
     - GOMAXPROCS=2
   matrix:
-    - CASS=2.1.9
-    - CASS=2.2.1
+    - CASS=2.2.13
+    - CASS=3.11
 
 go:
-  - 1.4
-  - 1.5
+  - "1.10"
+  - "1.11"
+  - "tip"
 
 before_install:
-  - go get github.com/stretchr/testify/assert
-  - go get github.com/jteeuwen/go-bindata/...
-  - go get github.com/relops/csvb
-  - go get github.com/cihub/seelog
+  - curl -sSL https://github.com/Masterminds/glide/releases/download/$GLIDE_VERSION/glide-v0.13.1-linux-amd64.tar.gz | tar -vxz -C /usr/local/bin --strip=1
   - export PATH=$PATH:/home/travis/gopath/bin
 
 install:
@@ -33,7 +31,8 @@ install:
   - pushd ccm
   - ./setup.py install --user
   - popd
-  - go get -v ./...
+  - glide install
+  - make install
 
 script:
   - set -e
