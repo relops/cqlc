@@ -1,0 +1,13 @@
+version: '3.3'
+services:
+  c2:
+    image: 'cassandra:2.1'
+    network_mode: host
+  c3:
+    image: 'cassandra:3.1'
+    environment:
+      - CASSANDRA_BROADCAST_ADDRESS=127.0.0.1
+    ports:
+    - target: 904
+      published: 9042
+      protocol: tcp
