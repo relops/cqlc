@@ -16,7 +16,14 @@ cqlc --instance=127.0.0.1 --keyspace=cqlc --package=foo --output=foo.go --symbol
 ````bash
 # generate columns
 make cqlc/columns.go
+# e2e test
+# TODO: you need to run it twice if schema changed because first time it will dump the schema, which won't get compiled ...
+# this same as when using latex ... you do xelatex several times when there is bib ...
+make travis-test
+make travis-tear
 ````
+
+
 
 ````go
 // NOTE: in order to support set map by value, we must flatten binding,

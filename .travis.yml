@@ -1,10 +1,7 @@
+sudo: required
 language: go
-
-sudo: false
-
-cache:
-  directories:
-    - $HOME/.ccm/repository
+services:
+- docker
 
 matrix:
   fast_finish: true
@@ -13,6 +10,7 @@ env:
   global:
     # TODO: why need this?
     - GOMAXPROCS=2
+    - DOCKER_COMPOSE_VERSION=1.22.0
   matrix:
     - CASS=2.2.1
 #    - CASS=3.11
@@ -23,8 +21,10 @@ go:
 #  - "tip"
 
 before_install:
-  # NOTE: needed for generator test, it generate file like /tmp/092804891/binding.go https://travis-ci.org/pingginp/cqlc/builds/428906675
-  - go get github.com/gocql/gocql
+  - sudo rm /usr/local/bin/docker-compose
+  - curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
+  - chmod +x docker-compose
+  - sudo mv docker-compose /usr/local/bin
   - curl -sSL https://github.com/Masterminds/glide/releases/download/v0.13.1/glide-v0.13.1-linux-amd64.tar.gz | tar -vxz -C ${GOPATH}/bin --strip=1
 # FIXME: workaround for gopath
   - mkdir -p ${GOPATH}/src/github.com/relops/cqlc
@@ -41,5 +41,7 @@ install:
   - make install
 
 script:
-  - set -e
-  - PATH=$PATH:$HOME/.local/bin bash -x integration.sh $CASS
+  - make test
+  # e2e
+  - make travis-test
+

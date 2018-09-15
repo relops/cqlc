@@ -40,4 +40,13 @@ test-unit:
 format:
 	gofmt -w cqlc generator integration test
 
-.PHONY: test columns bindata
+travis-test:
+	docker-compose -f e2e/docker-compose.yaml up -d c2
+	./wait-on-c.sh
+	sleep 5
+	go test -v ./e2e
+
+travis-tear:
+	cd e2e && make down
+
+.PHONY: test columns
