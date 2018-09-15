@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
-	//"go/format"
+	"go/format"
 	"io"
 	"io/ioutil"
 	"log"
@@ -170,12 +170,11 @@ func generateBinding(opts *Options, version string, w io.Writer) error {
 
 	log.Println("template rendered")
 
-	// FIXME: got error when formatting source
-	//bfmt, err := format.Source(b.Bytes())
-	//if err != nil {
-	//	return err
-	//}
-	bfmt := b.Bytes()
+	// FIXME: got error when formatting source https://github.com/pingginp/cqlc/issues/7
+	bfmt, err := format.Source(b.Bytes())
+	if err != nil {
+		return err
+	}
 
 	if _, err := w.Write(bfmt); err != nil {
 		return err
@@ -231,5 +230,5 @@ func importPaths(md *gocql.KeyspaceMetadata) (imports []string) {
 }
 
 func init() {
-	log.SetFlags(log.Llongfile)
+	log.SetFlags(log.Lshortfile)
 }
