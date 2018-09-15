@@ -11,19 +11,19 @@ matrix:
 
 env:
   global:
+    # TODO: why need this?
     - GOMAXPROCS=2
   matrix:
-    - CASS=2.2.13
+#    - CASS=2.2.13
     - CASS=3.11
 
 go:
   - "1.10"
-  - "1.11"
-  - "tip"
+#  - "1.11"
+#  - "tip"
 
 before_install:
-  - curl -sSL https://github.com/Masterminds/glide/releases/download/v0.13.1/glide-v0.13.1-linux-amd64.tar.gz | tar -vxz -C /usr/local/bin --strip=1
-  - export PATH=$PATH:/home/travis/gopath/bin
+  - curl -sSL https://github.com/Masterminds/glide/releases/download/v0.13.1/glide-v0.13.1-linux-amd64.tar.gz | tar -vxz -C ${GOPATH}/bin --strip=1
 
 install:
   - pip install --user PyYAML six
