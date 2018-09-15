@@ -14,8 +14,8 @@ env:
     # TODO: why need this?
     - GOMAXPROCS=2
   matrix:
-#    - CASS=2.2.13
-    - CASS=3.11
+    - CASS=2.2.1
+#    - CASS=3.11
 
 go:
   - "1.10"
