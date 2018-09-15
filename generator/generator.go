@@ -2,7 +2,6 @@ package generator
 
 import (
 	"bytes"
-	"fmt"
 	"go/format"
 	"io"
 	"io/ioutil"

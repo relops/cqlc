@@ -222,6 +222,12 @@ type ColumnBinding struct {
 	CollectionOperationType CollectionOperationType
 }
 
+// KeyValue is used for bind map value by key
+type KeyValue struct {
+	Key   interface{}
+	Value interface{}
+}
+
 type TableBinding struct {
 	Table   Table
 	Columns []ColumnBinding
@@ -535,27 +541,21 @@ func BuildStatement(c *Context) (stmt string, placeHolders []interface{}, err er
 
 	placeHolders = make([]interface{}, 0)
 
-	// NOTE: for all the binding we need to expand slice due to multiple place holders in one binding
+	// NOTE: for all binding we need to expand value due to multiple placeholders in one binding
 	// in bindings we have foo[?] = ?
 	// in where bindings we have where foo in (?, ?, ?)
 
 	for _, bind := range c.Bindings {
 		v := bind.Value
-		switch reflect.TypeOf(v).Kind() {
-		case reflect.Slice:
-			s := reflect.ValueOf(v)
-			for i := 0; i < s.Len(); i++ {
-				placeHolders = append(placeHolders, s.Index(i).Interface())
-			}
-		case reflect.Array:
-
-			// Not really happy about having to special case UUIDs
-			// but this works for now
-
-			if val, ok := v.(gocql.UUID); ok {
-				placeHolders = append(placeHolders, val.Bytes())
-			} else {
-				return "", nil, bindingErrorf("Cannot bind component: %+v (type: %s)", v, reflect.TypeOf(v))
+		switch bind.CollectionType {
+		case MapType:
+			switch bind.CollectionOperationType {
+			case SetByKey:
+				kv, ok := v.(KeyValue)
+				if !ok {
+					return "", nil, errors.Errorf("map set by key requires key value on column %s", bind.Column.ColumnName())
+				}
+				placeHolders = append(placeHolders, kv.Key, kv.Value)
 			}
 		default:
 			placeHolders = append(placeHolders, v)
@@ -677,7 +677,7 @@ func set(c *Context, col Column, value interface{}) {
 }
 
 func setMap(c *Context, col Column, key interface{}, value interface{}) {
-	b := ColumnBinding{Column: col, Value: []interface{}{key, value}, CollectionType: MapType, CollectionOperationType: SetByKey}
+	b := ColumnBinding{Column: col, Value: KeyValue{Key: key, Value: value}, CollectionType: MapType, CollectionOperationType: SetByKey}
 	c.Bindings = append(c.Bindings, b)
 }
 
