@@ -4,15 +4,17 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
-	"github.com/gocql/gocql"
-	"go/format"
+	//"go/format"
 	"io"
 	"io/ioutil"
+	"log"
 	"os"
 	"path/filepath"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/gocql/gocql"
 )
 
 var (
@@ -47,6 +49,7 @@ func Generate(opts *Options, version string) error {
 	if err != nil {
 		return err
 	}
+	log.Println("valid options")
 
 	var b bytes.Buffer
 	if err = generateBinding(opts, version, &b); err != nil {
@@ -85,7 +88,7 @@ func coalesceImports(md *gocql.KeyspaceMetadata) []string {
 	set["log"] = true
 
 	paths := make([]string, 0)
-	for path, _ := range set {
+	for path := range set {
 		paths = append(paths, path)
 	}
 
@@ -108,6 +111,8 @@ func generateBinding(opts *Options, version string, w io.Writer) error {
 	if err != nil {
 		return fmt.Errorf("Connect error %s", err)
 	}
+
+	log.Println("connected")
 
 	defer s.Close()
 
@@ -140,6 +145,8 @@ func generateBinding(opts *Options, version string, w io.Writer) error {
 		return err
 	}
 
+	log.Printf("keyspace meta %v\n", md)
+
 	provenance := Provenance{
 		Keyspace:      opts.Keyspace,
 		Version:       version,
@@ -161,14 +168,20 @@ func generateBinding(opts *Options, version string, w io.Writer) error {
 		return err
 	}
 
-	bfmt, err := format.Source(b.Bytes())
-	if err != nil {
-		return err
-	}
+	log.Println("template rendered")
+
+	// FIXME: got error when formatting source
+	//bfmt, err := format.Source(b.Bytes())
+	//if err != nil {
+	//	return err
+	//}
+	bfmt := b.Bytes()
 
 	if _, err := w.Write(bfmt); err != nil {
 		return err
 	}
+
+	log.Println("generateBinding finished")
 
 	return nil
 }
@@ -215,4 +228,8 @@ func importPaths(md *gocql.KeyspaceMetadata) (imports []string) {
 	}
 
 	return imports
+}
+
+func init() {
+	log.SetFlags(log.Llongfile)
 }

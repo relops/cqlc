@@ -7,7 +7,8 @@ This a fork of [relops/cqlc](https://github.com/relops/cqlc) which is no longer 
 ## Usage
 
 ````bash
-make build
+make install
+cqlc --instance=127.0.0.1 --keyspace=cqlc --package=foo --output=foo.go --symbols
 ````
 
 ## Dev
