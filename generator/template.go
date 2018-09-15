@@ -3,10 +3,11 @@ package generator
 import (
 	"bytes"
 	"fmt"
-	"github.com/gocql/gocql"
 	"regexp"
 	"strings"
 	"text/template"
+
+	"github.com/gocql/gocql"
 )
 
 var bindingTemplate *template.Template
@@ -27,8 +28,7 @@ func init() {
 		"isLastComponent":       isLastComponent,
 		"isCounterColumnFamily": isCounterColumnFamily,
 	}
-	temp, _ := generator_tmpl_binding_tmpl()
-	bindingTemplate = template.Must(template.New("binding.tmpl").Funcs(m).Parse(string(temp)))
+	bindingTemplate = template.Must(template.New("binding.tmpl").Funcs(m).Parse(Tmpl))
 }
 
 // TODO This is metadata specific to the column family that should be cached at compilation

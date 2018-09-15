@@ -22,7 +22,7 @@ go:
   - "tip"
 
 before_install:
-  - curl -sSL https://github.com/Masterminds/glide/releases/download/$GLIDE_VERSION/glide-v0.13.1-linux-amd64.tar.gz | tar -vxz -C /usr/local/bin --strip=1
+  - curl -sSL https://github.com/Masterminds/glide/releases/download/v0.13.1/glide-v0.13.1-linux-amd64.tar.gz | tar -vxz -C /usr/local/bin --strip=1
   - export PATH=$PATH:/home/travis/gopath/bin
 
 install:

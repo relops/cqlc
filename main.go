@@ -1,17 +1,17 @@
 package main
 
 import (
-	"fmt"
-	"github.com/jessevdk/go-flags"
-	"github.com/relops/cqlc/generator"
 	"log"
 	"os"
+
+	"github.com/jessevdk/go-flags"
+	"github.com/relops/cqlc/generator"
 )
 
 var opts generator.Options
 var parser = flags.NewParser(&opts, flags.Default)
 
-var VERSION string = "0.10.5"
+var Version = "0.10.5"
 
 func init() {
 	opts.Version = printVersionAndExit
@@ -23,7 +23,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	if err := generator.Generate(&opts, VERSION); err != nil {
+	if err := generator.Generate(&opts, Version); err != nil {
 		if err == generator.ErrInvalidOptions {
 			parser.WriteHelp(os.Stderr)
 			os.Exit(1)
@@ -34,6 +34,6 @@ func main() {
 }
 
 func printVersionAndExit() {
-	fmt.Fprintf(os.Stderr, "%s %s\n", "cqlc", VERSION)
+	os.Stdout.Write([]byte(Version + "\n"))
 	os.Exit(0)
 }
