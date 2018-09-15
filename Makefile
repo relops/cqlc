@@ -43,6 +43,7 @@ format:
 travis-test:
 	docker-compose -f e2e/docker-compose.yaml up -d c2
 	./wait-on-c.sh
+	docker ps
 	sleep 5
 	go test -v ./e2e
 

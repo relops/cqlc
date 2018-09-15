@@ -11,7 +11,17 @@ make install
 cqlc --instance=127.0.0.1 --keyspace=cqlc --package=foo --output=foo.go --symbols
 ````
 
+You need to change the repo path in `glide.yaml` to use this fork
+
+````yaml
+- package: github.com/relops/cqlc
+  version: master
+  repo: https://github.com/pingginp/cqlc.git
+````
+
 ## Dev
+
+- clone the repo to `$GOPATH/src/github.com/relops/cqlc`
 
 ````bash
 # generate columns
@@ -22,8 +32,6 @@ make cqlc/columns.go
 make travis-test
 make travis-tear
 ````
-
-
 
 ````go
 // NOTE: in order to support set map by value, we must flatten binding,
