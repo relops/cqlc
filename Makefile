@@ -1,6 +1,14 @@
 CCM_NODE ?= node1
 CQLSH_CMD ?= ccm $(CCM_NODE) cqlsh
 
+.PHONY: build
+build:
+	go build -o build/cqlc .
+
+.PHONY: install
+install:
+	go install .
+
 test/collections.cql: test/tmpl/schema.tmpl test/schema_generator.go
 	cd test; go run schema_generator.go
 
@@ -19,17 +27,27 @@ cqlc/columns.go: cqlc/tmpl/columns.tmpl cqlc/column_generator.go
 
 columns: cqlc/columns.go
 
-bindata: generator/binding_tmpl.go
-
 input: test/.fixtures/collections/input.go test/collections.cql
 
-generator/binding_tmpl.go: generator/tmpl/binding.tmpl
-	go-bindata -pkg=generator -o=generator/binding_tmpl.go generator/tmpl
+# FIXME: generator won't work due to go vendor ... inspect type does not equal
+#test: columns schema test/.fixtures/collections/input.go
+#	go test -v ./cqlc
+test: test-unit
 
-test: columns bindata schema test/.fixtures/collections/input.go
-	go test -v ./...
+test-unit:
+	go test -v ./cqlc
 
 format:
 	gofmt -w cqlc generator integration test
 
-.PHONY: test columns bindata
+travis-test:
+	docker-compose -f e2e/docker-compose.yaml up -d c2
+	./wait-on-c.sh
+	docker ps
+	sleep 5
+	go test -v ./e2e
+
+travis-tear:
+	cd e2e && make down
+
+.PHONY: test columns

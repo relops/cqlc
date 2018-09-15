@@ -3,10 +3,11 @@ package generator
 import (
 	"bytes"
 	"fmt"
-	"github.com/gocql/gocql"
 	"regexp"
 	"strings"
 	"text/template"
+
+	"github.com/gocql/gocql"
 )
 
 var bindingTemplate *template.Template
@@ -27,8 +28,7 @@ func init() {
 		"isLastComponent":       isLastComponent,
 		"isCounterColumnFamily": isCounterColumnFamily,
 	}
-	temp, _ := generator_tmpl_binding_tmpl()
-	bindingTemplate = template.Must(template.New("binding.tmpl").Funcs(m).Parse(string(temp)))
+	bindingTemplate = template.Must(template.New("binding.tmpl").Funcs(m).Parse(Tmpl))
 }
 
 // TODO This is metadata specific to the column family that should be cached at compilation
@@ -47,19 +47,19 @@ func isCounterColumn(c gocql.ColumnMetadata) bool {
 }
 
 func supportsClustering(c gocql.ColumnMetadata) bool {
-	return c.Kind == gocql.CLUSTERING_KEY
+	return c.Kind == gocql.ColumnClusteringKey
 }
 
 func supportsPartitioning(c gocql.ColumnMetadata) bool {
-	return c.Kind == gocql.PARTITION_KEY
+	return c.Kind == gocql.ColumnPartitionKey
 }
 
 func isLastComponent(c gocql.ColumnMetadata, t *gocql.TableMetadata) bool {
 	switch c.Kind {
-	case gocql.PARTITION_KEY:
+	case gocql.ColumnPartitionKey:
 		lastPartitionKeyColumn := t.PartitionKey[len(t.PartitionKey)-1]
 		return c.Name == lastPartitionKeyColumn.Name
-	case gocql.CLUSTERING_KEY:
+	case gocql.ColumnClusteringKey:
 		lastClusteringColumn := t.ClusteringColumns[len(t.ClusteringColumns)-1]
 		return c.Name == lastClusteringColumn.Name
 	default:
@@ -82,13 +82,13 @@ func columnType(c gocql.ColumnMetadata, table *gocql.TableMetadata) string {
 	baseType := columnTypes[t.Type()]
 
 	// TODO The Kind field should be an enum, not a string
-	if c.Kind == gocql.CLUSTERING_KEY {
+	if c.Kind == gocql.ColumnClusteringKey {
 		replacement := ".Clustered"
 		if isLastComponent(c, table) {
 			replacement = ".LastClustered"
 		}
 		baseType = strings.Replace(baseType, ".", replacement, 1)
-	} else if c.Kind == gocql.PARTITION_KEY {
+	} else if c.Kind == gocql.ColumnPartitionKey {
 		replacement := ".Partitioned"
 		if isLastComponent(c, table) {
 			replacement = ".LastPartitioned"

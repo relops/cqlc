@@ -15,12 +15,13 @@ package cqlc
 
 import (
 	"bytes"
-	"errors"
 	"fmt"
-	"github.com/gocql/gocql"
 	"log"
 	"reflect"
 	"strings"
+
+	"github.com/gocql/gocql"
+	"github.com/pkg/errors"
 )
 
 type OperationType int
@@ -57,6 +58,8 @@ const (
 	Append
 	Prepend
 	RemoveByValue
+	RemoveByKey
+	SetByKey
 )
 
 var (
@@ -217,6 +220,12 @@ type ColumnBinding struct {
 	Incremental             bool
 	CollectionType          CollectionType
 	CollectionOperationType CollectionOperationType
+}
+
+// KeyValue is used for bind map value by key
+type KeyValue struct {
+	Key   interface{}
+	Value interface{}
 }
 
 type TableBinding struct {
@@ -382,7 +391,7 @@ func (c *Context) FetchOne(s *gocql.Session) (bool, error) {
 		if !ok {
 			row[i] = cols[i].TypeInfo.New()
 			if c.Debug && row[i] == nil {
-				log.Printf("Could not map type info: %+v", cols[i].TypeInfo.Type)
+				log.Printf("Could not map type info: %+v", cols[i].TypeInfo.Type())
 			}
 		} else {
 			row[i] = binding.Value
@@ -446,7 +455,9 @@ func (c *Context) Prepare(s *gocql.Session) (*gocql.Query, error) {
 			}
 		default:
 			{
-				placeHolders = append(placeHolders, &v)
+				// TODO: (pingginp) why it took address of interface and it worked ...
+				//placeHolders = append(placeHolders, &v)
+				placeHolders = append(placeHolders, v)
 			}
 		}
 	}
@@ -517,10 +528,71 @@ func debugStmt(stmt string, placeHolders []interface{}) {
 	buffer.WriteString("CQL: ")
 	buffer.WriteString(infused)
 	buffer.WriteString("\n")
-	fmt.Printf(buffer.String(), placeHolders...)
+	log.Printf(buffer.String(), placeHolders...)
+	//panic("debugStmt")
 }
 
+// BuildStatement is the new BuildStatement based on Prepare to support set map value by key
 func BuildStatement(c *Context) (stmt string, placeHolders []interface{}, err error) {
+	stmt, err = c.RenderCQL()
+	if err != nil {
+		return "", nil, errors.Wrap(err, "error render CQL")
+	}
+
+	placeHolders = make([]interface{}, 0)
+
+	// NOTE: for all binding we need to expand value due to multiple placeholders in one binding
+	// in bindings we have foo[?] = ?
+	// in where bindings we have where foo in (?, ?, ?)
+
+	for _, bind := range c.Bindings {
+		v := bind.Value
+		switch bind.CollectionType {
+		case MapType:
+			switch bind.CollectionOperationType {
+			case SetByKey:
+				kv, ok := v.(KeyValue)
+				if !ok {
+					return "", nil, errors.Errorf("map set by key requires key value on column %s", bind.Column.ColumnName())
+				}
+				placeHolders = append(placeHolders, kv.Key, kv.Value)
+			}
+		default:
+			placeHolders = append(placeHolders, v)
+		}
+	}
+
+	for _, cond := range c.Conditions {
+		v := cond.Binding.Value
+		switch reflect.TypeOf(v).Kind() {
+		case reflect.Slice:
+			s := reflect.ValueOf(v)
+			for i := 0; i < s.Len(); i++ {
+				placeHolders = append(placeHolders, s.Index(i).Interface())
+			}
+		case reflect.Array:
+
+			// Not really happy about having to special case UUIDs
+			// but this works for now
+
+			if val, ok := v.(gocql.UUID); ok {
+				placeHolders = append(placeHolders, val.Bytes())
+			} else {
+				return "", nil, bindingErrorf("Cannot bind component: %+v (type: %s)", v, reflect.TypeOf(v))
+			}
+		default:
+			placeHolders = append(placeHolders, v)
+		}
+	}
+
+	c.Dispose()
+
+	return stmt, placeHolders, nil
+}
+
+// Deprecated
+// NOTE: (pingginp) this is used by Exec and unlike Prepare, it didn't handle expand binding
+func BuildStatementOld(c *Context) (stmt string, placeHolders []interface{}, err error) {
 	// TODO Does this function need to get exported?
 	stmt, err = c.RenderCQL()
 	if err != nil {
@@ -556,7 +628,6 @@ func (c *Context) RenderCQL() (string, error) {
 
 	var buf bytes.Buffer
 
-	// TODO This should be a switch
 	switch c.Operation {
 	case ReadOperation:
 		{
@@ -581,7 +652,7 @@ func (c *Context) RenderCQL() (string, error) {
 			renderDelete(c, &buf)
 		}
 	default:
-		return "", fmt.Errorf("Unknown operation type: %s", c.Operation)
+		return "", fmt.Errorf("Unknown operation type: %v", c.Operation)
 	}
 
 	return buf.String(), nil
@@ -603,6 +674,11 @@ func Truncate(s *gocql.Session, t Table) error {
 
 func set(c *Context, col Column, value interface{}) {
 	c.Bindings = append(c.Bindings, ColumnBinding{Column: col, Value: value})
+}
+
+func setMap(c *Context, col Column, key interface{}, value interface{}) {
+	b := ColumnBinding{Column: col, Value: KeyValue{Key: key, Value: value}, CollectionType: MapType, CollectionOperationType: SetByKey}
+	c.Bindings = append(c.Bindings, b)
 }
 
 func appendList(c *Context, col ListColumn, values interface{}) {

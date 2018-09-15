@@ -29,8 +29,8 @@ func main() {
 	iter, err := ctx.Select().
 		From(EVENTS).
 		Where(
-		EVENTS.SENSOR.Eq(sensorId),
-		EVENTS.TIMESTAMP.Lt(gocql.TimeUUID())).
+			EVENTS.SENSOR.Eq(sensorId),
+			EVENTS.TIMESTAMP.Lt(gocql.TimeUUID())).
 		Fetch(session)
 
 	if err != nil {

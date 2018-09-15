@@ -286,6 +286,16 @@ func (s *CqlTestSuite) TestUpdate() {
 	cql, err := c.RenderCQL()
 	assert.NoError(s.T(), err)
 	assert.Equal(s.T(), cql, "UPDATE foo SET bar = ?, quux = ? WHERE id = ?")
+
+	// set string map value by key, not entire map
+	c = NewContext()
+	c.Upsert(s.table).
+		SetStringStringMapValue(barCol, "dz1", `{"json":"string"}`).
+		SetInt32(quuxCol, 10).
+		Where(idCol.Eq("x"))
+	cql, err = c.RenderCQL()
+	assert.NoError(s.T(), err)
+	assert.Equal(s.T(), cql, "UPDATE foo SET bar[?] = ?, quux = ? WHERE id = ?")
 }
 
 func (s *CqlTestSuite) TestCounter() {
