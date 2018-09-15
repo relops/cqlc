@@ -218,7 +218,7 @@ const (
         {{range $_, $col := $cf.Columns}}
             {{ $ColStructType := snakeToCamel $col.Name }}
             {{ $QualifiedColStructType := sprint $StructType $ColStructType }}
-            cqlc.ColumnBinding{Column: &{{ $QualifiedColStructType }}Column{}, Value: v.{{snakeToCamel $col.Name}}},
+            {Column: &{{ $QualifiedColStructType }}Column{}, Value: v.{{snakeToCamel $col.Name}}},
         {{end}}
         }
         return cqlc.TableBinding{Table: &{{$StructType}}Def{}, Columns: cols}
@@ -229,7 +229,7 @@ const (
         {{range $_, $col := $cf.Columns}}
             {{ $ColStructType := snakeToCamel $col.Name }}
             {{ $QualifiedColStructType := sprint $StructType $ColStructType }}
-            cqlc.ColumnBinding{Column: &{{ $QualifiedColStructType }}Column{}, Value: &v.{{snakeToCamel $col.Name}}},
+            {Column: &{{ $QualifiedColStructType }}Column{}, Value: &v.{{snakeToCamel $col.Name}}},
         {{end}}
         }
         return cqlc.TableBinding{Table: &{{$StructType}}Def{}, Columns: cols}
