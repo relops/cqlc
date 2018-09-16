@@ -42,7 +42,7 @@ test: test-unit
 test-unit:
 	go test -v ./cqlc
 
-travis-test:
+travis-test: install
 	docker-compose -f e2e/docker-compose.yaml up -d c2
 	./wait-on-c.sh
 	docker ps
