@@ -11,7 +11,7 @@ import (
 var opts generator.Options
 var parser = flags.NewParser(&opts, flags.Default)
 
-var Version = "0.10.5"
+var Version string
 
 func init() {
 	opts.Version = printVersionAndExit

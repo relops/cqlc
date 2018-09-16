@@ -2,12 +2,14 @@
 
 [![Build Status](https://travis-ci.org/pingginp/cqlc.svg?branch=master)](https://travis-ci.org/pingginp/cqlc)
 
-This a fork of [relops/cqlc](https://github.com/relops/cqlc) which is no longer maintained
+This a fork of [relops/cqlc](https://github.com/relops/cqlc) the upstream is no longer maintained.
 
 ## Usage
 
 ````bash
+# install the generator to $GOPATH/bin
 make install
+# generate table and column definition based on schema in keyspace cqlc
 cqlc --instance=127.0.0.1 --keyspace=cqlc --package=foo --output=foo.go --symbols
 ````
 
@@ -27,75 +29,26 @@ You need to change the repo path in `glide.yaml` to use this fork
 # generate columns
 make cqlc/columns.go
 # e2e test
-# TODO: you need to run it twice if schema changed because first time it will dump the schema, which won't get compiled ...
+# TODO: you need to run it twice if schema changed because first time it will generate package based on schema, which won't get compiled ...
 # this same as when using latex ... you do xelatex several times when there is bib ...
 make travis-test
 make travis-tear
+# release, update cqlc/ver.go, build and zip binary for all three platforms, only mac is tested
+make release
 ````
 
-````go
-// NOTE: in order to support set map by value, we must flatten binding,
-// previously it is only did in Prepare and ignored in BuildStatement
+The code has two part, runtime and generator
 
-// Prepare is used in Select, it only has where condition binding
-// Prepare is only called by Fetch
-func (c *Context) Prepare(s *gocql.Session) (*gocql.Query, error) {
-	stmt, err := c.RenderCQL()
-}
+- [cqlc](cqlc) is the runtime, a query builder, don't get mislead by the [column_generator.go](cqlc/column_generator.go)
+it is mainly for generating runtime code that ships with the library
+- [generator](generator) generates table and column definition based on schema, NOTE: it does [NOT support Cassandra 3](https://github.com/pingginp/cqlc/issues/7)
 
-// BuildStatement is used in update, thus it has binding and where condition binding
-// BuildStatement is called by Exec, Batch, Swap
-func BuildStatement(c *Context) (stmt string, placeHolders []interface{}, err error) {
-	
-}
+### Runtime
 
-// cqlc.go
-func (c *Context) RenderCQL() (string, error) {
-	switch c.Operation {
-	case ReadOperation:
-		renderSelect(c, &buf)
-	case WriteOperation:
-		if c.hasConditions() {
-			renderUpdate(c, &buf, false)
-		} else {
-			renderInsert(c, &buf)
-		}
-		renderCAS(c, &buf)
-	case CounterOperation:
-		renderUpdate(c, &buf, true)
-	case DeleteOperation:
-		renderDelete(c, &buf)
-	default:
-		return "", fmt.Errorf("Unknown operation type: %v", c.Operation)
-	}
-}
+The main modification we have are listed below
+ 
+- [support update map value by key](doc/set-map-value-by-key.md), previously, cqlc can only update entire map. (This change only requires update runtime)
 
-// render.go
-func renderUpdate(ctx *Context, buf *bytes.Buffer, counterTable bool) {
-	for i, binding := range ctx.Bindings {
-		col := binding.Column.ColumnName()
-		if counterTable {
-			setFragments[i] = fmt.Sprintf("%s = %s + ?", col, col)
-		} else {
-			switch binding.CollectionType {
-			case ListType:
-				switch binding.CollectionOperationType {
-				case Append:
-					setFragments[i] = fmt.Sprintf("%s = %s + ?", col, col)
-				case Prepend:
-					setFragments[i] = fmt.Sprintf("%s = ? + %s", col, col)
-				case RemoveByValue:
-					setFragments[i] = fmt.Sprintf("%s = %s - ?", col, col)
-				}
-			case MapType:
-				switch binding.CollectionOperationType {
-				case SetByKey:
-					setFragments[i] = fmt.Sprintf("%s[?] = ?", col)
-				}
-			default:
-				setFragments[i] = fmt.Sprintf("%s = ?", col)
-			}
-		}
-	}
-}
-````
+### Generator
+
+- generator now compiles, caused by breaking change of constant name in gocql

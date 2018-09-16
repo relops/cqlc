@@ -82,9 +82,9 @@ func coalesceImports(md *gocql.KeyspaceMetadata) []string {
 		set[path] = true
 	}
 
-	set["github.com/relops/cqlc/cqlc"] = true
 	set["github.com/gocql/gocql"] = true
-	set["log"] = true
+	set["github.com/pkg/errors"] = true
+	set["github.com/relops/cqlc/cqlc"] = true
 
 	paths := make([]string, 0)
 	for path := range set {

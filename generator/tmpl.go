@@ -13,8 +13,8 @@ package {{ .Options.Package }}
 
 import (
     {{range $_, $path := .Imports}}
-        "{{$path}}"
-    {{end}}
+        "{{$path -}}"
+    {{- end}}
 )
 
 const (
@@ -138,8 +138,8 @@ const (
 
     type {{$StructType}} struct {
         {{range $_, $col := $cf.Columns}}
-            {{snakeToCamel $col.Name}} {{valueType $col}}
-        {{end}}
+            {{snakeToCamel $col.Name}} {{valueType $col -}}
+        {{- end}}
     }
 
     {{range $_, $col := $cf.Columns}}
@@ -150,8 +150,8 @@ const (
 
     type {{$StructType}}Def struct {
         {{range $_, $col := $cf.Columns}}
-            {{toUpper $col.Name}} {{columnType $col $cf }}
-        {{end}}
+            {{toUpper $col.Name}} {{columnType $col $cf -}}
+        {{- end}}
     }
 
     func Bind{{$StructType}}(iter *gocql.Iter) ([]{{$StructType}}, error) {
@@ -176,7 +176,7 @@ const (
                     case "{{$col.Name}}": row[i] = &t.{{snakeToCamel $col.Name}}
                 {{end}}
                 default:
-                    log.Fatal("unhandled column: ", columns[i].Name)
+                    return errors.Errorf("cqlc: unhandled column: %s", columns[i].Name)
                 }
             }
             if !iter.Scan(row...) {
@@ -219,7 +219,7 @@ const (
             {{ $ColStructType := snakeToCamel $col.Name }}
             {{ $QualifiedColStructType := sprint $StructType $ColStructType }}
             {Column: &{{ $QualifiedColStructType }}Column{}, Value: v.{{snakeToCamel $col.Name}}},
-        {{end}}
+        {{- end}}
         }
         return cqlc.TableBinding{Table: &{{$StructType}}Def{}, Columns: cols}
     }
@@ -230,7 +230,7 @@ const (
             {{ $ColStructType := snakeToCamel $col.Name }}
             {{ $QualifiedColStructType := sprint $StructType $ColStructType }}
             {Column: &{{ $QualifiedColStructType }}Column{}, Value: &v.{{snakeToCamel $col.Name}}},
-        {{end}}
+        {{- end}}
         }
         return cqlc.TableBinding{Table: &{{$StructType}}Def{}, Columns: cols}
     }
@@ -241,7 +241,7 @@ const (
                 {{ $ColStructType := snakeToCamel $col.Name }}
                 {{ $QualifiedColStructType := sprint $StructType $ColStructType }}
                 &{{ $QualifiedColStructType }}Column{},
-            {{end}}
+            {{- end}}
         }
     }
 
