@@ -27,7 +27,12 @@ build-windows:
 install:
 	go install -ldflags "$(LDFLAGS)" .
 
-release: build-all
+# sync the version defined in runtime with Makefile
+update-ver:
+# NOTE: mac's default sed is not GNU sed https://stackoverflow.com/questions/4247068/sed-command-with-i-option-failing-on-mac-but-works-on-linux
+	sed -i .bak -E 's/const Version = "(.*)"/const Version = "$(VERSION)"/g' cqlc/ver.go
+
+release: update-ver build-all
 	cd build; rm -f *.zip
 	cd build; zip cqlc-$(VERSION)-linux.zip cqlc-linux
 	cd build; zip cqlc-$(VERSION)-mac.zip cqlc-mac

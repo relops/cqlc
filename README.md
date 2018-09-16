@@ -33,6 +33,8 @@ make cqlc/columns.go
 # this same as when using latex ... you do xelatex several times when there is bib ...
 make travis-test
 make travis-tear
+# release, update cqlc/ver.go, build and zip binary for all three platforms, only mac is tested
+make release
 ````
 
 The code has two part, runtime and generator

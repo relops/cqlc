@@ -101,15 +101,16 @@ func defaultReadOptions() *ReadOptions {
 	return &ReadOptions{Distinct: false}
 }
 
-// NewContext creates a fresh Context instance.
+// NewContext creates a fresh Context instance with a default logrus entry with field {cqlc:version}
 // If you want statement debugging, set the Debug property to true
 func NewContext() *Context {
 	// TODO: (pingginp) might change value to version number
-	return NewContextWithLogger(logrus.WithField("cqlc", true))
+	return NewContextWithLogger(logrus.WithField("cqlc", Version))
 }
 
+// NewContextWithLogger creates a fresh Context and extend a new the logrus entry with field {cqlc:version}
 func NewContextWithLogger(logger *logrus.Entry) *Context {
-	return &Context{Debug: false, ReadOptions: defaultReadOptions(), logger: logger.WithField("cqlc", true)}
+	return &Context{Debug: false, ReadOptions: defaultReadOptions(), logger: logger.WithField("cqlc", Version)}
 }
 
 // NewDebugContext creates a fresh Context with debug turned on
@@ -272,14 +273,12 @@ func (c *Context) Limit(lim int) Fetchable {
 }
 
 func (c *Context) OrderBy(cols ...ClusteredColumn) Fetchable {
-
 	spec := make([]OrderSpec, len(cols))
 	for i, c := range cols {
 		spec[i] = OrderSpec{Col: c.ClusterWith(), Desc: c.IsDescending()}
 	}
 
 	c.ReadOptions.Ordering = spec
-
 	return c
 }
 
