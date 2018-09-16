@@ -22,6 +22,7 @@ import (
 
 	"github.com/gocql/gocql"
 	"github.com/pkg/errors"
+	"github.com/sirupsen/logrus"
 )
 
 type OperationType int
@@ -93,6 +94,7 @@ type Context struct {
 	Keyspace string
 	// Setting StaticKeyspace to true will cause the generated CQL to be qualified by the keyspace the code was generated against.
 	StaticKeyspace bool
+	logger         *logrus.Entry
 }
 
 func defaultReadOptions() *ReadOptions {
@@ -102,7 +104,19 @@ func defaultReadOptions() *ReadOptions {
 // NewContext creates a fresh Context instance.
 // If you want statement debugging, set the Debug property to true
 func NewContext() *Context {
-	return &Context{Debug: false, ReadOptions: defaultReadOptions()}
+	// TODO: (pingginp) might change value to version number
+	return NewContextWithLogger(logrus.WithField("cqlc", true))
+}
+
+func NewContextWithLogger(logger *logrus.Entry) *Context {
+	return &Context{Debug: false, ReadOptions: defaultReadOptions(), logger: logger.WithField("cqlc", true)}
+}
+
+// NewDebugContext creates a fresh Context with debug turned on
+func NewDebugContext() *Context {
+	c := NewContext()
+	c.Debug = true
+	return c
 }
 
 type Executable interface {
@@ -271,6 +285,7 @@ func (c *Context) OrderBy(cols ...ClusteredColumn) Fetchable {
 
 func (c *Context) From(t Table) SelectWhereStep {
 	c.Table = t
+	c.logger = c.logger.WithField("table", t.TableName())
 	return c
 }
 
@@ -299,6 +314,7 @@ func (c *Context) Having(cond ...Condition) Executable {
 func (c *Context) Upsert(u Upsertable) SetValueStep {
 	c.Table = u
 	c.Operation = WriteOperation
+	c.logger = c.logger.WithField("table", u.TableName())
 	return c
 }
 
@@ -416,6 +432,8 @@ func (c *Context) Fetch(s *gocql.Session) (*gocql.Iter, error) {
 	return q.Iter(), nil
 }
 
+// Prepare is used in Select, it only has where condition binding
+// Prepare is only called by Fetch
 func (c *Context) Prepare(s *gocql.Session) (*gocql.Query, error) {
 
 	stmt, err := c.RenderCQL()
@@ -435,37 +453,31 @@ func (c *Context) Prepare(s *gocql.Session) (*gocql.Query, error) {
 
 		switch reflect.TypeOf(v).Kind() {
 		case reflect.Slice:
-			{
-				s := reflect.ValueOf(v)
-				for i := 0; i < s.Len(); i++ {
-					placeHolders = append(placeHolders, s.Index(i).Interface())
-				}
+			s := reflect.ValueOf(v)
+			for i := 0; i < s.Len(); i++ {
+				placeHolders = append(placeHolders, s.Index(i).Interface())
 			}
 		case reflect.Array:
-			{
 
-				// Not really happy about having to special case UUIDs
-				// but this works for now
+			// Not really happy about having to special case UUIDs
+			// but this works for now
 
-				if val, ok := v.(gocql.UUID); ok {
-					placeHolders = append(placeHolders, val.Bytes())
-				} else {
-					return nil, bindingErrorf("Cannot bind component: %+v (type: %s)", v, reflect.TypeOf(v))
-				}
+			if val, ok := v.(gocql.UUID); ok {
+				placeHolders = append(placeHolders, val.Bytes())
+			} else {
+				return nil, bindingErrorf("Cannot bind component: %+v (type: %s)", v, reflect.TypeOf(v))
 			}
 		default:
-			{
-				// TODO: (pingginp) why it took address of interface and it worked ...
-				//placeHolders = append(placeHolders, &v)
-				placeHolders = append(placeHolders, v)
-			}
+			// TODO: (pingginp) why it took address of interface and it worked ...
+			//placeHolders = append(placeHolders, &v)
+			placeHolders = append(placeHolders, v)
 		}
 	}
 
 	c.Dispose()
 
 	if c.Debug {
-		debugStmt(stmt, placeHolders)
+		debugStmt(c.logger, stmt, placeHolders)
 	}
 
 	return s.Query(stmt, placeHolders...), nil
@@ -479,7 +491,7 @@ func (c *Context) Exec(s *gocql.Session) error {
 	}
 
 	if c.Debug {
-		debugStmt(stmt, placeHolders)
+		debugStmt(c.logger, stmt, placeHolders)
 	}
 
 	return s.Query(stmt, placeHolders...).Exec()
@@ -514,7 +526,7 @@ func (c *Context) Batch(b *gocql.Batch) error {
 	}
 
 	if c.Debug {
-		debugStmt(stmt, placeHolders)
+		debugStmt(c.logger, stmt, placeHolders)
 	}
 
 	b.Query(stmt, placeHolders...)
@@ -522,23 +534,25 @@ func (c *Context) Batch(b *gocql.Batch) error {
 	return nil
 }
 
-func debugStmt(stmt string, placeHolders []interface{}) {
+func debugStmt(logger *logrus.Entry, stmt string, placeHolders []interface{}) {
 	infused := strings.Replace(stmt, "?", " %+v", -1)
 	var buffer bytes.Buffer
 	buffer.WriteString("CQL: ")
 	buffer.WriteString(infused)
-	buffer.WriteString("\n")
-	log.Printf(buffer.String(), placeHolders...)
+	logger.Printf(buffer.String(), placeHolders...)
 	//panic("debugStmt")
 }
 
 // BuildStatement is the new BuildStatement based on Prepare to support set map value by key
+// BuildStatement is used in update, thus it has binding and where condition binding
+// BuildStatement is called by Exec, Batch, Swap
 func BuildStatement(c *Context) (stmt string, placeHolders []interface{}, err error) {
 	stmt, err = c.RenderCQL()
 	if err != nil {
 		return "", nil, errors.Wrap(err, "error render CQL")
 	}
 
+	// placeHolders are the bindings that will be passed to gocql
 	placeHolders = make([]interface{}, 0)
 
 	// NOTE: for all binding we need to expand value due to multiple placeholders in one binding
@@ -553,7 +567,7 @@ func BuildStatement(c *Context) (stmt string, placeHolders []interface{}, err er
 			case SetByKey:
 				kv, ok := v.(KeyValue)
 				if !ok {
-					return "", nil, errors.Errorf("map set by key requires key value on column %s", bind.Column.ColumnName())
+					return "", nil, errors.Errorf("map set by key requires KeyValue binding on column %s", bind.Column.ColumnName())
 				}
 				placeHolders = append(placeHolders, kv.Key, kv.Value)
 			}

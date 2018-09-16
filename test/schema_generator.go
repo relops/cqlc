@@ -5,8 +5,8 @@ package main
 import (
 	"bytes"
 	"fmt"
-	"log"
 	"io/ioutil"
+	"log"
 	"text/template"
 )
 
