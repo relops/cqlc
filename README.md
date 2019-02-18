@@ -52,3 +52,9 @@ The main modification we have are listed below
 ### Generator
 
 - generator now compiles, caused by breaking change of constant name in gocql
+
+The overall generator logic is
+
+- get table meta using gocql
+- render the template defined in `tmpl.go` using template helper methods defined in `template.go`
+  - `valueType` is returning empty value for `text`, just add a new mapping in `literalTypes` fixed this [#7](https://github.com/pingginp/cqlc/issues/7)
