@@ -41,7 +41,7 @@ The code has two part, runtime and generator
 
 - [cqlc](cqlc) is the runtime, a query builder, don't get mislead by the [column_generator.go](cqlc/column_generator.go)
 it is mainly for generating runtime code that ships with the library
-- [generator](generator) generates table and column definition based on schema, NOTE: it does [NOT support Cassandra 3](https://github.com/pingginp/cqlc/issues/7)
+- [generator](generator) generates table and column definition based on schema, NOTE: it now [supports Cassandra 3](https://github.com/pingginp/cqlc/issues/7)
 
 ### Runtime
 
