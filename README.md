@@ -21,6 +21,12 @@ You need to change the repo path in `glide.yaml` to use this fork
   repo: https://github.com/pingginp/cqlc.git
 ````
 
+If you use `go mod`, add the following in your `go.mod`, [go mod wiki](https://github.com/golang/go/wiki/Modules#when-should-i-use-the-replace-directive)
+
+````text
+replace github.com/relops/cqlc => github.com/pingginp/cqlc v0.12.0
+````
+
 ## Dev
 
 - clone the repo to `$GOPATH/src/github.com/relops/cqlc`
