@@ -132,19 +132,26 @@ func columnType(c gocql.ColumnMetadata, table *gocql.TableMetadata) string {
 	return baseType
 }
 
-func valueType(c gocql.ColumnMetadata) string {
+func valueType(c gocql.ColumnMetadata) (res string) {
+	//defer func() {
+	//	log.Printf("col %s %s %s", c.Name, c.Type, res)
+	//}()
 
 	t := c.Type
 
 	switch t.Type() {
 	case gocql.TypeList, gocql.TypeSet:
-		// TODO should probably not swallow this
-		ct, _ := t.(gocql.CollectionType)
+		ct, ok := t.(gocql.CollectionType)
+		if !ok {
+			panic("valueType list, set not collection")
+		}
 		literal := literalTypes[ct.Elem.Type()]
 		return fmt.Sprintf("[]%s", literal)
 	case gocql.TypeMap:
-		// TODO should probably not swallow this
-		ct, _ := t.(gocql.CollectionType)
+		ct, ok := t.(gocql.CollectionType)
+		if !ok {
+			panic("valueType map not collection")
+		}
 		key := literalTypes[ct.Key.Type()]
 		elem := literalTypes[ct.Elem.Type()]
 		return fmt.Sprintf("map[%s]%s", key, elem)

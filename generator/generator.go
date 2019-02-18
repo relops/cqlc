@@ -144,7 +144,7 @@ func generateBinding(opts *Options, version string, w io.Writer) error {
 		return err
 	}
 
-	log.Printf("keyspace meta %v\n", md)
+	log.Printf("keyspace meta %v", md)
 
 	provenance := Provenance{
 		Keyspace:      opts.Keyspace,
@@ -167,6 +167,8 @@ func generateBinding(opts *Options, version string, w io.Writer) error {
 		return err
 	}
 
+	//ioutil.WriteFile("testdata/tmp.go", b.Bytes(), 0664)
+
 	log.Println("template rendered")
 
 	// FIXME: got error when formatting source https://github.com/pingginp/cqlc/issues/7
@@ -187,6 +189,8 @@ func generateBinding(opts *Options, version string, w io.Writer) error {
 }
 
 func importPaths(md *gocql.KeyspaceMetadata) (imports []string) {
+	log.Println("importPaths called")
+
 	// Ideally need to use a set
 	paths := make(map[string]bool)
 
@@ -203,15 +207,24 @@ func importPaths(md *gocql.KeyspaceMetadata) (imports []string) {
 			switch t.Type() {
 			case gocql.TypeList, gocql.TypeSet:
 				// TODO should probably not swallow this
-				ct, _ := t.(gocql.CollectionType)
+				ct, ok := t.(gocql.CollectionType)
+				if !ok {
+					panic("list set")
+				}
 				f(ct.Elem)
 			case gocql.TypeMap:
 				// TODO should probably not swallow this
-				ct, _ := t.(gocql.CollectionType)
+				ct, ok := t.(gocql.CollectionType)
+				if !ok {
+					panic("map")
+				}
 				f(ct.Key)
 				f(ct.Elem)
 			default:
-				nt, _ := t.(gocql.NativeType)
+				nt, ok := t.(gocql.NativeType)
+				if !ok {
+					panic("native")
+				}
 				f(nt)
 			}
 		}

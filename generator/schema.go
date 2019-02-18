@@ -12,6 +12,7 @@ var (
 var literalTypes = map[gocql.Type]string{
 	gocql.TypeAscii:     "string",
 	gocql.TypeVarchar:   "string",
+	gocql.TypeText:      "string", // the only fix needed for support C*3 ...
 	gocql.TypeInt:       "int32",
 	gocql.TypeBigInt:    "int64",
 	gocql.TypeFloat:     "float32",
