@@ -45,13 +45,16 @@ it is mainly for generating runtime code that ships with the library
 
 ### Runtime
 
-The main modification we have are listed below
+The main modification to the runtime are listed below
  
 - [support update map value by key](doc/set-map-value-by-key.md), previously, cqlc can only update entire map. (This change only requires update runtime)
 
 ### Generator
 
+The main modification to the generator are listed below
+
 - generator now compiles, caused by breaking change of constant name in gocql
+- support Cassandra 3 by adding a new literalType mapping for text -> string [#12](https://github.com/pingginp/cqlc/pull/12)
 
 The overall generator logic is
 

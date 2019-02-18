@@ -1,5 +1,5 @@
 hash: d4bb692c7281da9ad8d3c490e1125de6946522c7d0243f0f0b603b1e1e3e7b6d
-updated: 2018-09-15T15:46:20.378092-07:00
+updated: 2019-02-18T15:22:23.586062-08:00
 imports:
 - name: github.com/gocql/gocql
   version: 5a139e8dcc59d560335dbda641b9f42085e59b0a
@@ -15,17 +15,6 @@ imports:
   version: c6ca198ec95c841fdb89fc0de7496fed11ab854e
 - name: github.com/pkg/errors
   version: c059e472caf75dbe73903f6521a20abac245b17f
-- name: github.com/sirupsen/logrus
-  version: 3e01752db0189b9157070a0e1668a620f9a85da2
-- name: golang.org/x/crypto
-  version: 0e37d006457bf46f9e6692014ba72ef82c33022c
-  subpackages:
-  - ssh/terminal
-- name: golang.org/x/sys
-  version: d0be0721c37eeb5299f245a996a483160fc36940
-  subpackages:
-  - unix
-  - windows
 - name: gopkg.in/inf.v0
   version: d2d2541c53f18d2a059457998ce2876cc8e67cbf
 testImports:
@@ -38,7 +27,7 @@ testImports:
   subpackages:
   - difflib
 - name: github.com/stretchr/testify
-  version: f35b8ab0b5a2cef36673838d662e249dd9c94686
+  version: ffdc059bfe9ce6a4e144ba849dbedead332c6053
   subpackages:
   - assert
   - require

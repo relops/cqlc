@@ -17,12 +17,12 @@ import (
 	"bytes"
 	"fmt"
 	"log"
+	"os"
 	"reflect"
 	"strings"
 
 	"github.com/gocql/gocql"
 	"github.com/pkg/errors"
-	"github.com/sirupsen/logrus"
 )
 
 type OperationType int
@@ -94,23 +94,27 @@ type Context struct {
 	Keyspace string
 	// Setting StaticKeyspace to true will cause the generated CQL to be qualified by the keyspace the code was generated against.
 	StaticKeyspace bool
-	logger         *logrus.Entry
+	logger         Logger
+}
+
+type Logger interface {
+	Printf(format string, args ...interface{})
 }
 
 func defaultReadOptions() *ReadOptions {
 	return &ReadOptions{Distinct: false}
 }
 
-// NewContext creates a fresh Context instance with a default logrus entry with field {cqlc:version}
+// NewContext creates a fresh Context instance using standard logger and logs to stderr with cqlc prefix
 // If you want statement debugging, set the Debug property to true
 func NewContext() *Context {
-	// TODO: (pingginp) might change value to version number
-	return NewContextWithLogger(logrus.WithField("cqlc", Version))
+	stdLogger := log.New(os.Stderr, "cqlc: ", log.Lshortfile|log.Ldate)
+	return NewContextWithLogger(stdLogger)
 }
 
-// NewContextWithLogger creates a fresh Context and extend a new the logrus entry with field {cqlc:version}
-func NewContextWithLogger(logger *logrus.Entry) *Context {
-	return &Context{Debug: false, ReadOptions: defaultReadOptions(), logger: logger.WithField("cqlc", Version)}
+// NewContextWithLogger creates a fresh Context with custom logger
+func NewContextWithLogger(logger Logger) *Context {
+	return &Context{Debug: false, ReadOptions: defaultReadOptions(), logger: logger}
 }
 
 // NewDebugContext creates a fresh Context with debug turned on
@@ -284,7 +288,7 @@ func (c *Context) OrderBy(cols ...ClusteredColumn) Fetchable {
 
 func (c *Context) From(t Table) SelectWhereStep {
 	c.Table = t
-	c.logger = c.logger.WithField("table", t.TableName())
+	//c.logger = c.logger.WithField("table", t.TableName())
 	return c
 }
 
@@ -313,7 +317,7 @@ func (c *Context) Having(cond ...Condition) Executable {
 func (c *Context) Upsert(u Upsertable) SetValueStep {
 	c.Table = u
 	c.Operation = WriteOperation
-	c.logger = c.logger.WithField("table", u.TableName())
+	//c.logger = c.logger.WithField("table", u.TableName())
 	return c
 }
 
@@ -533,7 +537,7 @@ func (c *Context) Batch(b *gocql.Batch) error {
 	return nil
 }
 
-func debugStmt(logger *logrus.Entry, stmt string, placeHolders []interface{}) {
+func debugStmt(logger Logger, stmt string, placeHolders []interface{}) {
 	infused := strings.Replace(stmt, "?", " %+v", -1)
 	var buffer bytes.Buffer
 	buffer.WriteString("CQL: ")
