@@ -1,4 +1,4 @@
-VERSION = 0.12.0
+VERSION = 0.12.1
 LDFLAGS = -X main.Version=$(VERSION)
 GO = CGO_ENABLED=0 go
 GO_LINUX = GOOS=linux GOARCH=amd64 $(GO)
