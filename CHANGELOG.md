@@ -4,6 +4,10 @@ NOTE: this file format is based on [gaocegege/maintainer](https://github.com/gao
 
 ## Unreleased
 
+0.12.2 
+
+- support `IF` statement in `DELETE`
+
 ## 0.12.1 (2019-02-18)
 
 - previous release didn't update all the mapping in generator

@@ -184,13 +184,25 @@ func renderDelete(ctx *Context, buf *bytes.Buffer) {
 	}
 
 	renderWhereClause(ctx, buf)
+
+	if len(ctx.IfConditions) > 0 {
+		renderIfClause(ctx, buf)
+	}
 }
 
 func renderWhereClause(ctx *Context, buf *bytes.Buffer) {
 	fmt.Fprint(buf, "WHERE ")
+	renderCondition(buf, ctx.Conditions)
+}
 
-	whereFragments := make([]string, len(ctx.Conditions))
-	for i, condition := range ctx.Conditions {
+func renderIfClause(ctx *Context, buf *bytes.Buffer) {
+	fmt.Fprint(buf, " IF ")
+	renderCondition(buf, ctx.IfConditions)
+}
+
+func renderCondition(buf *bytes.Buffer, conditions []Condition) {
+	whereFragments := make([]string, len(conditions))
+	for i, condition := range conditions {
 		col := condition.Binding.Column.ColumnName()
 
 		pred := condition.Predicate

@@ -54,6 +54,7 @@ it is mainly for generating runtime code that ships with the library
 The main modification to the runtime are listed below
  
 - [support update map value by key](doc/set-map-value-by-key.md), previously, cqlc can only update entire map. (This change only requires update runtime)
+- support `IF` in `DELETE` 
 
 ### Generator
 

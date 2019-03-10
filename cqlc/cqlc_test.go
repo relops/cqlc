@@ -317,6 +317,16 @@ func (s *CqlTestSuite) TestDeleteRow() {
 	assert.Equal(s.T(), cql, "DELETE FROM foo WHERE id = ?")
 }
 
+func (s *CqlTestSuite) TestDeleteRowIf() {
+	idCol := &MockAsciiColumn{name: "id"}
+	ageCol := &MockInt32Column{name: "age"}
+	c := NewContext()
+	c.Delete().From(s.table).Where(idCol.Eq("x")).If(ageCol.Eq(28))
+	cql, err := c.RenderCQL()
+	assert.NoError(s.T(), err)
+	assert.Equal(s.T(), cql, "DELETE FROM foo WHERE id = ? IF age = ?")
+}
+
 func (s *CqlTestSuite) TestDeleteColumn() {
 	idCol := &MockAsciiColumn{name: "id"}
 	barCol := &MockAsciiColumn{name: "bar"}
