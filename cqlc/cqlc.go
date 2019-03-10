@@ -80,12 +80,15 @@ type ReadOptions struct {
 
 // Context represents the state of the CQL statement that is being built by the application.
 type Context struct {
-	Operation      OperationType
-	Table          Table
-	Columns        []Column
-	Bindings       []ColumnBinding
-	CASBindings    []ColumnBinding
-	Conditions     []Condition
+	Operation   OperationType
+	Table       Table
+	Columns     []Column
+	Bindings    []ColumnBinding
+	CASBindings []ColumnBinding
+	// Conditions is used by WHERE to locate primary key
+	Conditions []Condition
+	// IfConditions is used by IF which is put after WHERE to restrict non primary key columns
+	IfConditions   []Condition
 	ResultBindings map[string]ColumnBinding
 	// Debug flag will cause all CQL statements to get logged
 	Debug       bool
@@ -146,6 +149,11 @@ type UniqueFetchable interface {
 	FetchOne(*gocql.Session) (bool, error)
 }
 
+type IfQueryStep interface {
+	If(conditions ...Condition) Query
+	Query
+}
+
 type Query interface {
 	Executable
 	Fetchable
@@ -155,7 +163,7 @@ type Query interface {
 
 type SelectWhereStep interface {
 	Fetchable
-	Where(conditions ...Condition) Query
+	Where(conditions ...Condition) IfQueryStep
 }
 
 type SelectFromStep interface {
@@ -370,14 +378,19 @@ func (c *Context) Apply(cols ...ColumnBinding) SetValueStep {
 	return c
 }
 
-// Adds column bindings whose values will nbe populated if a CAS operation
+// Adds column bindings whose values will be populated if a CAS operation
 // is applied.
 func (c *Context) IfExists(cols ...ColumnBinding) CompareAndSwap {
 	c.CASBindings = cols
 	return c
 }
 
-func (c *Context) Where(cond ...Condition) Query {
+func (c *Context) If(cond ...Condition) Query {
+	c.IfConditions = cond
+	return c
+}
+
+func (c *Context) Where(cond ...Condition) IfQueryStep {
 	c.Conditions = cond
 	return c
 }
@@ -579,60 +592,37 @@ func BuildStatement(c *Context) (stmt string, placeHolders []interface{}, err er
 		}
 	}
 
-	for _, cond := range c.Conditions {
-		v := cond.Binding.Value
-		switch reflect.TypeOf(v).Kind() {
-		case reflect.Slice:
-			s := reflect.ValueOf(v)
-			for i := 0; i < s.Len(); i++ {
-				placeHolders = append(placeHolders, s.Index(i).Interface())
+	bindCondition := func(conditions []Condition) error {
+		for _, cond := range conditions {
+			v := cond.Binding.Value
+			switch reflect.TypeOf(v).Kind() {
+			case reflect.Slice:
+				s := reflect.ValueOf(v)
+				for i := 0; i < s.Len(); i++ {
+					placeHolders = append(placeHolders, s.Index(i).Interface())
+				}
+			case reflect.Array:
+
+				// Not really happy about having to special case UUIDs
+				// but this works for now
+
+				if val, ok := v.(gocql.UUID); ok {
+					placeHolders = append(placeHolders, val.Bytes())
+				} else {
+					return bindingErrorf("Cannot bind component: %+v (type: %s)", v, reflect.TypeOf(v))
+				}
+			default:
+				placeHolders = append(placeHolders, v)
 			}
-		case reflect.Array:
-
-			// Not really happy about having to special case UUIDs
-			// but this works for now
-
-			if val, ok := v.(gocql.UUID); ok {
-				placeHolders = append(placeHolders, val.Bytes())
-			} else {
-				return "", nil, bindingErrorf("Cannot bind component: %+v (type: %s)", v, reflect.TypeOf(v))
-			}
-		default:
-			placeHolders = append(placeHolders, v)
 		}
+		return nil
 	}
 
-	c.Dispose()
-
-	return stmt, placeHolders, nil
-}
-
-// Deprecated
-// NOTE: (pingginp) this is used by Exec and unlike Prepare, it didn't handle expand binding
-func BuildStatementOld(c *Context) (stmt string, placeHolders []interface{}, err error) {
-	// TODO Does this function need to get exported?
-	stmt, err = c.RenderCQL()
-	if err != nil {
-		return stmt, nil, err
+	if err := bindCondition(c.Conditions); err != nil {
+		return "", nil, err
 	}
-
-	bindings := len(c.Bindings) // TODO check whether this is nil
-	conditions := 0
-
-	if c.Conditions != nil {
-		conditions = len(c.Conditions)
-	}
-
-	placeHolders = make([]interface{}, bindings+conditions)
-
-	for i, bind := range c.Bindings {
-		placeHolders[i] = bind.Value
-	}
-
-	if c.Conditions != nil {
-		for i, cond := range c.Conditions {
-			placeHolders[i+bindings] = cond.Binding.Value
-		}
+	if err := bindCondition(c.IfConditions); err != nil {
+		return "", nil, err
 	}
 
 	c.Dispose()
@@ -681,6 +671,7 @@ func (c *Context) Dispose() {
 	c.Table = nil
 	c.Bindings = nil
 	c.Conditions = nil
+	c.IfConditions = nil
 	c.CASBindings = nil
 }
 

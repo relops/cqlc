@@ -81,8 +81,7 @@ const (
                         return cqlc.Condition{Binding: binding, Predicate: cqlc.InPredicate}
                     }
                 {{ end }}
-            {{ end }}
-            {{ if supportsClustering $col }}
+            {{ else if supportsClustering $col }}
 
                 func (b * {{$QualifiedColStructType}}Column ) ClusterWith() string {
                     return b.ColumnName()
@@ -130,6 +129,14 @@ const (
                     column := &{{$QualifiedColStructType}}Column{}
                     binding := cqlc.ColumnBinding{Column: column, Value: value}
                     return cqlc.Condition{Binding: binding, Predicate: cqlc.LePredicate}
+                }
+            {{ else }}
+// Eq is used in DELETE IF statement to filter on non primary key columns, 
+// introduced in https://github.com/pingginp/cqlc/issues/13
+                func (b * {{$QualifiedColStructType}}Column ) Eq(value {{valueType $col}}) cqlc.Condition {
+                    column := &{{$QualifiedColStructType}}Column{}
+                    binding := cqlc.ColumnBinding{Column: column, Value: value}
+                    return cqlc.Condition{Binding: binding, Predicate: cqlc.EqPredicate}
                 }
             {{ end }}
         {{ end }}
