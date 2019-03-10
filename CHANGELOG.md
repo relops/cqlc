@@ -4,9 +4,13 @@ NOTE: this file format is based on [gaocegege/maintainer](https://github.com/gao
 
 ## Unreleased
 
-0.12.2 
+## 0.13.0 (2019-03-10)
 
-- support `IF` statement in `DELETE`
+Was going to make it 0.12.2 but since it breaks both runtime and generated code, bump minor version number
+
+- support `IF` in `DELETE` [#13](https://github.com/pingginp/cqlc/issues/13)
+- in generated column bindings allow `Eq` on all columns, previously only primary key, index are allowed, which blocks using 
+other columns in condition queries after `If`
 
 ## 0.12.1 (2019-02-18)
 
