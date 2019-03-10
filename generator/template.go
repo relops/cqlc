@@ -94,7 +94,10 @@ func columnType(c gocql.ColumnMetadata, table *gocql.TableMetadata) string {
 			replacement = ".LastPartitioned"
 		}
 		baseType = strings.Replace(baseType, ".", replacement, 1)
-	} else if c.Index.Name != "" {
+		//} else if c.Index.Name != "" {
+	} else {
+		// NOTE: this is changed to allow Eq on all columns to use DELETE ... WHERE ... IF ...
+		// see https://github.com/pingginp/cqlc/issues/13
 		replacement := ".Equality"
 		baseType = strings.Replace(baseType, ".", replacement, 1)
 	}
