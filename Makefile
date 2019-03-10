@@ -1,35 +1,58 @@
-CCM_NODE ?= node1
-CQLSH_CMD ?= ccm $(CCM_NODE) cqlsh
+VERSION = 0.13.0
+LDFLAGS = -X main.Version=$(VERSION)
+GO = CGO_ENABLED=0 go
+GO_LINUX = GOOS=linux GOARCH=amd64 $(GO)
+GO_MAC = GOOS=darwin GOARCH=amd64 $(GO)
+GO_WINDOWS = GOOS=windows GOARCH=amd64 $(GO)
 
-test/collections.cql: test/tmpl/schema.tmpl test/schema_generator.go
-	cd test; go run schema_generator.go
+.PHONY: gen fmt build install test
 
-test/.fixtures/collections/input.go: test/tmpl/input.tmpl test/schema_generator.go
-	cd test; go run schema_generator.go
+fmt:
+	gofmt -d -l -w cqlc generator e2e
 
-schema: test/collections.cql
-	-$(CQLSH_CMD) -f test/keyspace.cql
-	$(CQLSH_CMD) -k cqlc -f test/schema.cql
-	$(CQLSH_CMD) -k cqlc -f test/collections.cql
-	$(CQLSH_CMD) -k cqlc -f test/shared.cql
-	$(CQLSH_CMD) -k cqlc2 -f test/shared.cql
+build:
+	$(GO) build -ldflags "$(LDFLAGS)" -o build/cqlc .
 
-cqlc/columns.go: cqlc/tmpl/columns.tmpl cqlc/column_generator.go
+build-all: build-linux build-mac build-windows
+
+build-linux:
+	$(GO_LINUX) build -ldflags "$(LDFLAGS)" -o build/cqlc-linux .
+
+build-mac:
+	$(GO_MAC) build -ldflags "$(LDFLAGS)" -o build/cqlc-mac .
+
+build-windows:
+	$(GO_WINDOWS) build -ldflags "$(LDFLAGS)" -o build/cqlc-windows .
+
+install:
+	go install -ldflags "$(LDFLAGS)" .
+
+# sync the version defined in runtime with Makefile
+update-ver:
+# NOTE: mac's default sed is not GNU sed https://stackoverflow.com/questions/4247068/sed-command-with-i-option-failing-on-mac-but-works-on-linux
+	sed -i .bak -E 's/const Version = "(.*)"/const Version = "$(VERSION)"/g' cqlc/ver.go
+
+release: update-ver build-all
+	cd build; rm -f *.zip
+	cd build; zip cqlc-$(VERSION)-linux.zip cqlc-linux
+	cd build; zip cqlc-$(VERSION)-mac.zip cqlc-mac
+	cd build; zip cqlc-$(VERSION)-windows.zip cqlc-windows
+
+# generate highly duplicated part in runtime
+gen:
 	cd cqlc; go run column_generator.go
 
-columns: cqlc/columns.go
+test: test-unit
 
-bindata: generator/binding_tmpl.go
+test-unit:
+	go test -v ./cqlc
 
-input: test/.fixtures/collections/input.go test/collections.cql
+travis-test: install
+	docker-compose -f e2e/docker-compose.yaml up -d c2
+	./wait-on-c.sh
+	docker ps
+	sleep 5
+	go test -v ./e2e
 
-generator/binding_tmpl.go: generator/tmpl/binding.tmpl
-	go-bindata -pkg=generator -o=generator/binding_tmpl.go generator/tmpl
-
-test: columns bindata schema test/.fixtures/collections/input.go
-	go test -v ./...
-
-format:
-	gofmt -w cqlc generator integration test
-
-.PHONY: test columns bindata
+travis-tear:
+	cd e2e && make down

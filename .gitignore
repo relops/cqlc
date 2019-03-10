@@ -1,3 +1,6 @@
 output/
 test/.fixtures/collections/input.go
 test/collections.cql
+
+.idea
+vendor

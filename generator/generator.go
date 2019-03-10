@@ -2,17 +2,18 @@ package generator
 
 import (
 	"bytes"
-	"errors"
-	"fmt"
-	"github.com/gocql/gocql"
 	"go/format"
 	"io"
 	"io/ioutil"
+	"log"
 	"os"
 	"path/filepath"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/gocql/gocql"
+	"github.com/pkg/errors"
 )
 
 var (
@@ -47,6 +48,7 @@ func Generate(opts *Options, version string) error {
 	if err != nil {
 		return err
 	}
+	log.Println("valid options")
 
 	var b bytes.Buffer
 	if err = generateBinding(opts, version, &b); err != nil {
@@ -80,12 +82,12 @@ func coalesceImports(md *gocql.KeyspaceMetadata) []string {
 		set[path] = true
 	}
 
-	set["github.com/relops/cqlc/cqlc"] = true
 	set["github.com/gocql/gocql"] = true
-	set["log"] = true
+	set["github.com/pkg/errors"] = true
+	set["github.com/relops/cqlc/cqlc"] = true
 
 	paths := make([]string, 0)
-	for path, _ := range set {
+	for path := range set {
 		paths = append(paths, path)
 	}
 
@@ -106,8 +108,10 @@ func generateBinding(opts *Options, version string, w io.Writer) error {
 	s, err := cluster.CreateSession()
 
 	if err != nil {
-		return fmt.Errorf("Connect error", err)
+		return errors.Errorf("Connect error %s", err)
 	}
+
+	log.Println("connected")
 
 	defer s.Close()
 
@@ -116,12 +120,12 @@ func generateBinding(opts *Options, version string, w io.Writer) error {
 	err = s.Query(`SELECT native_protocol_version, release_version, cql_version, host_id
 		           FROM system.local`).Scan(&protoString, &release, &cqlVersion, &hostId)
 	if err != nil {
-		return fmt.Errorf("System metadata error", err)
+		return errors.Errorf("System metadata error %s", err)
 	}
 
 	proto, err := strconv.Atoi(protoString)
 	if err != nil {
-		return fmt.Errorf("Could not parse protocol version", err)
+		return errors.Errorf("Could not parse protocol version %s", err)
 	}
 
 	if proto > 3 {
@@ -130,7 +134,7 @@ func generateBinding(opts *Options, version string, w io.Writer) error {
 		s, err = cluster.CreateSession()
 
 		if err != nil {
-			return fmt.Errorf("Re-connect error", err)
+			return errors.Errorf("Re-connect error %s", err)
 		}
 	}
 
@@ -139,6 +143,8 @@ func generateBinding(opts *Options, version string, w io.Writer) error {
 	if err != nil {
 		return err
 	}
+
+	log.Printf("keyspace meta %v", md)
 
 	provenance := Provenance{
 		Keyspace:      opts.Keyspace,
@@ -161,19 +167,30 @@ func generateBinding(opts *Options, version string, w io.Writer) error {
 		return err
 	}
 
+	//ioutil.WriteFile("testdata/tmp.go", b.Bytes(), 0664)
+
+	log.Println("template rendered")
+
+	// FIXME: got error when formatting source https://github.com/pingginp/cqlc/issues/7
 	bfmt, err := format.Source(b.Bytes())
 	if err != nil {
 		return err
 	}
 
+	log.Println("formatted rendered code")
+
 	if _, err := w.Write(bfmt); err != nil {
 		return err
 	}
+
+	log.Println("generateBinding finished")
 
 	return nil
 }
 
 func importPaths(md *gocql.KeyspaceMetadata) (imports []string) {
+	log.Println("importPaths called")
+
 	// Ideally need to use a set
 	paths := make(map[string]bool)
 
@@ -190,15 +207,24 @@ func importPaths(md *gocql.KeyspaceMetadata) (imports []string) {
 			switch t.Type() {
 			case gocql.TypeList, gocql.TypeSet:
 				// TODO should probably not swallow this
-				ct, _ := t.(gocql.CollectionType)
+				ct, ok := t.(gocql.CollectionType)
+				if !ok {
+					panic("list set")
+				}
 				f(ct.Elem)
 			case gocql.TypeMap:
 				// TODO should probably not swallow this
-				ct, _ := t.(gocql.CollectionType)
+				ct, ok := t.(gocql.CollectionType)
+				if !ok {
+					panic("map")
+				}
 				f(ct.Key)
 				f(ct.Elem)
 			default:
-				nt, _ := t.(gocql.NativeType)
+				nt, ok := t.(gocql.NativeType)
+				if !ok {
+					panic("native")
+				}
 				f(nt)
 			}
 		}
@@ -215,4 +241,8 @@ func importPaths(md *gocql.KeyspaceMetadata) (imports []string) {
 	}
 
 	return imports
+}
+
+func init() {
+	log.SetFlags(log.Lshortfile)
 }

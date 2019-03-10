@@ -15,12 +15,14 @@ package cqlc
 
 import (
 	"bytes"
-	"errors"
 	"fmt"
-	"github.com/gocql/gocql"
 	"log"
+	"os"
 	"reflect"
 	"strings"
+
+	"github.com/gocql/gocql"
+	"github.com/pkg/errors"
 )
 
 type OperationType int
@@ -57,6 +59,8 @@ const (
 	Append
 	Prepend
 	RemoveByValue
+	RemoveByKey
+	SetByKey
 )
 
 var (
@@ -76,12 +80,15 @@ type ReadOptions struct {
 
 // Context represents the state of the CQL statement that is being built by the application.
 type Context struct {
-	Operation      OperationType
-	Table          Table
-	Columns        []Column
-	Bindings       []ColumnBinding
-	CASBindings    []ColumnBinding
-	Conditions     []Condition
+	Operation   OperationType
+	Table       Table
+	Columns     []Column
+	Bindings    []ColumnBinding
+	CASBindings []ColumnBinding
+	// Conditions is used by WHERE to locate primary key
+	Conditions []Condition
+	// IfConditions is used by IF which is put after WHERE to restrict non primary key columns
+	IfConditions   []Condition
 	ResultBindings map[string]ColumnBinding
 	// Debug flag will cause all CQL statements to get logged
 	Debug       bool
@@ -90,16 +97,34 @@ type Context struct {
 	Keyspace string
 	// Setting StaticKeyspace to true will cause the generated CQL to be qualified by the keyspace the code was generated against.
 	StaticKeyspace bool
+	logger         Logger
+}
+
+type Logger interface {
+	Printf(format string, args ...interface{})
 }
 
 func defaultReadOptions() *ReadOptions {
 	return &ReadOptions{Distinct: false}
 }
 
-// NewContext creates a fresh Context instance.
+// NewContext creates a fresh Context instance using standard logger and logs to stderr with cqlc prefix
 // If you want statement debugging, set the Debug property to true
 func NewContext() *Context {
-	return &Context{Debug: false, ReadOptions: defaultReadOptions()}
+	stdLogger := log.New(os.Stderr, "cqlc: ", log.Lshortfile|log.Ldate)
+	return NewContextWithLogger(stdLogger)
+}
+
+// NewContextWithLogger creates a fresh Context with custom logger
+func NewContextWithLogger(logger Logger) *Context {
+	return &Context{Debug: false, ReadOptions: defaultReadOptions(), logger: logger}
+}
+
+// NewDebugContext creates a fresh Context with debug turned on
+func NewDebugContext() *Context {
+	c := NewContext()
+	c.Debug = true
+	return c
 }
 
 type Executable interface {
@@ -124,6 +149,11 @@ type UniqueFetchable interface {
 	FetchOne(*gocql.Session) (bool, error)
 }
 
+type IfQueryStep interface {
+	If(conditions ...Condition) Query
+	Query
+}
+
 type Query interface {
 	Executable
 	Fetchable
@@ -133,7 +163,7 @@ type Query interface {
 
 type SelectWhereStep interface {
 	Fetchable
-	Where(conditions ...Condition) Query
+	Where(conditions ...Condition) IfQueryStep
 }
 
 type SelectFromStep interface {
@@ -219,6 +249,12 @@ type ColumnBinding struct {
 	CollectionOperationType CollectionOperationType
 }
 
+// KeyValue is used for bind map value by key
+type KeyValue struct {
+	Key   interface{}
+	Value interface{}
+}
+
 type TableBinding struct {
 	Table   Table
 	Columns []ColumnBinding
@@ -249,19 +285,18 @@ func (c *Context) Limit(lim int) Fetchable {
 }
 
 func (c *Context) OrderBy(cols ...ClusteredColumn) Fetchable {
-
 	spec := make([]OrderSpec, len(cols))
 	for i, c := range cols {
 		spec[i] = OrderSpec{Col: c.ClusterWith(), Desc: c.IsDescending()}
 	}
 
 	c.ReadOptions.Ordering = spec
-
 	return c
 }
 
 func (c *Context) From(t Table) SelectWhereStep {
 	c.Table = t
+	//c.logger = c.logger.WithField("table", t.TableName())
 	return c
 }
 
@@ -290,6 +325,7 @@ func (c *Context) Having(cond ...Condition) Executable {
 func (c *Context) Upsert(u Upsertable) SetValueStep {
 	c.Table = u
 	c.Operation = WriteOperation
+	//c.logger = c.logger.WithField("table", u.TableName())
 	return c
 }
 
@@ -342,14 +378,19 @@ func (c *Context) Apply(cols ...ColumnBinding) SetValueStep {
 	return c
 }
 
-// Adds column bindings whose values will nbe populated if a CAS operation
+// Adds column bindings whose values will be populated if a CAS operation
 // is applied.
 func (c *Context) IfExists(cols ...ColumnBinding) CompareAndSwap {
 	c.CASBindings = cols
 	return c
 }
 
-func (c *Context) Where(cond ...Condition) Query {
+func (c *Context) If(cond ...Condition) Query {
+	c.IfConditions = cond
+	return c
+}
+
+func (c *Context) Where(cond ...Condition) IfQueryStep {
 	c.Conditions = cond
 	return c
 }
@@ -382,7 +423,7 @@ func (c *Context) FetchOne(s *gocql.Session) (bool, error) {
 		if !ok {
 			row[i] = cols[i].TypeInfo.New()
 			if c.Debug && row[i] == nil {
-				log.Printf("Could not map type info: %+v", cols[i].TypeInfo.Type)
+				log.Printf("Could not map type info: %+v", cols[i].TypeInfo.Type())
 			}
 		} else {
 			row[i] = binding.Value
@@ -407,6 +448,8 @@ func (c *Context) Fetch(s *gocql.Session) (*gocql.Iter, error) {
 	return q.Iter(), nil
 }
 
+// Prepare is used in Select, it only has where condition binding
+// Prepare is only called by Fetch
 func (c *Context) Prepare(s *gocql.Session) (*gocql.Query, error) {
 
 	stmt, err := c.RenderCQL()
@@ -426,35 +469,31 @@ func (c *Context) Prepare(s *gocql.Session) (*gocql.Query, error) {
 
 		switch reflect.TypeOf(v).Kind() {
 		case reflect.Slice:
-			{
-				s := reflect.ValueOf(v)
-				for i := 0; i < s.Len(); i++ {
-					placeHolders = append(placeHolders, s.Index(i).Interface())
-				}
+			s := reflect.ValueOf(v)
+			for i := 0; i < s.Len(); i++ {
+				placeHolders = append(placeHolders, s.Index(i).Interface())
 			}
 		case reflect.Array:
-			{
 
-				// Not really happy about having to special case UUIDs
-				// but this works for now
+			// Not really happy about having to special case UUIDs
+			// but this works for now
 
-				if val, ok := v.(gocql.UUID); ok {
-					placeHolders = append(placeHolders, val.Bytes())
-				} else {
-					return nil, bindingErrorf("Cannot bind component: %+v (type: %s)", v, reflect.TypeOf(v))
-				}
+			if val, ok := v.(gocql.UUID); ok {
+				placeHolders = append(placeHolders, val.Bytes())
+			} else {
+				return nil, bindingErrorf("Cannot bind component: %+v (type: %s)", v, reflect.TypeOf(v))
 			}
 		default:
-			{
-				placeHolders = append(placeHolders, &v)
-			}
+			// TODO: (pingginp) why it took address of interface and it worked ...
+			//placeHolders = append(placeHolders, &v)
+			placeHolders = append(placeHolders, v)
 		}
 	}
 
 	c.Dispose()
 
 	if c.Debug {
-		debugStmt(stmt, placeHolders)
+		debugStmt(c.logger, stmt, placeHolders)
 	}
 
 	return s.Query(stmt, placeHolders...), nil
@@ -468,7 +507,7 @@ func (c *Context) Exec(s *gocql.Session) error {
 	}
 
 	if c.Debug {
-		debugStmt(stmt, placeHolders)
+		debugStmt(c.logger, stmt, placeHolders)
 	}
 
 	return s.Query(stmt, placeHolders...).Exec()
@@ -503,7 +542,7 @@ func (c *Context) Batch(b *gocql.Batch) error {
 	}
 
 	if c.Debug {
-		debugStmt(stmt, placeHolders)
+		debugStmt(c.logger, stmt, placeHolders)
 	}
 
 	b.Query(stmt, placeHolders...)
@@ -511,39 +550,79 @@ func (c *Context) Batch(b *gocql.Batch) error {
 	return nil
 }
 
-func debugStmt(stmt string, placeHolders []interface{}) {
+func debugStmt(logger Logger, stmt string, placeHolders []interface{}) {
 	infused := strings.Replace(stmt, "?", " %+v", -1)
 	var buffer bytes.Buffer
 	buffer.WriteString("CQL: ")
 	buffer.WriteString(infused)
-	buffer.WriteString("\n")
-	fmt.Printf(buffer.String(), placeHolders...)
+	logger.Printf(buffer.String(), placeHolders...)
+	//panic("debugStmt")
 }
 
+// BuildStatement is the new BuildStatement based on Prepare to support set map value by key
+// BuildStatement is used in update, thus it has binding and where condition binding
+// BuildStatement is called by Exec, Batch, Swap
 func BuildStatement(c *Context) (stmt string, placeHolders []interface{}, err error) {
-	// TODO Does this function need to get exported?
 	stmt, err = c.RenderCQL()
 	if err != nil {
-		return stmt, nil, err
+		return "", nil, errors.Wrap(err, "error render CQL")
 	}
 
-	bindings := len(c.Bindings) // TODO check whether this is nil
-	conditions := 0
+	// placeHolders are the bindings that will be passed to gocql
+	placeHolders = make([]interface{}, 0)
 
-	if c.Conditions != nil {
-		conditions = len(c.Conditions)
-	}
+	// NOTE: for all binding we need to expand value due to multiple placeholders in one binding
+	// in bindings we have foo[?] = ?
+	// in where bindings we have where foo in (?, ?, ?)
 
-	placeHolders = make([]interface{}, bindings+conditions)
-
-	for i, bind := range c.Bindings {
-		placeHolders[i] = bind.Value
-	}
-
-	if c.Conditions != nil {
-		for i, cond := range c.Conditions {
-			placeHolders[i+bindings] = cond.Binding.Value
+	for _, bind := range c.Bindings {
+		v := bind.Value
+		switch bind.CollectionType {
+		case MapType:
+			switch bind.CollectionOperationType {
+			case SetByKey:
+				kv, ok := v.(KeyValue)
+				if !ok {
+					return "", nil, errors.Errorf("map set by key requires KeyValue binding on column %s", bind.Column.ColumnName())
+				}
+				placeHolders = append(placeHolders, kv.Key, kv.Value)
+			}
+		default:
+			placeHolders = append(placeHolders, v)
 		}
+	}
+
+	bindCondition := func(conditions []Condition) error {
+		for _, cond := range conditions {
+			v := cond.Binding.Value
+			switch reflect.TypeOf(v).Kind() {
+			case reflect.Slice:
+				s := reflect.ValueOf(v)
+				for i := 0; i < s.Len(); i++ {
+					placeHolders = append(placeHolders, s.Index(i).Interface())
+				}
+			case reflect.Array:
+
+				// Not really happy about having to special case UUIDs
+				// but this works for now
+
+				if val, ok := v.(gocql.UUID); ok {
+					placeHolders = append(placeHolders, val.Bytes())
+				} else {
+					return bindingErrorf("Cannot bind component: %+v (type: %s)", v, reflect.TypeOf(v))
+				}
+			default:
+				placeHolders = append(placeHolders, v)
+			}
+		}
+		return nil
+	}
+
+	if err := bindCondition(c.Conditions); err != nil {
+		return "", nil, err
+	}
+	if err := bindCondition(c.IfConditions); err != nil {
+		return "", nil, err
 	}
 
 	c.Dispose()
@@ -556,7 +635,6 @@ func (c *Context) RenderCQL() (string, error) {
 
 	var buf bytes.Buffer
 
-	// TODO This should be a switch
 	switch c.Operation {
 	case ReadOperation:
 		{
@@ -581,7 +659,7 @@ func (c *Context) RenderCQL() (string, error) {
 			renderDelete(c, &buf)
 		}
 	default:
-		return "", fmt.Errorf("Unknown operation type: %s", c.Operation)
+		return "", fmt.Errorf("Unknown operation type: %v", c.Operation)
 	}
 
 	return buf.String(), nil
@@ -593,6 +671,7 @@ func (c *Context) Dispose() {
 	c.Table = nil
 	c.Bindings = nil
 	c.Conditions = nil
+	c.IfConditions = nil
 	c.CASBindings = nil
 }
 
@@ -603,6 +682,11 @@ func Truncate(s *gocql.Session, t Table) error {
 
 func set(c *Context, col Column, value interface{}) {
 	c.Bindings = append(c.Bindings, ColumnBinding{Column: col, Value: value})
+}
+
+func setMap(c *Context, col Column, key interface{}, value interface{}) {
+	b := ColumnBinding{Column: col, Value: KeyValue{Key: key, Value: value}, CollectionType: MapType, CollectionOperationType: SetByKey}
+	c.Bindings = append(c.Bindings, b)
 }
 
 func appendList(c *Context, col ListColumn, values interface{}) {

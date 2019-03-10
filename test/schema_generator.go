@@ -5,31 +5,10 @@ package main
 import (
 	"bytes"
 	"fmt"
-	log "github.com/cihub/seelog"
 	"io/ioutil"
+	"log"
 	"text/template"
 )
-
-var logConfig = `
-<seelog type="sync">
-	<outputs formatid="main">
-		<console/>
-	</outputs>
-	<formats>
-		<format id="main" format="%Date(2006-02-01 03:04:05.000) - %Msg%n"/>
-	</formats>
-</seelog>`
-
-func init() {
-	logger, err := log.LoggerFromConfigAsString(logConfig)
-
-	if err != nil {
-		fmt.Printf("Could not load seelog configuration: %s\n", err)
-		return
-	}
-
-	log.ReplaceLogger(logger)
-}
 
 type TypeInfo struct {
 	Pre string

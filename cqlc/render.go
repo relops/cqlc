@@ -134,6 +134,20 @@ func renderUpdate(ctx *Context, buf *bytes.Buffer, counterTable bool) {
 				case RemoveByValue:
 					setFragments[i] = fmt.Sprintf("%s = %s - ?", col, col)
 				}
+			case MapType:
+				switch binding.CollectionOperationType {
+				case SetByKey:
+					setFragments[i] = fmt.Sprintf("%s[?] = ?", col)
+					// TODO: it seems in C*2 and C*3 the + has different semantic
+					// https://docs.datastax.com/en/cql/3.1/cql/cql_using/use_map_t.html
+					// https://docs.datastax.com/en/cql/3.3/cql/cql_using/useInsertMap.html
+					//case Append:
+					//	setFragments[i] = fmt.Sprintf("%s = %s + ?", col, col)
+					//case RemoveByKey:
+					//	setFragments[i] = fmt.Sprintf("%s = %s - ?", col, col)
+				default:
+					panic(fmt.Sprintf("unsupported Map CollectionOperationType %d", binding.CollectionOperationType))
+				}
 			default:
 				setFragments[i] = fmt.Sprintf("%s = ?", col)
 			}
@@ -170,13 +184,25 @@ func renderDelete(ctx *Context, buf *bytes.Buffer) {
 	}
 
 	renderWhereClause(ctx, buf)
+
+	if len(ctx.IfConditions) > 0 {
+		renderIfClause(ctx, buf)
+	}
 }
 
 func renderWhereClause(ctx *Context, buf *bytes.Buffer) {
 	fmt.Fprint(buf, "WHERE ")
+	renderCondition(buf, ctx.Conditions)
+}
 
-	whereFragments := make([]string, len(ctx.Conditions))
-	for i, condition := range ctx.Conditions {
+func renderIfClause(ctx *Context, buf *bytes.Buffer) {
+	fmt.Fprint(buf, " IF ")
+	renderCondition(buf, ctx.IfConditions)
+}
+
+func renderCondition(buf *bytes.Buffer, conditions []Condition) {
+	whereFragments := make([]string, len(conditions))
+	for i, condition := range conditions {
 		col := condition.Binding.Column.ColumnName()
 
 		pred := condition.Predicate

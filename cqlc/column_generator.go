@@ -4,32 +4,11 @@ package main
 
 import (
 	"bytes"
-	"fmt"
-	log "github.com/cihub/seelog"
+	"go/format"
 	"io/ioutil"
+	"log"
 	"text/template"
 )
-
-var logConfig = `
-<seelog type="sync">
-	<outputs formatid="main">
-		<console/>
-	</outputs>
-	<formats>
-		<format id="main" format="%Date(2006-02-01 03:04:05.000) - %Msg%n"/>
-	</formats>
-</seelog>`
-
-func init() {
-	logger, err := log.LoggerFromConfigAsString(logConfig)
-
-	if err != nil {
-		fmt.Printf("Could not load seelog configuration: %s\n", err)
-		return
-	}
-
-	log.ReplaceLogger(logger)
-}
 
 type TypeInfo struct {
 	Prefix  string
@@ -57,17 +36,26 @@ func main() {
 
 	t, err := template.New("columns.tmpl").ParseFiles("tmpl/columns.tmpl")
 	if err != nil {
-		log.Errorf("Could not open template: %s", err)
+		log.Fatalf("Could not open template: %s", err)
 		return
 	}
 
-	var b bytes.Buffer
-	t.Execute(&b, params)
-
-	if err := ioutil.WriteFile("columns.go", b.Bytes(), 0644); err != nil {
-		log.Errorf("Could not write templated file: %s", err)
+	var buf bytes.Buffer
+	if err := t.Execute(&buf, params); err != nil {
+		log.Fatalf("Could not render template: %s", err)
 		return
 	}
 
-	log.Info("Regenerated columns")
+	b, err := format.Source(buf.Bytes())
+	if err != nil {
+		log.Fatalf("Could not format rendered template as go code: %s", err)
+		return
+	}
+
+	if err := ioutil.WriteFile("columns.go", b, 0644); err != nil {
+		log.Fatalf("Could not write templated file: %s", err)
+		return
+	}
+
+	log.Println("Regenerated columns")
 }
